@@ -8,6 +8,11 @@
     <Authors>Joh</Authors>
     <AssemblyVersion>1.0.0.1</AssemblyVersion>
     <FileVersion>1.0</FileVersion>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>True</Optimize>
   </PropertyGroup>
 
   <ItemGroup>

@@ -12,3 +12,5 @@ E:\git\UnityTools\obj\Debug\net6.0\UnityTools.csproj.CopyComplete
 E:\git\UnityTools\obj\Debug\net6.0\UnityTools.dll
 E:\git\UnityTools\obj\Debug\net6.0\ref\UnityTools.dll
 E:\git\UnityTools\obj\Debug\net6.0\UnityTools.pdb
+E:\git\UnityTools\bin\Debug\net6.0\UnityTools.xml
+E:\git\UnityTools\obj\Debug\net6.0\UnityTools.xml

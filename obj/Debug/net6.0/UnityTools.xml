@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>UnityTools</name>
+    </assembly>
+    <members>
+        <member name="T:UnityTools.Debuger">
+            <summary>
+            自定义Debug类
+            </summary>
+        </member>
+        <member name="P:UnityTools.Debuger.enable">
+            <summary>
+            输出日志开关
+            </summary>
+        </member>
+        <member name="M:UnityTools.Debuger.Enable">
+            <summary>
+            打开日志输出
+            </summary>
+        </member>
+        <member name="M:UnityTools.Debuger.UnEnable">
+            <summary>
+            关闭日志输出
+            </summary>
+        </member>
+        <member name="M:UnityTools.Debuger.Log(System.Object)">
+            <summary>
+            参考UnityEngine.Debug
+            </summary>
+        </member>
+        <member name="M:UnityTools.Debuger.Log(System.Object,UnityEngine.Object)">
+            <summary>
+            参考UnityEngine.Debug
+            </summary>
+        </member>
+        <member name="M:UnityTools.Debuger.LogFormat(System.String,System.Object[])">
+            <summary>
+            参考UnityEngine.Debug
+            </summary>
+        </member>
+        <member name="M:UnityTools.Debuger.LogFormat(UnityEngine.Object,System.String,System.Object[])">
+            <summary>
+            参考UnityEngine.Debug
+            </summary>
+        </member>
+        <member name="M:UnityTools.Debuger.LogFormat(UnityEngine.LogType,UnityEngine.LogOption,UnityEngine.Object,System.String,System.Object[])">
+            <summary>
+            参考UnityEngine.Debug
+            </summary>
+        </member>
+        <member name="M:UnityTools.Debuger.LogError(System.Object)">
+            <summary>
+            参考UnityEngine.Debug
+            </summary>
+        </member>
+        <member name="M:UnityTools.Debuger.LogError(System.Object,UnityEngine.Object)">
+            <summary>
+            参考UnityEngine.Debug
+            </summary>
+        </member>
+        <member name="M:UnityTools.Debuger.LogErrorFormat(System.String,System.Object[])">
+            <summary>
+            参考UnityEngine.Debug
+            </summary>
+        </member>
+        <member name="M:UnityTools.Debuger.LogErrorFormat(UnityEngine.Object,System.String,System.Object[])">
+            <summary>
+            参考UnityEngine.Debug
+            </summary>
+        </member>
+        <member name="M:UnityTools.Debuger.LogException(System.Exception)">
+            <summary>
+            参考UnityEngine.Debug
+            </summary>
+        </member>
+        <member name="M:UnityTools.Debuger.LogException(System.Exception,UnityEngine.Object)">
+            <summary>
+            参考UnityEngine.Debug
+            </summary>
+        </member>
+        <member name="M:UnityTools.Debuger.LogWarning(System.Object)">
+            <summary>
+            参考UnityEngine.Debug
+            </summary>
+        </member>
+        <member name="M:UnityTools.Debuger.LogWarning(System.Object,UnityEngine.Object)">
+            <summary>
+            参考UnityEngine.Debug
+            </summary>
+        </member>
+        <member name="M:UnityTools.Debuger.LogWarningFormat(System.String,System.Object[])">
+            <summary>
+            参考UnityEngine.Debug
+            </summary>
+        </member>
+        <member name="M:UnityTools.Debuger.LogWarningFormat(UnityEngine.Object,System.String,System.Object[])">
+            <summary>
+            参考UnityEngine.Debug
+            </summary>
+        </member>
+        <member name="T:UnityTools.UnityExtend">
+            <summary>
+            UnityEngine类扩展方法
+            </summary>
+        </member>
+        <member name="M:UnityTools.UnityExtend.MateComponent(UnityEngine.GameObject,System.Type)">
+            <summary>
+            获取Component，如果没有则Add一个
+            </summary>
+            <returns>UnityEngine.Component</returns>
+        </member>
+        <member name="M:UnityTools.UnityExtend.MateComponent``1(UnityEngine.GameObject)">
+            <summary>
+            获取Component，如果没有则Add一个
+            </summary>
+            <returns>T</returns>
+        </member>
+    </members>
+</doc>
