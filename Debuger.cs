@@ -16,6 +16,10 @@ namespace UnityTools
         {
             Debug.Log(message, context);
         }
+        public static void LogFormat(string format, params object[] args)
+        {
+            Debug.LogFormat( format, args);
+        }
         public static void LogFormat(Object context, string format, params object[] args)
         {
             Debug.LogFormat(context, format, args);
