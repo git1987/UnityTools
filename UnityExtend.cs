@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UnityTools
+namespace UnityTools.Extend
 {
     /// <summary>
     /// UnityEngine类扩展方法
     /// </summary>
-    internal static class UnityExtend
+    public static class UnityEngineExtend
     {
         /// <summary>
         /// 获取Component，如果没有则Add一个
