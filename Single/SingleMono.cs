@@ -22,15 +22,16 @@ namespace UnityTools.Single
         /// 获取单例类对象，若没有则创建一个
         /// </summary>
         /// <returns></returns>
-        static public T GetInstance()
+        static public T GetInstance(GameObject componentGameObject = null)
         {
             if (_instance == null)
             {
                 if (Application.isPlaying)
                 {
-                    GameObject temp = new GameObject(typeof(T).Name);
-                    Debuger.LogWarning("创建了一个" + typeof(T).Name, temp);
-                    _instance = temp.AddComponent<T>();
+                    if (componentGameObject == null)
+                        componentGameObject = new GameObject(typeof(T).Name);
+                    Debuger.LogWarning("创建了一个" + typeof(T).Name, componentGameObject);
+                    _instance = componentGameObject.AddComponent<T>();
                 }
             }
             return _instance;

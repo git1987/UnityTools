@@ -183,7 +183,7 @@ namespace UnityTools.Single
                 if (reset)
                 {
                     go.transform.localPosition = Vector3.zero;
-                    go.transform.localRotation = Quaternion.Euler(Vector3.zero);
+                    go.transform.localRotation = Quaternion.identity;
                     go.transform.localScale = Vector3.one;
                 }
                 go.SetActive(false);
@@ -191,7 +191,10 @@ namespace UnityTools.Single
                 Transfer(name, 1);
                 return;
             }
-            Destroy(go);
+            else
+            {
+                Destroy(go);
+            }
         }
         /// <summary>
         /// 移除对象
