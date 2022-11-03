@@ -11,8 +11,20 @@ namespace UnityTools.Single
         /// </summary>
         public static void Recover(GameObject go, bool reset = false)
         {
+            if (go == null) return;
             if (instance == null) Destroy(go);
             else instance.RecoverObj(go, reset);
+        }
+        /// <summary>
+        /// 获取对象
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static GameObject GetObj(string name)
+        {
+            if (instance != null) return instance[name];
+            Debuger.LogError("There is no Pool component in the scene");
+            return null;
         }
         private Dictionary<string, GameObject> poolPrefab = new Dictionary<string, GameObject>();
         private Dictionary<string, Queue<GameObject>> pools = new Dictionary<string, Queue<GameObject>>();
@@ -45,7 +57,7 @@ namespace UnityTools.Single
         {
             if (prefab == null)
             {
-                Debuger.LogError("要初始化的对象为空");
+                Debuger.LogError("the prefab is null");
             }
             else
             {
@@ -73,7 +85,7 @@ namespace UnityTools.Single
                 }
                 else
                 {
-                    Debuger.LogWarning("已经初始化了：" + prefab.name, this.gameObject);
+                    Debuger.LogWarning(prefab.name + "a lready exists", this.gameObject);
                 }
             }
             return this;
@@ -107,7 +119,7 @@ namespace UnityTools.Single
             }
             else
             {
-                Debuger.LogErrorFormat("没有{0}这个对象", name);
+                Debuger.LogErrorFormat("{0} does not exist", name);
             }
         }
         /// <summary>
@@ -160,12 +172,12 @@ namespace UnityTools.Single
                 }
                 else
                 {
-                    Debuger.LogWarning(name + "对象数量不足");
+                    Debuger.LogWarning("not enough " + name);
                 }
             }
             else
             {
-                Debuger.LogError("没有初始化" + name);
+                Debuger.LogErrorFormat("{0} does not exist", name);
             }
             return temp;
         }
@@ -217,11 +229,11 @@ namespace UnityTools.Single
                 {
                     Destroy(go);
                 }
-                pools[name] = null;
-                pools.Remove(name);
 #if UNITY_EDITOR
                 tempList.Remove(poolPrefab[name]);
 #endif
+                pools[name] = null;
+                pools.Remove(name);
                 poolPrefab.Remove(name);
             }
         }
