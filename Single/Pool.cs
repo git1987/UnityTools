@@ -9,18 +9,20 @@ namespace UnityTools.Single
         /// <summary>
         /// 回收GameObject对象
         /// </summary>
-        public static void Recover(GameObject go, bool reset = false)
+        /// <param name="go"></param>
+        /// <param name="resetTransform">是否重置transform</param>
+        public static void Recover(GameObject go, bool resetTransform = false)
         {
             if (go == null) return;
             if (instance == null) Destroy(go);
-            else instance.RecoverObj(go, reset);
+            else instance.RecoverObj(go, resetTransform);
         }
         /// <summary>
-        /// 获取对象
+        /// 获取一个GameObject对象
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static GameObject GetObj(string name)
+        public static GameObject Get(string name)
         {
             if (instance != null) return instance[name];
             Debuger.LogError("There is no Pool component in the scene");
@@ -43,7 +45,7 @@ namespace UnityTools.Single
         /// <returns></returns>
         public GameObject this[string name]
         {
-            get { return GetObj(name); }
+            get { return this.GetObj(name); }
             set { RecoverObj(value, false); }
         }
         /// <summary>
@@ -183,16 +185,20 @@ namespace UnityTools.Single
         }
         /// <summary>
         /// 回收对象
+        /// <para>resetTransform:</para>
+        /// <para>localPosition = Vector3.zero</para>
+        /// <para>localRotation = Quaternion.identity[Vector3.zero]</para>
+        /// <para>localScale = Vector3.one</para>
         /// </summary>
         /// <param name="go"></param>
-        /// <param name="reset">重置transform</param>
-        void RecoverObj(GameObject go, bool reset)
+        /// <param name="resetTransform">重置transform</param>
+        public void RecoverObj(GameObject go, bool resetTransform)
         {
             if (go == null) return;
             if (poolPrefab.ContainsKey(go.name))
             {
                 go.transform.SetParent(this.transform);
-                if (reset)
+                if (resetTransform)
                 {
                     go.transform.localPosition = Vector3.zero;
                     go.transform.localRotation = Quaternion.identity;
@@ -232,7 +238,7 @@ namespace UnityTools.Single
 #if UNITY_EDITOR
                 tempList.Remove(poolPrefab[name]);
 #endif
-                pools[name] = null;
+                pools[name].Clear();
                 pools.Remove(name);
                 poolPrefab.Remove(name);
             }

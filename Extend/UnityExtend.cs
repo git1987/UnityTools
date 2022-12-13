@@ -1,7 +1,7 @@
 ﻿namespace UnityTools.Extend
 {
     /// <summary>
-    /// UnityEngine类扩展方法
+    /// UnityEngine命名空间下类扩展方法
     /// </summary>
     public static class UnityEngineExtend
     {
