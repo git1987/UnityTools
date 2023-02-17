@@ -65,7 +65,7 @@ namespace UnityTools.Single
             {
                 if (poolPrefab.ContainsKey(prefab.name))
                 {
-                    Queue<GameObject> gos = new Queue<GameObject>();
+                    Queue<GameObject> goQueue = new Queue<GameObject>();
                     for (int i = 0; i < count; i++)
                     {
                         GameObject go = Instantiate(prefab);
@@ -77,9 +77,9 @@ namespace UnityTools.Single
                         }
                         go.transform.SetParent(this.transform);
                         go.SetActive(false);
-                        gos.Enqueue(go);
+                        goQueue.Enqueue(go);
                     }
-                    pools.Add(prefab.name, gos);
+                    pools.Add(prefab.name, goQueue);
                     poolPrefab.Add(prefab.name, prefab);
 #if UNITY_EDITOR
                     tempList.Add(prefab);
@@ -152,7 +152,7 @@ namespace UnityTools.Single
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public GameObject GetObj(string name)
+        private GameObject GetObj(string name)
         {
             GameObject temp = null;
             if (poolPrefab.ContainsKey(name))
@@ -192,7 +192,7 @@ namespace UnityTools.Single
         /// </summary>
         /// <param name="go"></param>
         /// <param name="resetTransform">重置transform</param>
-        public void RecoverObj(GameObject go, bool resetTransform)
+        private void RecoverObj(GameObject go, bool resetTransform)
         {
             if (go == null) return;
             if (poolPrefab.ContainsKey(go.name))

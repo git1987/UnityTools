@@ -16,7 +16,12 @@ namespace UnityTools.Single
         /// </summary>
         static public T instance
         {
-            get { return _instance; }
+            get
+            {
+                if (_instance == null)
+                    Debuger.LogError(typeof(T).Name + " is not create!");
+                return _instance;
+            }
         }
         /// <summary>
         /// 获取单例类对象，若没有则创建一个
@@ -30,7 +35,7 @@ namespace UnityTools.Single
                 {
                     if (componentGameObject == null)
                         componentGameObject = new GameObject(typeof(T).Name);
-                    Debuger.LogWarning("创建了一个" + typeof(T).Name, componentGameObject);
+                    Debuger.LogWarning($"create {typeof(T).Name}!", componentGameObject);
                     _instance = componentGameObject.AddComponent<T>();
                 }
             }
@@ -67,7 +72,8 @@ namespace UnityTools.Single
         /// </summary>
         protected virtual void OnDestroy()
         {
-            _instance = null;
+            if (_instance == this)
+                _instance = null;
         }
     }
 }
