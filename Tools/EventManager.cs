@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 namespace UnityTools
 {
     /// <summary>
@@ -34,10 +33,10 @@ namespace UnityTools
         /// <summary>
         /// 带参数的EventManager事件监听清除
         /// </summary>
-        static readonly List<EventAction> eventManagerClear;
+        static public List<EventAction> eventManagerClear;
         static readonly Dictionary<string, List<EventAction>> eventActions;
         static EventManager()
-        {
+        { 
             eventManagerClear = new List<EventAction>();
             eventActions = new Dictionary<string, List<EventAction>>();
         }
@@ -150,13 +149,8 @@ namespace UnityTools
         static public void Clear()
         {
             eventActions.Clear();
-            if (eventManagerClear != null)
-            {
-                for (int i = 0; i < eventManagerClear.Count; i++)
-                {
-                    eventManagerClear[i].Invoke();
-                }
-            }
+            for (int i = 0; i < eventManagerClear.Count; i++)
+                eventManagerClear[i]?.Invoke();
         }
     }
 
@@ -166,13 +160,12 @@ namespace UnityTools
     public static class EventManager<T>
     {
         static readonly Dictionary<string, List<EventAction<T>>> eventActions;
+        static EventAction? ClearAction;
         static EventManager()
         {
             eventActions = new Dictionary<string, List<EventAction<T>>>();
-            EventManager.AddListener($"EventManager_{typeof(T).Name}", () =>
-            {
-                EventManager<T>.Clear();
-            });
+            //通过调用EventManager的静态成员，提前调用EventManager静态的构造方法
+            EventManager.eventManagerClear.Add(() => EventManager<T>.Clear());
         }
         /// <summary>
         /// 标记key，添加一个事件监听
@@ -298,10 +291,9 @@ namespace UnityTools
         static EventManager()
         {
             eventActions = new Dictionary<string, List<EventAction<T1, T2>>>();
-            EventManager.AddListener($"EventManager_{typeof(T1).Name}_{typeof(T2).Name}", () =>
-            {
-                EventManager<T1, T2>.Clear();
-            });
+            //通过调用EventManager的静态成员，提前调用EventManager静态的构造方法
+            EventManager.eventManagerClear.Add(() => EventManager<T1, T2>.Clear());
+
         }
         /// <summary>
         /// 标记key，添加一个事件监听

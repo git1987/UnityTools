@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 namespace UnityTools.Extend
 {
     /// <summary>
@@ -11,7 +12,7 @@ namespace UnityTools.Extend
         /// 获取Component，如果没有则Add一个
         /// </summary>
         /// <returns>UnityEngine.Component</returns>
-        public static UnityEngine.Component MateComponent(this UnityEngine.GameObject go, System.Type type)
+        public static Component MateComponent(this GameObject go, Type type)
         {
             UnityEngine.Component t = go.GetComponent(type);
             if (t == null)
@@ -22,7 +23,7 @@ namespace UnityTools.Extend
         /// 获取Component，如果没有则Add一个
         /// </summary>
         /// <returns>T</returns>
-        public static T MateComponent<T>(this UnityEngine.GameObject go) where T : UnityEngine.Component
+        public static T MateComponent<T>(this GameObject go) where T : Component
         {
             T t = go.GetComponent<T>();
             if (t == null)
@@ -31,6 +32,20 @@ namespace UnityTools.Extend
         }
         #endregion
         #region Transform
+        /// <summary>
+        /// transform，如果是RectTransform，也重置anchoredPosition3D
+        /// </summary>
+        /// <param name="transform">Transform</param>
+        /// <param name="parent">要设置的父级Transform</param>
+        public static void SetParentReset(this Transform transform, Transform parent)
+        {
+            transform.SetParent(parent);
+            transform.localPosition = Vector3.zero;
+            if (transform is RectTransform)
+                ((RectTransform)transform).anchoredPosition3D = Vector3.zero;
+            transform.localRotation = Quaternion.identity;
+            transform.localScale = Vector3.one;
+        }
         /// <summary>
         /// transform的轴向朝向目标点
         /// </summary>

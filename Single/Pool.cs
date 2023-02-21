@@ -65,6 +65,10 @@ namespace UnityTools.Single
             {
                 if (poolPrefab.ContainsKey(prefab.name))
                 {
+                    Debuger.LogWarning(prefab.name + "a lready exists", this.gameObject);
+                }
+                else
+                {
                     Queue<GameObject> goQueue = new Queue<GameObject>();
                     for (int i = 0; i < count; i++)
                     {
@@ -85,10 +89,6 @@ namespace UnityTools.Single
                     tempList.Add(prefab);
 #endif
                 }
-                else
-                {
-                    Debuger.LogWarning(prefab.name + "a lready exists", this.gameObject);
-                }
             }
             return this;
         }
@@ -108,15 +108,15 @@ namespace UnityTools.Single
         /// <param name="count"></param>
         public void SetResize(string name, int count)
         {
-            if (pools.ContainsKey(name))
+            if (pools.TryGetValue(name, out Queue<GameObject> queue))
             {
                 if (poolCount.ContainsKey(name))
                 {
-                    poolCount[name] = Mathf.Max(count, pools[name].Count);
+                    poolCount[name] = Mathf.Max(count, queue.Count);
                 }
                 else
                 {
-                    poolCount.Add(name, Mathf.Max(count, pools[name].Count));
+                    poolCount.Add(name, Mathf.Max(count, queue.Count));
                 }
             }
             else
@@ -131,9 +131,9 @@ namespace UnityTools.Single
         /// <returns></returns>
         private int Stock(string name)
         {
-            if (poolCount.ContainsKey(name))
+            if (poolCount.TryGetValue(name, out int count))
             {
-                return poolCount[name];
+                return count;
             }
             return int.MaxValue;
         }
@@ -144,8 +144,8 @@ namespace UnityTools.Single
         /// <param name="cashier"></param>
         private void Transfer(string name, short cashier)
         {
-            if (poolCount.ContainsKey(name))
-                poolCount[name] = Mathf.Max(poolCount[name] + cashier, 0);
+            if (poolCount.TryGetValue(name,out int count))
+                poolCount[name] = Mathf.Max(count + cashier, 0);
         }
         /// <summary>
         /// 获取对象
@@ -155,7 +155,7 @@ namespace UnityTools.Single
         private GameObject GetObj(string name)
         {
             GameObject temp = null;
-            if (poolPrefab.ContainsKey(name))
+            if (poolPrefab.TryGetValue(name,out GameObject go))
             {
                 if (Stock(name) > 0)
                 {
@@ -166,7 +166,7 @@ namespace UnityTools.Single
                     }
                     else
                     {
-                        temp = Instantiate(poolPrefab[name]);
+                        temp = Instantiate(go);
                         temp.name = name;
                     }
                     temp.SetActive(true);
