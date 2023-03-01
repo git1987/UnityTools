@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-namespace UnityTools
+﻿namespace UnityTools
 {
     /// <summary>
     /// 无参无返回值委托
@@ -160,7 +155,6 @@ namespace UnityTools
     public static class EventManager<T>
     {
         static readonly Dictionary<string, List<EventAction<T>>> eventActions;
-        static EventAction? ClearAction;
         static EventManager()
         {
             eventActions = new Dictionary<string, List<EventAction<T>>>();

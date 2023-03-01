@@ -15,10 +15,23 @@
     <Optimize>True</Optimize>
   </PropertyGroup>
 
+
   <ItemGroup>
     <Reference Include="UnityEngine">
-      <HintPath>UnityEngine.dll</HintPath>
+      <HintPath>Dll\UnityEngine.dll</HintPath>
+      <Aliases></Aliases>
     </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>Dll\UnityEngine.CoreModule.dll</HintPath>
+      <Aliases>Unity</Aliases>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>Dll\UnityEngine.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalDesignTimeBuildInput Remove="FakesAssemblies\**" />
   </ItemGroup>
 
 </Project>

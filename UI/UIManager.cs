@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
+//using UnityEngine.UI;
 using UnityTools.Extend;
 
 namespace UnityTools.UI
@@ -14,22 +9,37 @@ namespace UnityTools.UI
     /// </summary>
     public sealed class UIManager
     {
-        static UIManager()
-        {
-
-        }
-        /// UIPanel集合
-        private static Dictionary<string, BasePanel> panels;
+        /// <summary>
+        /// 当前场景中的所有 UIPanel集合
+        /// </summary>
+        private static Dictionary<string, BasePanel> panels = new Dictionary<string, BasePanel>();
+        /// <summary>
+        /// 当前场景的UICtrl
+        /// </summary>
 
         public static UICtrl uiCtrl { private set; get; }
+        /// <summary>
+        /// 设置当前场景的UICtrl
+        /// </summary>
+        /// <param name="_uiCtrl"></param>
         public static void SetUICtrl(UICtrl _uiCtrl)
         {
-            if (uiCtrl != null)
+            if (uiCtrl == null)
             {
-                UnityTools.Debuger.LogError("之前场景没有清空UI控制器" + uiCtrl.GetType().Name);
+                //设置UICtrl时进入到新场景，将旧的面板词典清空
+                panels.Clear();
+            }
+            else
+            {
+                Debuger.LogError("之前场景没有清空UI控制器" + uiCtrl.GetType().Name);
             }
             uiCtrl = _uiCtrl;
         }
+        /// <summary>
+        /// 泛型获取当前场景的UICtrl
+        /// </summary>
+        /// <typeparam name="C"></typeparam>
+        /// <returns></returns>
         public static C GetUICtrl<C>() where C : UICtrl
         {
             if (uiCtrl is C)
@@ -42,12 +52,16 @@ namespace UnityTools.UI
                 return null;
             }
         }
+        /// <summary>
+        /// 创建面板
+        /// </summary>
+        /// <typeparam name="P"></typeparam>
+        /// <param name="panelPrefab"></param>
         public static void CreatePanel<P>(GameObject panelPrefab) where P : BasePanel
         {
             string panelName = typeof(P).Name;
             if (!panels.ContainsKey(panelName))
             {
-                //GameObject panelObj = ResManager.BuildUIPanel<P>();
                 GameObject panelObj = GameObject.Instantiate(panelPrefab);
                 if (panelObj != null)
                 {
@@ -84,7 +98,6 @@ namespace UnityTools.UI
             panel.Show();
             panel.SetPanelLv(panelLv);
             return panel;
-            return null;
         }
         static RectTransform GetPanelParent(int panelLv)
         {
@@ -108,7 +121,7 @@ namespace UnityTools.UI
                 }
                 panelParent = uiCtrl.rect.Find("Panel" + panelLv);
             }
-            if (panelParent == null) UnityTools.Debuger.LogError("面板层级错误：" + panelLv);
+            if (panelParent == null) Debuger.LogError("面板层级错误：" + panelLv);
             return panelParent as RectTransform;
         }
         public static P GetPanel<P>() where P : BasePanel
@@ -116,7 +129,7 @@ namespace UnityTools.UI
             string panelName = typeof(P).Name;
             if (panels.ContainsKey(panelName))
                 return panels[panelName] as P;
-            UnityTools.Debuger.LogFormat("没有初始化{0}面板", panelName);
+            Debuger.LogFormat("没有初始化{0}面板", panelName);
             return null;
         }
     }

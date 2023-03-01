@@ -24,12 +24,18 @@ namespace UnityTools.UI
         {
             if (panelLv == 0)
             {
-                UnityTools.Debuger.LogError(GetType().Name + "面板没有在UIManager中初始化无法打开其他面板");
+                Debuger.LogError(this.GetType().Name + "面板没有在UIManager中打开过，没有设置面板层级，无法打开其他面板");
                 panelLv = 1;
             }
             return UIManager.OpenPanel<P>(panelLv);
         }
+        /// <summary>
+        /// 打开面板
+        /// </summary>
         public abstract void Show();
+        /// <summary>
+        /// 关闭面板
+        /// </summary>
         public abstract void Hide();
     }
 }

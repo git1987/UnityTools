@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿extern alias CoreModule;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityTools.Extend;
@@ -9,22 +10,30 @@ namespace UnityTools.UI
     /// </summary>
     public abstract class UICtrl : MonoBehaviour
     {
-        //进入场景时候相机的动画
-        protected Animator cameraAnimator;
-        //private Schedule cameraSchedule;
+        /// <summary>
+        /// 遮罩：UI阻挡点击判断
+        /// </summary>
         private RectTransform maskRect;
+        /// <summary>
+        /// 场景的Canvas
+        /// </summary>
         public Canvas canvas { private set; get; }
+        /// <summary>
+        /// Canvas的RectTransform
+        /// </summary>
         public RectTransform rect { private set; get; }
+        /// <summary>
+        /// 
+        /// </summary>
         protected virtual void Awake()
         {
             canvas = GetComponent<Canvas>();
             rect = transform as RectTransform;
-            UIManager.SetUICtrl(this);
             GameObject mask = new GameObject("mask");
             maskRect = mask.transform.gameObject.AddComponent<RectTransform>();
-            //maskRect.gameObject.AddComponent<CanvasRenderer>();
+            maskRect.gameObject.AddComponent<CanvasRenderer>();
             Image image = maskRect.GetComponent<Image>();
-            //image.color = new Color(0, 0, 0, 0);
+            image.color = new CoreModule::UnityEngine.Color(0, 0, 0, 0);
             maskRect.SetParentReset(rect);
             maskRect.anchorMin = Vector2.zero;
             maskRect.anchorMax = Vector2.one;
@@ -32,58 +41,26 @@ namespace UnityTools.UI
             maskRect.offsetMax = Vector2.zero;
             maskRect.localScale = Vector3.one;
             mask.SetActive(false);
+            UIManager.SetUICtrl(this);
         }
         /// <summary>
         /// 先实现子类的Start方法，最后调用父类base.Start()
         /// </summary>
         protected virtual void Start()
         {
-            //if (SceneCtrl.goToSceneName == null || SceneCtrl.goToSceneName == string.Empty)
-                GameBegin();
+            GameBegin();
         }
         /// <summary>
-        /// 动态加载场景，手动开始游戏
+        /// 动态加载场景时，关闭UICtrl.Start方法，手动调用
         /// </summary> 
         public virtual void GameBegin()
         {
-            //如果有场景动画，在播放完场景动画之后初始化UICtrl
-            if (cameraAnimator != null)
-            {
-                StartCoroutine(StopCameraAnimation(cameraAnimator.GetCurrentAnimatorStateInfo(0).length));
-                //cameraSchedule = Schedule.GetInstance(this.gameObject);
-                //cameraSchedule.Once(() =>
-                //{
-                //    cameraSchedule = null;
-                //    cameraAnimator.enabled = false;
-                //    Init();
-                //}, cameraAnimator.GetCurrentAnimatorStateInfo(0).length);
-            }
-            else
-            {
-                Init();
-            }
+            Init();
         }
         /// <summary>
         /// 初始化UICtrl
         /// </summary>
         protected abstract void Init();
-        protected IEnumerator StopCameraAnimation(float time)
-        {
-            float timer = time;
-            while (timer > 0)
-            {
-                timer -= Time.deltaTime;
-                if (Input.GetKeyDown(KeyCode.Escape))
-                {
-                    timer = 0;
-                    Init();
-                    cameraAnimator.Play("opening_animation", -1, cameraAnimator.GetCurrentAnimatorStateInfo(0).length);
-                    //cameraSchedule = cameraSchedule.Stop();
-                }
-                yield return null;
-            }
-            cameraAnimator.enabled = false;
-        }
         /// <summary>
         /// UI控制内打开面板
         /// </summary>
