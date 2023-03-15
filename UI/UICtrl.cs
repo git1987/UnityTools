@@ -22,9 +22,6 @@ namespace UnityTools.UI
         /// Canvas的RectTransform
         /// </summary>
         public RectTransform rect { private set; get; }
-        /// <summary>
-        /// 
-        /// </summary>
         protected virtual void Awake()
         {
             canvas = GetComponent<Canvas>();

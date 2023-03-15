@@ -23,7 +23,7 @@
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>Dll\UnityEngine.CoreModule.dll</HintPath>
-      <Aliases>Unity</Aliases>
+      <Aliases>CoreModule</Aliases>
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>Dll\UnityEngine.UI.dll</HintPath>
@@ -32,6 +32,13 @@
 
   <ItemGroup>
     <AdditionalDesignTimeBuildInput Remove="FakesAssemblies\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Dll\UnityEngine.CoreModule.dll">
+      <CustomToolNamespace></CustomToolNamespace>
+      <Generator></Generator>
+    </None>
   </ItemGroup>
 
 </Project>

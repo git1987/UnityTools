@@ -65,7 +65,7 @@ namespace UnityTools.Single
             {
                 if (poolPrefab.ContainsKey(prefab.name))
                 {
-                    Debuger.LogWarning(prefab.name + "a lready exists", this.gameObject);
+                    Debuger.LogWarning($"[{prefab.name}] already exists", this.gameObject);
                 }
                 else
                 {
@@ -121,7 +121,7 @@ namespace UnityTools.Single
             }
             else
             {
-                Debuger.LogErrorFormat("{0} does not exist", name);
+                Debuger.LogError($"[{name}] does not exist");
             }
         }
         /// <summary>
@@ -144,8 +144,11 @@ namespace UnityTools.Single
         /// <param name="cashier"></param>
         private void Transfer(string name, short cashier)
         {
-            if (poolCount.TryGetValue(name,out int count))
+            if (poolCount.TryGetValue(name, out int count))
+            {
                 poolCount[name] = Mathf.Max(count + cashier, 0);
+                Debuger.LogWarning($"[{name}]remaining number：{poolCount[name]}");
+            }
         }
         /// <summary>
         /// 获取对象
@@ -155,7 +158,7 @@ namespace UnityTools.Single
         private GameObject GetObj(string name)
         {
             GameObject temp = null;
-            if (poolPrefab.TryGetValue(name,out GameObject go))
+            if (poolPrefab.TryGetValue(name, out GameObject go))
             {
                 if (Stock(name) > 0)
                 {
@@ -179,7 +182,7 @@ namespace UnityTools.Single
             }
             else
             {
-                Debuger.LogErrorFormat("{0} does not exist", name);
+                Debuger.LogError($"[{name}] does not exist");
             }
             return temp;
         }
@@ -211,17 +214,9 @@ namespace UnityTools.Single
             }
             else
             {
+                Debug.LogWarning($"[{go.name}] is not in Pool");
                 Destroy(go);
             }
-        }
-        /// <summary>
-        /// 移除对象
-        /// </summary>
-        /// <param name="go"></param>
-        public void Reomve(GameObject go)
-        {
-            if (go != null)
-                Reomve(go.name);
         }
         /// <summary>
         /// 移除对象
@@ -241,6 +236,11 @@ namespace UnityTools.Single
                 pools[name].Clear();
                 pools.Remove(name);
                 poolPrefab.Remove(name);
+                Debuger.LogWarning($"remove [{name}]");
+            }
+            else
+            {
+                Debuger.LogError($"[{name}] does not exist");
             }
         }
     }

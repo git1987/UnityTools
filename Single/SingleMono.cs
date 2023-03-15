@@ -41,9 +41,6 @@ namespace UnityTools.Single
             }
             return _instance;
         }
-        /// <summary>
-        /// 
-        /// </summary>
         protected virtual void Awake()
         {
             if (_instance == null)
@@ -60,16 +57,6 @@ namespace UnityTools.Single
                 }
             }
         }
-        /// <summary>
-        /// 设置为切换场景不删除
-        /// </summary>
-        public void SetDontDestroy()
-        {
-            DontDestroyOnLoad(this.gameObject);
-        }
-        /// <summary>
-        ///
-        /// </summary>
         protected virtual void OnDestroy()
         {
             if (_instance == this)

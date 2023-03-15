@@ -62,7 +62,7 @@ namespace UnityTools.UI
             string panelName = typeof(P).Name;
             if (!panels.ContainsKey(panelName))
             {
-                GameObject panelObj = GameObject.Instantiate(panelPrefab);
+                GameObject panelObj = GameObject.Instantiate<GameObject>(panelPrefab);
                 if (panelObj != null)
                 {
                     panelObj.SetActive(false);
@@ -99,6 +99,14 @@ namespace UnityTools.UI
             panel.SetPanelLv(panelLv);
             return panel;
         }
+        public static P GetPanel<P>() where P : BasePanel
+        {
+            string panelName = typeof(P).Name;
+            if (panels.ContainsKey(panelName))
+                return panels[panelName] as P;
+            Debuger.LogFormat("没有初始化{0}面板", panelName);
+            return null;
+        }
         static RectTransform GetPanelParent(int panelLv)
         {
             Transform panelParent = uiCtrl.rect.Find("Panel" + panelLv);
@@ -123,14 +131,6 @@ namespace UnityTools.UI
             }
             if (panelParent == null) Debuger.LogError("面板层级错误：" + panelLv);
             return panelParent as RectTransform;
-        }
-        public static P GetPanel<P>() where P : BasePanel
-        {
-            string panelName = typeof(P).Name;
-            if (panels.ContainsKey(panelName))
-                return panels[panelName] as P;
-            Debuger.LogFormat("没有初始化{0}面板", panelName);
-            return null;
         }
     }
 }
