@@ -1,25 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <Version></Version>
-    <Authors>Joh</Authors>
-    <AssemblyVersion>1.0.0.1</AssemblyVersion>
-    <FileVersion>1.0</FileVersion>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <Optimize>True</Optimize>
-  </PropertyGroup>
-
 
   <ItemGroup>
     <Reference Include="UnityEngine">
       <HintPath>Dll\UnityEngine.dll</HintPath>
-      <Aliases></Aliases>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>Dll\UnityEngine.CoreModule.dll</HintPath>
@@ -28,17 +15,6 @@
     <Reference Include="UnityEngine.UI">
       <HintPath>Dll\UnityEngine.UI.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalDesignTimeBuildInput Remove="FakesAssemblies\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Dll\UnityEngine.CoreModule.dll">
-      <CustomToolNamespace></CustomToolNamespace>
-      <Generator></Generator>
-    </None>
   </ItemGroup>
 
 </Project>

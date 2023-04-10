@@ -10,7 +10,7 @@ namespace UnityTools.Single
         /// <summary>
         /// 
         /// </summary>
-        static private T _instance = null;
+        static protected T _instance = null;
         /// <summary>
         /// 单例类对象：需要自行判断是否为空，若想使用不为空的单例，使用GetInstance()
         /// </summary>
