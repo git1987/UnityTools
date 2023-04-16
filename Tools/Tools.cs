@@ -35,5 +35,17 @@ namespace UnityTools
             //将当前朝向向目标方向旋转一定角度，这个角度值可以做插值
             return Quaternion.AngleAxis(angle, direction) * tran.rotation;
         }
+        /// <summary>
+        /// 设置RectTransform四周围绕适配
+        /// </summary>
+        /// <param name="rect"></param>
+        static public void RectTransformSetSurround(RectTransform rect)
+        {
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.anchoredPosition3D = Vector3.zero;
+            rect.sizeDelta = Vector2.zero;
+        }
+
     }
 }

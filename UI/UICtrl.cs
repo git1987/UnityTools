@@ -1,5 +1,4 @@
-﻿extern alias CoreModule;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityTools.Extend;
@@ -27,11 +26,11 @@ namespace UnityTools.UI
             canvas = GetComponent<Canvas>();
             rect = transform as RectTransform;
             GameObject mask = new GameObject("mask");
-            maskRect = mask.transform.gameObject.AddComponent<RectTransform>();
+            mask.transform.SetParentReset(rect);
+            maskRect = mask.AddComponent<RectTransform>();
             maskRect.gameObject.AddComponent<CanvasRenderer>();
-            Image image = maskRect.GetComponent<Image>();
-            image.color = new CoreModule::UnityEngine.Color(0, 0, 0, 0);
-            maskRect.SetParentReset(rect);
+            Image image = mask.AddComponent<Image>();
+            image.color = new Color(0, 0, 0, 0);
             maskRect.anchorMin = Vector2.zero;
             maskRect.anchorMax = Vector2.one;
             maskRect.offsetMin = Vector2.zero;
