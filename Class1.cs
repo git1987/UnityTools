@@ -2,7 +2,7 @@
 
 namespace UnityTools
 {
-    public class Class1
+    class UnityToolsPrograme
     {
 
     }

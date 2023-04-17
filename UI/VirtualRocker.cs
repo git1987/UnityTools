@@ -7,25 +7,25 @@ namespace UnityTools.UI
 {
     public class VirtualRocker : MonoBehaviour
     {
-        public static GameObject CreatePrefab(GameObject canvas)
+        public static GameObject CreatePrefab(GameObject canvasObj)
         {
-            Canvas canvasObj = canvas.GetComponentInChildren<Canvas>();
-            if (canvasObj == null)
+            Canvas canvas = canvasObj.GetComponent<Canvas>();
+            if (canvas == null)
             {
-                canvasObj.GetComponentInParent<Canvas>();
+                canvas = canvasObj.GetComponentInChildren<Canvas>();
             }
             else
             {
-                Debuger.LogError("子级或者父级都没有Canvas组件！请选择带有Canvas组件的GameObject");
+                Debuger.LogError("请选择带有Canvas组件的GameObject");
                 return null;
             }
-            GameObject rocker = new GameObject("Rocker");
+            GameObject rocker = new GameObject("VirtualRocker");
             VirtualRocker virtualRocker = rocker.AddComponent<VirtualRocker>();
             rocker.transform.SetParent(canvas.transform);
             RectTransform rect = rocker.AddComponent<RectTransform>();
             Tools.RectTransformSetSurround(rect);
 
-            GameObject bg = new GameObject("bg");
+            GameObject bg = new GameObject("pointBg");
             rect = bg.AddComponent<RectTransform>();
             virtualRocker.pointBg = rect;
             rect.SetParent(rocker.transform);
@@ -80,7 +80,6 @@ namespace UnityTools.UI
         /// </summary>
         [SerializeField]
         RectTransform pointer;
-
         /// <summary>
         /// 可触发摇杆的区域
         /// </summary>
@@ -93,8 +92,7 @@ namespace UnityTools.UI
         {
             get { return point.anchoredPosition / pointBg.sizeDelta.x / 2; }
         }
-
-        protected void Awake()
+        protected virtual void Awake()
         {
             CanvasScaler cs = this.GetComponentInParent<CanvasScaler>();
             if (cs == null)
@@ -104,9 +102,15 @@ namespace UnityTools.UI
                 rate = cs.referenceResolution;
                 ResetRocker();
             }
+            if (pointBg.GetComponent<Image>().sprite == null)
+                Debuger.LogError("bg's sprite is null![Click this goto gameObject]", pointBg.gameObject);
+            if (point.GetComponent<Image>().sprite == null)
+                Debuger.LogError("point's sprite is null![Click this goto gameObject]", point.gameObject);
+            if (pointer.GetComponent<Image>().sprite == null)
+                Debuger.LogError("pointer's sprite is null![Click this goto gameObject]", pointer.gameObject);
         }
 
-        void CheckShowRocker()
+        protected virtual void CheckShowRocker()
         {
             if (!EventSystem.current.IsPointerOverGameObject())
             {
@@ -146,7 +150,7 @@ namespace UnityTools.UI
             }
         }
 
-        void ResetRocker()
+        protected virtual void ResetRocker()
         {
             isClick = false;
             pointBg.anchoredPosition = areaRect.anchoredPosition;
@@ -154,7 +158,7 @@ namespace UnityTools.UI
             if (unenableHide) pointBg.gameObject.SetActive(false);
         }
 
-        void UpdateRocker()
+        protected virtual void UpdateRocker()
         {
             if (isClick)
             {
@@ -170,7 +174,7 @@ namespace UnityTools.UI
             }
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             if (Input.GetMouseButtonDown(0))
             {
@@ -180,7 +184,6 @@ namespace UnityTools.UI
             {
                 ResetRocker();
             }
-
             UpdateRocker();
         }
     }

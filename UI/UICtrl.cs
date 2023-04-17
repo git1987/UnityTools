@@ -28,14 +28,9 @@ namespace UnityTools.UI
             GameObject mask = new GameObject("mask");
             mask.transform.SetParentReset(rect);
             maskRect = mask.AddComponent<RectTransform>();
-            maskRect.gameObject.AddComponent<CanvasRenderer>();
             Image image = mask.AddComponent<Image>();
             image.color = new Color(0, 0, 0, 0);
-            maskRect.anchorMin = Vector2.zero;
-            maskRect.anchorMax = Vector2.one;
-            maskRect.offsetMin = Vector2.zero;
-            maskRect.offsetMax = Vector2.zero;
-            maskRect.localScale = Vector3.one;
+            Tools.RectTransformSetSurround(maskRect);
             mask.SetActive(false);
             UIManager.SetUICtrl(this);
         }
@@ -47,7 +42,7 @@ namespace UnityTools.UI
             GameBegin();
         }
         /// <summary>
-        /// 动态加载场景时，关闭UICtrl.Start方法，手动调用
+        /// 动态加载场景时，关闭UICtrl.Start方法，手动调用GameBegin()
         /// </summary> 
         public virtual void GameBegin()
         {

@@ -45,6 +45,8 @@ namespace UnityTools
             rect.anchorMax = Vector2.one;
             rect.anchoredPosition3D = Vector3.zero;
             rect.sizeDelta = Vector2.zero;
+            rect.localScale = Vector3.one;
+            rect.localRotation = Quaternion.identity;
         }
 
     }
