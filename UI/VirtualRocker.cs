@@ -7,37 +7,62 @@ namespace UnityTools.UI
 {
     public class VirtualRocker : MonoBehaviour
     {
-        public static GameObject CreatePrefab()
+        public static GameObject CreatePrefab(GameObject canvasObj)
         {
-            GameObject prefab = new GameObject("Rocker");
-            RectTransform rect = prefab.AddComponent<RectTransform>();
+            if (canvasObj == null)
+            {
+                return null;
+            }
+            Canvas canvas = canvasObj.GetComponent<Canvas>();
+            if (canvas == null)
+            {
+                canvas = canvasObj.GetComponentInChildren<Canvas>();
+                if (canvas == null)
+                {
+                    canvas.GetComponentInParent<Canvas>();
+                }
+                else
+                {
+                    Debuger.LogError("子级或者父级都没有Canvas组件！请选择带有Canvas组件的GameObject");
+                    return null;
+                }
+            }
+            GameObject rocker = new GameObject("Rocker");
+            VirtualRocker virtualRocker = rocker.AddComponent<VirtualRocker>();
+            rocker.transform.SetParent(canvas.transform);
+            RectTransform rect = rocker.AddComponent<RectTransform>();
             Tools.RectTransformSetSurround(rect);
             GameObject bg = new GameObject("bg");
-            bg.AddComponent<Image>();
             rect = bg.AddComponent<RectTransform>();
+            virtualRocker.pointBg = rect;
+            rect.SetParent(rocker.transform);
             rect.sizeDelta = Vector2.one * 200;
             rect.anchoredPosition = new Vector2(0, 250);
-            rect.SetParent(prefab.transform);
             rect.anchorMin = new Vector2(.5f, 0);
             rect.anchorMax = new Vector2(.5f, 0);
+            bg.AddComponent<Image>();
             GameObject point = new GameObject("point");
-            point.AddComponent<Image>();
             rect = point.AddComponent<RectTransform>();
+            virtualRocker.pointRect = rect;
             rect.SetParent(bg.transform);
             rect.sizeDelta = Vector2.one * 50;
             rect.anchoredPosition = Vector2.zero;
+            point.AddComponent<Image>();
             GameObject area = new GameObject("area");
             rect = area.AddComponent<RectTransform>();
+            virtualRocker.areaRect = rect;
+            rect.SetParent(rocker.transform);
             rect.sizeDelta = Vector2.one * 500;
             rect.anchoredPosition = new Vector2(0, 250);
-            rect.SetParent(prefab.transform);
             rect.anchorMin = new Vector2(.5f, 0);
             rect.anchorMax = new Vector2(.5f, 0);
-            return prefab;
+            rocker.transform.localScale = Vector3.one;
+            return rocker;
         }
         public bool isClick { private set; get; }
         public bool unenableHide;
-        public RectTransform pointBg, pointRect;
+        [SerializeField]
+        private RectTransform pointBg, pointRect;
 
         //摇杆区域尺寸
         public RectTransform areaRect;
