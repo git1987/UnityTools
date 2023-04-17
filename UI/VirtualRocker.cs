@@ -24,6 +24,7 @@ namespace UnityTools.UI
             rocker.transform.SetParent(canvas.transform);
             RectTransform rect = rocker.AddComponent<RectTransform>();
             Tools.RectTransformSetSurround(rect);
+
             GameObject bg = new GameObject("bg");
             rect = bg.AddComponent<RectTransform>();
             virtualRocker.pointBg = rect;
@@ -33,13 +34,24 @@ namespace UnityTools.UI
             rect.anchorMin = new Vector2(.5f, 0);
             rect.anchorMax = new Vector2(.5f, 0);
             bg.AddComponent<Image>();
+
+            GameObject pointer = new GameObject("pointer");
+            rect = pointer.AddComponent<RectTransform>();
+            virtualRocker.pointer = rect;
+            rect.SetParent(bg.transform);
+            rect.sizeDelta = new Vector2(10, 100);
+            rect.anchoredPosition = Vector2.zero;
+            rect.pivot = new Vector2(.5f, 0);
+            pointer.AddComponent<Image>();
+
             GameObject point = new GameObject("point");
             rect = point.AddComponent<RectTransform>();
-            virtualRocker.pointRect = rect;
+            virtualRocker.point = rect;
             rect.SetParent(bg.transform);
             rect.sizeDelta = Vector2.one * 50;
             rect.anchoredPosition = Vector2.zero;
             point.AddComponent<Image>();
+
             GameObject area = new GameObject("area");
             rect = area.AddComponent<RectTransform>();
             virtualRocker.areaRect = rect;
@@ -53,17 +65,33 @@ namespace UnityTools.UI
         }
         public bool isClick { private set; get; }
         public bool unenableHide;
+        /// <summary>
+        /// 摇杆区域背景
+        /// </summary>
         [SerializeField]
-        private RectTransform pointBg, pointRect;
+        private RectTransform pointBg;
+        /// <summary>
+        /// 摇杆点
+        /// </summary>
+        [SerializeField]
+        RectTransform point;
+        /// <summary>
+        /// 摇杆方向指针
+        /// </summary>
+        [SerializeField]
+        RectTransform pointer;
 
-        //摇杆区域尺寸
-        public RectTransform areaRect;
+        /// <summary>
+        /// 可触发摇杆的区域
+        /// </summary>
+        [SerializeField]
+        private RectTransform areaRect;
         public Vector3 clickMousePos;
         public Vector2 rate = new Vector2(1080, 1920);
 
         public Vector2 Direction
         {
-            get { return pointRect.anchoredPosition / pointBg.sizeDelta.x / 2; }
+            get { return point.anchoredPosition / pointBg.sizeDelta.x / 2; }
         }
 
         protected void Awake()
@@ -122,7 +150,7 @@ namespace UnityTools.UI
         {
             isClick = false;
             pointBg.anchoredPosition = areaRect.anchoredPosition;
-            pointRect.anchoredPosition = Vector3.zero;
+            point.anchoredPosition = Vector3.zero;
             if (unenableHide) pointBg.gameObject.SetActive(false);
         }
 
@@ -130,10 +158,15 @@ namespace UnityTools.UI
         {
             if (isClick)
             {
-                pointRect.anchoredPosition = (Vector2)(Input.mousePosition - clickMousePos);
-                if (pointRect.anchoredPosition.magnitude > pointBg.sizeDelta.x / 2 - pointRect.sizeDelta.x / 2)
-                    pointRect.anchoredPosition = pointRect.anchoredPosition.normalized *
-                                                 (pointBg.sizeDelta.x / 2 - pointRect.sizeDelta.x / 2);
+                /*设置point位置点*/
+                point.anchoredPosition = (Vector2)(Input.mousePosition - clickMousePos);
+                if (point.anchoredPosition.magnitude > pointBg.sizeDelta.x / 2 - point.sizeDelta.x / 2)
+                    point.anchoredPosition = point.anchoredPosition.normalized *
+                                                 (pointBg.sizeDelta.x / 2 - point.sizeDelta.x / 2);
+                /*设置pointer的方向*/
+                float angle = Vector2.SignedAngle(Vector2.up, Direction);
+                pointer.eulerAngles = new Vector3(0, 0, angle);
+                pointer.gameObject.SetActive(Direction != Vector2.zero);
             }
         }
 
