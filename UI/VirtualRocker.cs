@@ -7,25 +7,17 @@ namespace UnityTools.UI
 {
     public class VirtualRocker : MonoBehaviour
     {
-        public static GameObject CreatePrefab(GameObject canvasObj)
+        public static GameObject CreatePrefab(GameObject canvas)
         {
+            Canvas canvasObj = canvas.GetComponentInChildren<Canvas>();
             if (canvasObj == null)
             {
-                return null;
+                canvasObj.GetComponentInParent<Canvas>();
             }
-            Canvas canvas = canvasObj.GetComponent<Canvas>();
-            if (canvas == null)
+            else
             {
-                canvas = canvasObj.GetComponentInChildren<Canvas>();
-                if (canvas == null)
-                {
-                    canvas.GetComponentInParent<Canvas>();
-                }
-                else
-                {
-                    Debuger.LogError("子级或者父级都没有Canvas组件！请选择带有Canvas组件的GameObject");
-                    return null;
-                }
+                Debuger.LogError("子级或者父级都没有Canvas组件！请选择带有Canvas组件的GameObject");
+                return null;
             }
             GameObject rocker = new GameObject("Rocker");
             VirtualRocker virtualRocker = rocker.AddComponent<VirtualRocker>();
