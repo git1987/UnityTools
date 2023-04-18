@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityTools.Extend;
+
 namespace UnityTools
 {
     /// <summary>
@@ -29,12 +33,14 @@ namespace UnityTools
         /// <summary>
         /// 带参数的EventManager事件监听清除
         /// </summary>
-        static public List<EventAction> eventManagerClear;
-        static readonly Dictionary<string, List<EventAction>> eventActions;
+        static public List<EventAction> eventManagerClear { private set; get; }
+        static private List<string> eventActionNameList;
+        static private List<List<EventAction>> eventActionList;
         static EventManager()
         {
             eventManagerClear = new List<EventAction>();
-            eventActions = new Dictionary<string, List<EventAction>>();
+            eventActionNameList = new List<string>();
+            eventActionList = new List<List<EventAction>>();
         }
         /// <summary>
         /// 标记key，添加一个事件监听
@@ -43,16 +49,25 @@ namespace UnityTools
         /// <param name="action"></param>
         static public void AddListener(string key, EventAction action)
         {
-            if (eventActions.ContainsKey(key))
+            if (eventActionNameList.Contains(key))
             {
-                if (eventActions[key].Contains(action))
-                    Debuger.LogError(key + "重复添加事件监听");
-                else
-                    eventActions[key].Add(action);
+                bool isKey = false;
+                eventActionNameList.ForAction((item, index) =>
+                {
+                    if (item == key)
+                    {
+                        if (eventActionList[index].Contains(action))
+                            Debuger.LogError(key + "重复添加事件监听");
+                        else
+                            eventActionList[index].Add(action);
+                        isKey = true;
+                    }
+                }, () => isKey);
             }
             else
             {
-                eventActions.Add(key, new List<EventAction>() { action });
+                eventActionNameList.Add(key);
+                eventActionList.Add(new List<EventAction>() { action });
             }
         }
         /// <summary>
@@ -69,7 +84,17 @@ namespace UnityTools
         /// <returns></returns>
         static public bool RemoveListener(string key)
         {
-            return eventActions.Remove(key);
+            bool isRemove = false;
+            eventActionNameList.ForAction((item, index) =>
+            {
+                if (item == key)
+                {
+                    eventActionNameList.RemoveAt(index);
+                    eventActionList.RemoveAt(index);
+                    isRemove = true;
+                }
+            }, () => isRemove);
+            return isRemove;
         }
         /// <summary>
         /// 移除委托
@@ -85,34 +110,40 @@ namespace UnityTools
         /// </summary>
         /// <param name="action"></param>
         /// <returns></returns>
+        [Obsolete("Use RemoveListener(key,action)!")]
         static public bool RemoveListener(EventAction action)
         {
-            foreach (string key in eventActions.Keys)
+            int removeCount = 0;
+            for (int i = 0; i < eventActionList.Count; i++)
             {
-                for (int i = 0; i < eventActions[key].Count; i++)
+                for (int j = 0; j < eventActionList[i].Count; j++)
                 {
-                    if (eventActions[key][i] == action)
+                    if (eventActionList[i][j] == action)
                     {
-                        eventActions[key].RemoveAt(i);
-                        return true;
+                        eventActionList[i].RemoveAt(j);
+                        j--;
+                        removeCount++;
                     }
                 }
             }
-            return false;
+            Debuger.LogWarning("移除监听个数：" + removeCount);
+            return removeCount > 0;
         }
         /// <summary>
         /// 根据标记移除监听
         /// </summary>
         /// <param name="key"></param>
         /// <param name="action"></param>
-        static public void RemoveListener(string key, EventAction action)
+        static public bool RemoveListener(string key, EventAction action)
         {
-            if (eventActions.ContainsKey(key))
+            for (int i = 0; i < eventActionList.Count; i++)
             {
-                if (eventActions[key].Remove(action))
+                if (eventActionNameList[i] == key)
                 {
+                    return eventActionList[i].Remove(action);
                 }
             }
+            return false;
         }
         /// <summary>
         /// 根据标记移除监听
@@ -133,24 +164,22 @@ namespace UnityTools
         /// <param name="key"></param>
         static public void Broadcast(string key)
         {
-            if (eventActions.ContainsKey(key))
+            bool isKey = false;
+            eventActionNameList.ForAction((item, index) =>
             {
-                foreach (EventAction ea in eventActions[key])
+                if (item == key)
                 {
-                    ea?.Invoke();
+                    eventActionList[index].ForAction(e => e?.Invoke());
                 }
-            }
-            else
-            {
-                Debuger.LogError($"没有[{key}]类型的委托");
-            }
+            }, () => isKey);
         }
         /// <summary>
         /// 清除所有委托
         /// </summary>
         static public void Clear()
         {
-            eventActions.Clear();
+            eventActionList.Clear();
+            eventActionNameList.Clear();
             for (int i = 0; i < eventManagerClear.Count; i++)
                 eventManagerClear[i]?.Invoke();
         }
@@ -161,10 +190,14 @@ namespace UnityTools
     /// </summary>
     public static class EventManager<T>
     {
-        static readonly Dictionary<string, List<EventAction<T>>> eventActions;
+        //static readonly Dictionary<string, List<EventAction<T>>> eventActions;
+        static private List<string> eventActionNameList;
+        static private List<List<EventAction<T>>> eventActionList;
         static EventManager()
         {
-            eventActions = new Dictionary<string, List<EventAction<T>>>();
+            eventActionNameList = new List<string>();
+            eventActionList = new List<List<EventAction<T>>>();
+            //eventActions = new Dictionary<string, List<EventAction<T>>>();
             //通过调用EventManager的静态成员，提前调用EventManager静态的构造方法
             EventManager.eventManagerClear.Add(() => EventManager<T>.Clear());
         }
@@ -175,16 +208,25 @@ namespace UnityTools
         /// <param name="action"></param>
         static public void AddListener(string key, EventAction<T> action)
         {
-            if (eventActions.ContainsKey(key))
+            if (eventActionNameList.Contains(key))
             {
-                if (eventActions[key].Contains(action))
-                    Debuger.LogError(key + "重复添加事件监听");
-                else
-                    eventActions[key].Add(action);
+                bool isKey = false;
+                eventActionNameList.ForAction((item, index) =>
+                {
+                    if (item == key)
+                    {
+                        if (eventActionList[index].Contains(action))
+                            Debuger.LogError(key + "重复添加事件监听");
+                        else
+                            eventActionList[index].Add(action);
+                        isKey = true;
+                    }
+                }, () => isKey);
             }
             else
             {
-                eventActions.Add(key, new List<EventAction<T>>() { action });
+                eventActionNameList.Add(key);
+                eventActionList.Add(new List<EventAction<T>>() { action });
             }
         }
         /// <summary>
@@ -201,7 +243,17 @@ namespace UnityTools
         /// <returns></returns>
         static public bool RemoveListener(string key)
         {
-            return eventActions.Remove(key);
+            bool isRemove = false;
+            eventActionNameList.ForAction((item, index) =>
+            {
+                if (item == key)
+                {
+                    eventActionNameList.RemoveAt(index);
+                    eventActionList.RemoveAt(index);
+                    isRemove = true;
+                }
+            }, () => isRemove);
+            return isRemove;
         }
         /// <summary>
         /// 移除委托
@@ -212,39 +264,46 @@ namespace UnityTools
         {
             return RemoveListener(key.ToString());
         }
+
         /// <summary>
         /// 移除监听
         /// </summary>
         /// <param name="action"></param>
         /// <returns></returns>
+        [Obsolete("Use RemoveListener(key,action)!")]
         static public bool RemoveListener(EventAction<T> action)
         {
-            foreach (string key in eventActions.Keys)
+            int removeCount = 0;
+            for (int i = 0; i < eventActionList.Count; i++)
             {
-                for (int i = 0; i < eventActions[key].Count; i++)
+                for (int j = 0; j < eventActionList[i].Count; j++)
                 {
-                    if (eventActions[key][i] == action)
+                    if (eventActionList[i][j] == action)
                     {
-                        eventActions[key].RemoveAt(i);
-                        return true;
+                        eventActionList[i].RemoveAt(j);
+                        j--;
+                        removeCount++;
                     }
                 }
             }
-            return false;
+            Debuger.LogWarning("移除监听个数：" + removeCount);
+            return removeCount > 0;
         }
         /// <summary>
         /// 根据标记移除监听
         /// </summary>
         /// <param name="key"></param>
         /// <param name="action"></param>
-        static public void RemoveListener(string key, EventAction<T> action)
+        static public bool RemoveListener(string key, EventAction<T> action)
         {
-            if (eventActions.ContainsKey(key))
+            for (int i = 0; i < eventActionList.Count; i++)
             {
-                if (eventActions[key].Remove(action))
+                if (eventActionNameList[i] == key)
                 {
+                    return eventActionList[i].Remove(action);
                 }
             }
+            return false;
         }
         /// <summary>
         /// 根据标记移除监听
@@ -260,17 +319,14 @@ namespace UnityTools
         /// <param name="t"></param>
         static public void Broadcast(string key, T t)
         {
-            if (eventActions.ContainsKey(key))
+            bool isKey = false;
+            eventActionNameList.ForAction((item, index) =>
             {
-                foreach (EventAction<T> ea in eventActions[key])
+                if (item == key)
                 {
-                    ea?.Invoke(t);
+                    eventActionList[index].ForAction(e => e?.Invoke(t));
                 }
-            }
-            else
-            {
-                Debuger.LogError($"没有[{key}]类型的委托");
-            }
+            }, () => isKey);
         }
         /// <summary>
         /// 广播
@@ -285,7 +341,8 @@ namespace UnityTools
         static public void Clear()
         {
             Debuger.LogWarning($"clear <{typeof(T).Name}> all events!");
-            eventActions.Clear();
+            eventActionList.Clear();
+            eventActionNameList.Clear();
         }
     }
 
@@ -294,14 +351,19 @@ namespace UnityTools
     /// </summary>
     public static class EventManager<T1, T2>
     {
-        static readonly Dictionary<string, List<EventAction<T1, T2>>> eventActions;
+        //static readonly Dictionary<string, List<EventAction<T1, T2>>> eventActions;
+        static private List<string> eventActionNameList;
+        static private List<List<EventAction<T1, T2>>> eventActionList;
         static EventManager()
         {
-            eventActions = new Dictionary<string, List<EventAction<T1, T2>>>();
+            eventActionNameList = new List<string>();
+            eventActionList = new List<List<EventAction<T1, T2>>>();
+            //eventActions = new Dictionary<string, List<EventAction<T1, T2>>>();
             //通过调用EventManager的静态成员，提前调用EventManager静态的构造方法
             EventManager.eventManagerClear.Add(() => EventManager<T1, T2>.Clear());
 
         }
+
         /// <summary>
         /// 标记key，添加一个事件监听
         /// </summary>
@@ -309,16 +371,25 @@ namespace UnityTools
         /// <param name="action"></param>
         static public void AddListener(string key, EventAction<T1, T2> action)
         {
-            if (eventActions.ContainsKey(key))
+            if (eventActionNameList.Contains(key))
             {
-                if (eventActions[key].Contains(action))
-                    Debuger.LogError(key + "重复添加事件监听");
-                else
-                    eventActions[key].Add(action);
+                bool isKey = false;
+                eventActionNameList.ForAction((item, index) =>
+                {
+                    if (item == key)
+                    {
+                        if (eventActionList[index].Contains(action))
+                            Debuger.LogError(key + "重复添加事件监听");
+                        else
+                            eventActionList[index].Add(action);
+                        isKey = true;
+                    }
+                }, () => isKey);
             }
             else
             {
-                eventActions.Add(key, new List<EventAction<T1, T2>>() { action });
+                eventActionNameList.Add(key);
+                eventActionList.Add(new List<EventAction<T1, T2>>() { action });
             }
         }
         /// <summary>
@@ -335,7 +406,17 @@ namespace UnityTools
         /// <returns></returns>
         static public bool RemoveListener(string key)
         {
-            return eventActions.Remove(key);
+            bool isRemove = false;
+            eventActionNameList.ForAction((item, index) =>
+            {
+                if (item == key)
+                {
+                    eventActionNameList.RemoveAt(index);
+                    eventActionList.RemoveAt(index);
+                    isRemove = true;
+                }
+            }, () => isRemove);
+            return isRemove;
         }
         /// <summary>
         /// 移除委托
@@ -346,21 +427,44 @@ namespace UnityTools
         {
             return RemoveListener(key.ToString());
         }
+
         /// <summary>
         /// 移除监听
         /// </summary>
         /// <param name="action"></param>
         /// <returns></returns>
+        [Obsolete("Use RemoveListener(key,action)!")]
         static public bool RemoveListener(EventAction<T1, T2> action)
         {
-            foreach (string key in eventActions.Keys)
+            int removeCount = 0;
+            for (int i = 0; i < eventActionList.Count; i++)
             {
-                for (int i = 0; i < eventActions[key].Count; i++)
-                    if (eventActions[key][i] == action)
+                for (int j = 0; j < eventActionList[i].Count; j++)
+                {
+                    if (eventActionList[i][j] == action)
                     {
-                        eventActions[key].RemoveAt(i);
-                        return true;
+                        eventActionList[i].RemoveAt(j);
+                        j--;
+                        removeCount++;
                     }
+                }
+            }
+            Debuger.LogWarning("移除监听个数：" + removeCount);
+            return removeCount > 0;
+        }
+        /// <summary>
+        /// 根据标记移除监听
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="action"></param>
+        static public bool RemoveListener(string key, EventAction<T1, T2> action)
+        {
+            for (int i = 0; i < eventActionList.Count; i++)
+            {
+                if (eventActionNameList[i] == key)
+                {
+                    return eventActionList[i].Remove(action);
+                }
             }
             return false;
         }
@@ -372,53 +476,37 @@ namespace UnityTools
         static public void RemoveListener<E>(E key, EventAction<T1, T2> action) where E : System.Enum
         { RemoveListener(key.ToString(), action); }
         /// <summary>
-        /// 根据标记移除监听
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="action"></param>
-        static public void RemoveListener(string key, EventAction<T1, T2> action)
-        {
-            if (eventActions.ContainsKey(key))
-            {
-                if (eventActions[key].Remove(action))
-                {
-                }
-            }
-        }
-        /// <summary>
-        /// 广播
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="t1"></param>
-        /// <param name="t2"></param>
-        static public void Broadcast<E>(E key, T1 t1, T2 t2) where E : System.Enum
-        { Broadcast(key.ToString(), t1, t2); }
-        /// <summary>
-        /// 广播
+        /// 
         /// </summary>
         /// <param name="key"></param>
         /// <param name="t1"></param>
         /// <param name="t2"></param>
         static public void Broadcast(string key, T1 t1, T2 t2)
         {
-            if (eventActions.ContainsKey(key))
+            bool isKey = false;
+            eventActionNameList.ForAction((item, index) =>
             {
-                foreach (EventAction<T1, T2> ea in eventActions[key])
+                if (item == key)
                 {
-                    ea?.Invoke(t1, t2);
+                    eventActionList[index].ForAction(e => e?.Invoke(t1, t2));
                 }
-            }
-            else
-            {
-                Debuger.LogError($"没有[{key}]类型的委托");
-            }
+            }, () => isKey);
         }
+        /// <summary>
+        /// 广播
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="t"></param>
+        static public void Broadcast<E>(E key, T1 t1, T2 t2) where E : System.Enum
+        { Broadcast(key.ToString(), t1, t2); }
         /// <summary>
         /// 清除所有委托
         /// </summary>
         static public void Clear()
         {
-            eventActions.Clear();
+            Debuger.LogWarning($"clear <{typeof(T1).Name}, {typeof(T2).Name}> all events!");
+            eventActionList.Clear();
+            eventActionNameList.Clear();
         }
     }
 }

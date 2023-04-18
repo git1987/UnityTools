@@ -1,8 +1,78 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 namespace UnityTools.Extend
 {
+    public static class ClassExtend
+    {
+        /// <summary>
+        /// 遍历List
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="action">传参list中的item的回调</param>
+        public static void ForAction<T>(this List<T> list, EventAction<T> action)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                action(list[i]);
+            }
+        }
+        /// <summary>
+        /// 遍历List
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="action">传参list中的item和index的回调</param>
+        public static void ForAction<T>(this List<T> list, EventAction<T, int> action)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                action(list[i], i);
+            }
+        }
+
+        /// <summary>
+        /// 遍历List
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="action">传参list中的item的回调</param>
+        /// <param name="breakFunc">判断是否从遍历中break的bool返回值委托</param>
+        public static void ForAction<T>(this List<T> list, EventAction<T> action, EventFunction<bool> breakFunc)
+        {
+            if (breakFunc == null) list.ForAction(action);
+            else
+            {
+                for (int i = 0; i < list.Count; i++)
+                {
+                    action(list[i]);
+                    if (breakFunc.Invoke()) break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 遍历List
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="action">传参list中的item和index的回调</param>
+        /// <param name="breakFunc">判断是否从遍历中break的bool返回值委托</param>
+        public static void ForAction<T>(this List<T> list, EventAction<T, int> action, EventFunction<bool> breakFunc)
+        {
+            if (breakFunc == null) list.ForAction(action);
+            else
+            {
+                for (int i = 0; i < list.Count; i++)
+                {
+                    action(list[i], i);
+                    if (breakFunc.Invoke()) break;
+                }
+            }
+        }
+    }
     /// <summary>
     /// UnityEngine命名空间下类扩展方法
     /// </summary>
