@@ -47,6 +47,43 @@ namespace UnityTools.Extend
             transform.localRotation = Quaternion.identity;
             transform.localScale = Vector3.one;
         }
+        /// <summary>
+        /// 根据名字获取子级的transform
+        /// </summary>
+        /// <param name="transform"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static Transform GetChildByName(this Transform transform, string name)
+        {
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                Transform child = transform.GetChild(i);
+                if (child.name == name)
+                    return child;
+                child = child.GetChildByName(name);
+                if (child != null)
+                    return child;
+            }
+            return null;
+        }
+        /// <summary>
+        /// 遍历transform的子级
+        /// </summary>
+        /// <param name="transform"></param>
+        /// <param name="action">将子级作为参数的回调</param>
+        /// <param name="includeGrandchildren">是否包含孙集</param>
+        public static void ForAction(this Transform transform, EventAction<Transform> action, bool includeGrandchildren = false)
+        {
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                Transform child = transform.GetChild(i);
+                action?.Invoke(child);
+                if (includeGrandchildren)
+                {
+                    child.ForAction(action, includeGrandchildren);
+                }
+            }
+        }
         #endregion
     }
 }
