@@ -1,13 +1,23 @@
 ﻿extern alias EditorCoreModule;
+
+using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace UnityTools.UI
 {
+    /// <summary>
+    /// 虚拟摇杆
+    /// </summary>
     public class VirtualRocker : MonoBehaviour
     {
-        public static GameObject CreatePrefab(GameObject canvasObj)
+        /// <summary>
+        /// 选择CanvasGameObject创建一个虚拟摇杆
+        /// </summary>
+        /// <param name="canvasObj"></param>
+        /// <returns></returns>
+        public static GameObject CreateGameObject(GameObject canvasObj)
         {
             Canvas canvas = canvasObj.GetComponent<Canvas>();
             if (canvas == null)
@@ -33,7 +43,7 @@ namespace UnityTools.UI
             rect.anchoredPosition = new Vector2(0, 250);
             rect.anchorMin = new Vector2(.5f, 0);
             rect.anchorMax = new Vector2(.5f, 0);
-            bg.AddComponent<Image>();
+            bg.AddComponent<Image>().raycastTarget = false;
 
             GameObject pointer = new GameObject("pointer");
             rect = pointer.AddComponent<RectTransform>();
@@ -42,7 +52,7 @@ namespace UnityTools.UI
             rect.sizeDelta = new Vector2(10, 100);
             rect.anchoredPosition = Vector2.zero;
             rect.pivot = new Vector2(.5f, 0);
-            pointer.AddComponent<Image>();
+            pointer.AddComponent<Image>().raycastTarget = false;
 
             GameObject point = new GameObject("point");
             rect = point.AddComponent<RectTransform>();
@@ -50,7 +60,7 @@ namespace UnityTools.UI
             rect.SetParent(bg.transform);
             rect.sizeDelta = Vector2.one * 50;
             rect.anchoredPosition = Vector2.zero;
-            point.AddComponent<Image>();
+            point.AddComponent<Image>().raycastTarget = false;
 
             GameObject area = new GameObject("area");
             rect = area.AddComponent<RectTransform>();
@@ -64,7 +74,14 @@ namespace UnityTools.UI
             return rocker;
         }
         public bool isClick { private set; get; }
+        /// <summary>
+        /// 未激活时是否隐藏
+        /// </summary>
         public bool unenableHide;
+        /// <summary>
+        /// 是否忽略UI遮挡
+        /// </summary>
+        public bool ignoreUI;
         /// <summary>
         /// 摇杆区域背景
         /// </summary>
@@ -74,12 +91,16 @@ namespace UnityTools.UI
         /// 摇杆点
         /// </summary>
         [SerializeField]
-        RectTransform point;
+        private RectTransform point;
+        //是否显示虚拟摇杆点
+        private bool showPoint;
         /// <summary>
         /// 摇杆方向指针
         /// </summary>
         [SerializeField]
-        RectTransform pointer;
+        private RectTransform pointer;
+        //是否显示虚拟摇杆指针
+        private bool showPointer;
         /// <summary>
         /// 可触发摇杆的区域
         /// </summary>
@@ -102,17 +123,39 @@ namespace UnityTools.UI
                 rate = cs.referenceResolution;
                 ResetRocker();
             }
-            if (pointBg.GetComponent<Image>().sprite == null)
-                Debuger.LogError("bg's sprite is null![Click this goto gameObject]", pointBg.gameObject);
-            if (point.GetComponent<Image>().sprite == null)
-                Debuger.LogError("point's sprite is null![Click this goto gameObject]", point.gameObject);
-            if (pointer.GetComponent<Image>().sprite == null)
-                Debuger.LogError("pointer's sprite is null![Click this goto gameObject]", pointer.gameObject);
+            if (point != null)
+            {
+                showPoint = point.GetComponent<Image>().sprite != null;
+                point.gameObject.SetActive(showPoint);
+            }
+            else
+            {
+                Debug.LogWarning("point is null!");
+            }
+            if (pointer != null)
+            {
+                showPointer = point.GetComponent<Image>().sprite != null;
+                pointer.gameObject.SetActive(showPoint);
+            }
+            else
+            {
+                Debug.LogWarning("pointer is null!");
+            }
+            if (pointBg)
+            {
+                pointBg.gameObject.SetActive(pointBg.GetComponent<Image>().sprite == null);
+            }
+            else
+            {
+                Debug.LogWarning("pointBg is null!");
+            }
         }
-
+        /// <summary>
+        /// 是否触发虚拟摇杆UI
+        /// </summary>
         protected virtual void CheckShowRocker()
         {
-            if (!EventSystem.current.IsPointerOverGameObject())
+            if (ignoreUI || !EventSystem.current.IsPointerOverGameObject())
             {
                 float screenRate = Screen.height * rate.x / (Screen.width * rate.y);
                 int width, height;
@@ -149,7 +192,9 @@ namespace UnityTools.UI
                 }
             }
         }
-
+        /// <summary>
+        /// 重置虚拟摇杆UI
+        /// </summary>
         protected virtual void ResetRocker()
         {
             isClick = false;
@@ -157,20 +202,28 @@ namespace UnityTools.UI
             point.anchoredPosition = Vector3.zero;
             if (unenableHide) pointBg.gameObject.SetActive(false);
         }
-
+        /// <summary>
+        /// 更新虚拟摇杆UI
+        /// </summary>
         protected virtual void UpdateRocker()
         {
             if (isClick)
             {
                 /*设置point位置点*/
-                point.anchoredPosition = (Vector2)(Input.mousePosition - clickMousePos);
-                if (point.anchoredPosition.magnitude > pointBg.sizeDelta.x / 2 - point.sizeDelta.x / 2)
-                    point.anchoredPosition = point.anchoredPosition.normalized *
-                                                 (pointBg.sizeDelta.x / 2 - point.sizeDelta.x / 2);
+                if (showPoint)
+                {
+                    point.anchoredPosition = (Vector2)(Input.mousePosition - clickMousePos);
+                    if (point.anchoredPosition.magnitude > pointBg.sizeDelta.x / 2 - point.sizeDelta.x / 2)
+                        point.anchoredPosition = point.anchoredPosition.normalized *
+                                                     (pointBg.sizeDelta.x / 2 - point.sizeDelta.x / 2);
+                }
                 /*设置pointer的方向*/
-                float angle = Vector2.SignedAngle(Vector2.up, Direction);
-                pointer.eulerAngles = new Vector3(0, 0, angle);
-                pointer.gameObject.SetActive(Direction != Vector2.zero);
+                if (showPointer)
+                {
+                    float angle = Vector2.SignedAngle(Vector2.up, Direction);
+                    pointer.eulerAngles = new Vector3(0, 0, angle);
+                    pointer.gameObject.SetActive(Direction != Vector2.zero);
+                }
             }
         }
 

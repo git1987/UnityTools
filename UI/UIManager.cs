@@ -32,9 +32,25 @@ namespace UnityTools.UI
             }
             else
             {
-                Debuger.LogError("之前场景没有清空UI控制器" + uiCtrl.GetType().Name);
+                Debuger.LogError("之前场景没有清空UICtrl" + uiCtrl.GetType().Name);
             }
             uiCtrl = _uiCtrl;
+        }
+        public static void RemoveUICtrl(UICtrl currentUICtrl)
+        {
+            if (currentUICtrl == null)
+            {
+                Debuger.LogError("currentUICtrl is null");
+            }
+            else if (uiCtrl == null)
+            {
+                Debuger.LogError("UIManager.uiCtrl是空的，当前场景没有注册UICtrl");
+            }
+            else if (uiCtrl != currentUICtrl)
+            {
+                Debuger.LogError("当前场景uiCtrl和UIMangaer.uiCtrl不相同");
+            }
+            uiCtrl = null;
         }
         /// <summary>
         /// 泛型获取当前场景的UICtrl

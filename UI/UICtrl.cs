@@ -41,6 +41,10 @@ namespace UnityTools.UI
         {
             GameBegin();
         }
+        protected virtual void OnDestory()
+        {
+            UIManager.RemoveUICtrl(this);
+        }
         /// <summary>
         /// 动态加载场景时，关闭UICtrl.Start方法，手动调用GameBegin()
         /// </summary> 
