@@ -10,7 +10,7 @@ namespace UnityTools.UI
     /// <summary>
     /// 虚拟摇杆
     /// </summary>
-    public class VirtualRocker : MonoBehaviour
+    public class VirtualRocker : MonoBehaviour 
     {
         /// <summary>
         /// 选择CanvasGameObject创建一个虚拟摇杆
@@ -43,6 +43,7 @@ namespace UnityTools.UI
             rect.anchoredPosition = new Vector2(0, 250);
             rect.anchorMin = new Vector2(.5f, 0);
             rect.anchorMax = new Vector2(.5f, 0);
+                    
             bg.AddComponent<Image>().raycastTarget = false;
 
             GameObject pointer = new GameObject("pointer");
