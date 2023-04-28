@@ -22,10 +22,6 @@ namespace UnityTools.UI
             Canvas canvas = canvasObj.GetComponent<Canvas>();
             if (canvas == null)
             {
-                canvas = canvasObj.GetComponentInChildren<Canvas>();
-            }
-            else
-            {
                 Debuger.LogError("请选择带有Canvas组件的GameObject");
                 return null;
             }
