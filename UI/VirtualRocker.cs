@@ -37,18 +37,17 @@ namespace UnityTools.UI
 
             GameObject bg = new GameObject("pointBg");
             rect = bg.AddComponent<RectTransform>();
-            virtualRocker.pointBg = rect;
+            virtualRocker._pointBg = rect;
             rect.SetParent(rocker.transform);
             rect.sizeDelta = Vector2.one * 200;
             rect.anchoredPosition = new Vector2(0, 250);
             rect.anchorMin = new Vector2(.5f, 0);
             rect.anchorMax = new Vector2(.5f, 0);
-                    
             bg.AddComponent<Image>().raycastTarget = false;
 
             GameObject pointer = new GameObject("pointer");
             rect = pointer.AddComponent<RectTransform>();
-            virtualRocker.pointer = rect;
+            virtualRocker._pointer = rect;
             rect.SetParent(bg.transform);
             rect.sizeDelta = new Vector2(10, 100);
             rect.anchoredPosition = Vector2.zero;
@@ -57,7 +56,7 @@ namespace UnityTools.UI
 
             GameObject point = new GameObject("point");
             rect = point.AddComponent<RectTransform>();
-            virtualRocker.point = rect;
+            virtualRocker._point = rect;
             rect.SetParent(bg.transform);
             rect.sizeDelta = Vector2.one * 50;
             rect.anchoredPosition = Vector2.zero;
@@ -87,19 +86,22 @@ namespace UnityTools.UI
         /// 摇杆区域背景
         /// </summary>
         [SerializeField]
-        private RectTransform pointBg;
+        private RectTransform _pointBg;
+        public RectTransform pointBg => pointBg;
         /// <summary>
         /// 摇杆点
         /// </summary>
         [SerializeField]
-        private RectTransform point;
+        private RectTransform _point;
+        public RectTransform point => point;
         //是否显示虚拟摇杆点
         private bool showPoint;
         /// <summary>
         /// 摇杆方向指针
         /// </summary>
         [SerializeField]
-        private RectTransform pointer;
+        private RectTransform _pointer;
+        public RectTransform pointer => pointer;
         //是否显示虚拟摇杆指针
         private bool showPointer;
         /// <summary>
@@ -112,7 +114,7 @@ namespace UnityTools.UI
 
         public Vector2 Direction
         {
-            get { return point.anchoredPosition / pointBg.sizeDelta.x / 2; }
+            get { return _point.anchoredPosition / _pointBg.sizeDelta.x / 2; }
         }
         protected virtual void Awake()
         {
@@ -124,27 +126,27 @@ namespace UnityTools.UI
                 rate = cs.referenceResolution;
                 ResetRocker();
             }
-            if (point != null)
+            if (_point != null)
             {
-                showPoint = point.GetComponent<Image>().sprite != null;
-                point.gameObject.SetActive(showPoint);
+                showPoint = _point.GetComponent<Image>().sprite != null;
+                _point.gameObject.SetActive(showPoint);
             }
             else
             {
                 Debug.LogWarning("point is null!");
             }
-            if (pointer != null)
+            if (_pointer != null)
             {
-                showPointer = point.GetComponent<Image>().sprite != null;
-                pointer.gameObject.SetActive(showPoint);
+                showPointer = _point.GetComponent<Image>().sprite != null;
+                    _pointer.gameObject.SetActive(showPoint);
             }
             else
             {
                 Debug.LogWarning("pointer is null!");
             }
-            if (pointBg)
+            if (    _pointBg)
             {
-                pointBg.gameObject.SetActive(pointBg.GetComponent<Image>().sprite == null);
+                _pointBg.gameObject.SetActive(_pointBg.GetComponent<Image>().sprite == null);
             }
             else
             {
@@ -188,8 +190,8 @@ namespace UnityTools.UI
                     y <= areaRect.anchoredPosition.y + areaRect.sizeDelta.y / 2)
                 {
                     isClick = true;
-                    pointBg.anchoredPosition = new Vector2(x, y);
-                    pointBg.gameObject.SetActive(true);
+                    _pointBg.anchoredPosition = new Vector2(x, y);
+                    _pointBg.gameObject.SetActive(true);
                 }
             }
         }
@@ -199,9 +201,9 @@ namespace UnityTools.UI
         protected virtual void ResetRocker()
         {
             isClick = false;
-            pointBg.anchoredPosition = areaRect.anchoredPosition;
-            point.anchoredPosition = Vector3.zero;
-            if (unenableHide) pointBg.gameObject.SetActive(false);
+            _pointBg.anchoredPosition = areaRect.anchoredPosition;
+            _point.anchoredPosition = Vector3.zero;
+            if (unenableHide) _pointBg.gameObject.SetActive(false);
         }
         /// <summary>
         /// 更新虚拟摇杆UI
@@ -213,17 +215,17 @@ namespace UnityTools.UI
                 /*设置point位置点*/
                 if (showPoint)
                 {
-                    point.anchoredPosition = (Vector2)(Input.mousePosition - clickMousePos);
-                    if (point.anchoredPosition.magnitude > pointBg.sizeDelta.x / 2 - point.sizeDelta.x / 2)
-                        point.anchoredPosition = point.anchoredPosition.normalized *
-                                                     (pointBg.sizeDelta.x / 2 - point.sizeDelta.x / 2);
+                    _point.anchoredPosition = (Vector2)(Input.mousePosition - clickMousePos);
+                    if (_point.anchoredPosition.magnitude > _pointBg.sizeDelta.x / 2 - _point.sizeDelta.x / 2)
+                        _point.anchoredPosition = _point.anchoredPosition.normalized *
+                                                     (_pointBg.sizeDelta.x / 2 - _point.sizeDelta.x / 2);
                 }
                 /*设置pointer的方向*/
                 if (showPointer)
                 {
                     float angle = Vector2.SignedAngle(Vector2.up, Direction);
-                    pointer.eulerAngles = new Vector3(0, 0, angle);
-                    pointer.gameObject.SetActive(Direction != Vector2.zero);
+                    _pointer.eulerAngles = new Vector3(0, 0, angle);
+                    _pointer.gameObject.SetActive(Direction != Vector2.zero);
                 }
             }
         }

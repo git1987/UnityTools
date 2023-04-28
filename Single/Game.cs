@@ -3,27 +3,41 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityTools.Extend;
 
 namespace UnityTools.Single
 {
     public sealed class Game : SingleMono<Game>
     {
         /// <summary>
+        /// 延时调用的方法和计时器
+        /// </summary>
+        class DelayedData
+        {
+            public EventAction action;
+            public float timer;
+            public DelayedData(EventAction ea, float time)
+            {
+                this.action = ea;
+                this.timer = time;
+            }
+        }
+        /// <summary>
         /// 清除所有延时调用方法
         /// </summary>
         public static void ClearDelayed()
         {
-            instance.actionList.Clear();
-            instance.actionTimeList.Clear();
+            instance.delayedList.Clear();
         }
         /// <summary>
         /// 延时调用方法:time==0 时，隔一帧执行监听
         /// </summary>
         /// <param name="action"></param>
-        /// <param name="time">== 0 时，隔一帧执行监听</param>
+        /// <param name="time">== 0 ，隔一帧执行监听</param>
         public static void Delayed(EventAction action, float time = 0)
         {
-            if (instance.actionList.Contains(action))
+            DelayedData ed = instance.GetDelayedData(action);
+            if (ed != null)
             {
                 Debuger.LogError("已经存在回调了，添加了两次");
                 return;
@@ -31,9 +45,9 @@ namespace UnityTools.Single
             if (time <= 0) instance.DelayedFrame(action);
             else
             {
-                instance.actionList.Add(action);
                 //新添加的回调，在当前帧就要执行Update，所以要提前加当前deltaTime补上
-                instance.actionTimeList.Add(time + Time.deltaTime);
+                ed = new DelayedData(action, time + Time.deltaTime);
+                instance.delayedList.Add(ed);
             }
         }
         /// <summary>
@@ -43,18 +57,27 @@ namespace UnityTools.Single
         /// <returns></returns>
         public static bool RemoveDelayed(EventAction action)
         {
-            if (instance.actionList.Contains(action))
+            DelayedData ed = instance.GetDelayedData(action);
+            if (ed != null)
             {
-                int index = instance.actionList.IndexOf(action);
-                instance.actionList.RemoveAt(index);
-                instance.actionTimeList.RemoveAt(index);
+                instance.delayedList.Remove(ed);
                 return true;
             }
             Debuger.LogError("没有该延时调用的方法");
             return false;
         }
-        private List<EventAction> actionList = new List<EventAction>();
-        private List<float> actionTimeList = new List<float>();
+        private List<DelayedData> delayedList = new List<DelayedData>();
+        private DelayedData GetDelayedData(EventAction ea)
+        {
+            for (int i = 0; i < delayedList.Count; i++)
+            {
+                if (delayedList[i].action == ea)
+                {
+                    return delayedList[i];
+                }
+            }
+            return null;
+        }
         /// <summary>
         /// 延迟一帧执行监听
         /// </summary>
@@ -71,20 +94,24 @@ namespace UnityTools.Single
 
         private void Update()
         {
-            if (actionList != null && actionList.Count > 0)
+            if (delayedList != null && delayedList.Count > 0)
             {
-                for (int i = 0; i < actionList.Count; i++)
+                for (int i = 0; i < delayedList.Count; i++)
                 {
-                    actionTimeList[i] -= Time.deltaTime;
-                    if (actionTimeList[i] <= 0)
+                    delayedList[i].timer -= Time.deltaTime;
+                    if (delayedList[i].timer <= 0)
                     {
-                        actionList[i].Invoke();
-                        instance.actionList.RemoveAt(i);
-                        instance.actionTimeList.RemoveAt(i);
+                        delayedList[i].action.Invoke();
+                        instance.delayedList.RemoveAt(i);
                         i--;
                     }
                 }
             }
+        }
+        protected override void OnDestroy()
+        {
+            delayedList.Clear();
+            base.OnDestroy();
         }
     }
 }
