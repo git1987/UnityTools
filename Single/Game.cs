@@ -27,7 +27,7 @@ namespace UnityTools.Single
         /// </summary>
         public static void ClearDelayed()
         {
-            instance.delayedList.Clear();
+            GetInstance().delayedList.Clear();
         }
         /// <summary>
         /// 延时调用方法:time==0 时，隔一帧执行监听
@@ -36,18 +36,18 @@ namespace UnityTools.Single
         /// <param name="time">== 0 ，隔一帧执行监听</param>
         public static void Delayed(EventAction action, float time = 0)
         {
-            DelayedData ed = instance.GetDelayedData(action);
+            DelayedData ed = GetInstance().GetDelayedData(action);
             if (ed != null)
             {
                 Debuger.LogError("已经存在回调了，添加了两次");
                 return;
             }
-            if (time <= 0) instance.DelayedFrame(action);
+            if (time <= 0) GetInstance().DelayedFrame(action);
             else
             {
                 //新添加的回调，在当前帧就要执行Update，所以要提前加当前deltaTime补上
                 ed = new DelayedData(action, time + Time.deltaTime);
-                instance.delayedList.Add(ed);
+                GetInstance().delayedList.Add(ed);
             }
         }
         /// <summary>
@@ -57,10 +57,10 @@ namespace UnityTools.Single
         /// <returns></returns>
         public static bool RemoveDelayed(EventAction action)
         {
-            DelayedData ed = instance.GetDelayedData(action);
+            DelayedData ed = GetInstance().GetDelayedData(action);
             if (ed != null)
             {
-                instance.delayedList.Remove(ed);
+                GetInstance().delayedList.Remove(ed);
                 return true;
             }
             Debuger.LogError("没有该延时调用的方法");
@@ -102,7 +102,7 @@ namespace UnityTools.Single
                     if (delayedList[i].timer <= 0)
                     {
                         delayedList[i].action.Invoke();
-                        instance.delayedList.RemoveAt(i);
+                        GetInstance().delayedList.RemoveAt(i);
                         i--;
                     }
                 }
