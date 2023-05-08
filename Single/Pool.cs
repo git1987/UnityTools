@@ -156,7 +156,7 @@ namespace UnityTools.Single
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        private GameObject GetObj(string name)
+        public GameObject GetObj(string name)
         {
             GameObject temp = null;
             if (poolPrefab.TryGetValue(name, out GameObject go))
