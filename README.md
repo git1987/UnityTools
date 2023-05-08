@@ -7,19 +7,21 @@ EventManager：事件管理器
 Tools：静态方法类
 
 ## UnityTools.Single(MonoBehaviour类型单例类)
-SingleMono：单例类基类
-
+SingleMono：单例类基类  
 Game：常用的一些功能  
-&#8195;&#8195;[Delayed:延时调用方法]
-
-Pool：GameObject对象池
+&#8195;&#8195;[Delayed:延时调用方法]  
+Pool：GameObject对象池  
 
 ## UnityTools.Extend（类扩展）
-UnityEngineExtend：UnityEngine程序集的扩展方法
+UnityEngineExtend：UnityEngine程序集的扩展方法  
 
 ## UnityTools.UI（UI框架）
 UIManager：UI总控制器  
 UICtrl：场景UI控制器基类（每个场景只有一个）  
 BasePanel：面板基类  
 MaskGraphic：不渲染的Graphic，raycastTarget有效  
-VirtualRocker：虚拟摇杆
+VirtualRocker：虚拟摇杆  
+
+##UnityTools.MonoComponent（继承MonoBehaviour的组件）
+AutoClear:自动清除的组件（特效类型），最终调用Pool.Recover(this.gameObject)  
+Schedule:计时任务类组件（Update方法内更新时间，使用Time.deltaTime更新时间）单次延时回调，多次重复回调

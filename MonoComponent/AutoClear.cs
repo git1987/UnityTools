@@ -35,7 +35,7 @@ namespace UnityTools.MonoComponent
         public void SetFinishAction(EventAction _finish)
         {
             if (autoClear)
-                this.finish = _finish;
+                finish = _finish;
             else
                 UnityTools.Debuger.LogError("不是自动清除的特效", this.gameObject);
         }
@@ -44,7 +44,12 @@ namespace UnityTools.MonoComponent
         {
             if (lifeTime > 0)
             {
-                Schedule.GetInstance(this.gameObject).Once(() => Pool.Recover(this.gameObject), lifeTime);
+                Schedule.GetInstance(this.gameObject).Once(() =>
+                {
+                    finish?.Invoke();
+                    finish = null;
+                    Pool.Recover(this.gameObject);
+                }, lifeTime);
             }
         }
         public void OnDisable()
