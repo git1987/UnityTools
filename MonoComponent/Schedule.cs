@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityTools.Extend;
 
-namespace UnityTools.Component
+namespace UnityTools.MonoComponent
 {
     /// <summary>
     /// 计时任务

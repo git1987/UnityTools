@@ -4,7 +4,7 @@ using System.Text;
 using UnityEngine;
 using UnityTools.Single;
 
-namespace UnityTools.Component
+namespace UnityTools.MonoComponent
 {
     /// <summary>
     /// 自动清理组件
