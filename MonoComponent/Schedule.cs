@@ -90,9 +90,10 @@ namespace UnityTools.MonoComponent
         /// <param name="finish"></param>
         public void Repeated(EventAction<int> repeatedAction, float startTime, float periodTime, int repeat, float maxTime, EventAction finish)
         {
+            enable = true;
             scheduleData = new ScheduleData()
             {
-                maxTime = maxTime,
+                maxTime = maxTime + Time.deltaTime,
                 repeatedAction = repeatedAction,
                 periodTime = periodTime,
                 repeat = repeat,
@@ -122,14 +123,14 @@ namespace UnityTools.MonoComponent
         private void Update()
         {
             if (!enable) return;
+            if (scheduleData.maxTime < float.MaxValue)
+                scheduleData.maxTime -= Time.deltaTime;
             if (timer <= 0)
             {
                 scheduleData.action?.Invoke();
                 scheduleData.repeatedAction?.Invoke(repeatIndex++);
                 if (scheduleData.repeat < int.MaxValue)
                     scheduleData.repeat--;
-                if (scheduleData.maxTime < float.MaxValue)
-                    scheduleData.maxTime -= Time.deltaTime;
                 if (scheduleData.repeat <= 0)
                 {
                     //次数用完了
