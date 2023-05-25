@@ -20,6 +20,19 @@ namespace UnityTools.UI
 
         public static UICtrl uiCtrl { private set; get; }
         /// <summary>
+        /// 根据面板名称的全称呼自动加载panel prefab的委托
+        /// </summary>
+
+        private static EventFunction<string, GameObject> getPanelPrefabFunction = null;
+        /// <summary>
+        /// 设置自动加载panel prefab的委托
+        /// </summary>
+        /// <param name="function"></param>
+        public static void SetBuildPanelFunction(EventFunction<string, GameObject> function)
+        {
+            getPanelPrefabFunction = function;
+        }
+        /// <summary>
         /// 设置当前场景的UICtrl
         /// </summary>
         /// <param name="_uiCtrl"></param>
@@ -106,6 +119,8 @@ namespace UnityTools.UI
             if (!panels.ContainsKey(panelName))
             {
                 //CreatePanel<P>();
+                if (getPanelPrefabFunction == null) Debuger.LogError("没有设置自动加载panel prefab的委托");
+                CreatePanel<P>(getPanelPrefabFunction(panelName));
             }
             P panel = panels[panelName] as P;
             Transform panelParent = GetPanelParent(panelLv);
@@ -116,6 +131,11 @@ namespace UnityTools.UI
             panel.SetPanelLv(panelLv);
             return panel;
         }
+        /// <summary>
+        /// 获取面板
+        /// </summary>
+        /// <typeparam name="P"></typeparam>
+        /// <returns></returns>
         public static P GetPanel<P>() where P : BasePanel
         {
             string panelName = typeof(P).Name;
