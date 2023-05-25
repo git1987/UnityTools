@@ -1,62 +1,89 @@
 ﻿using UnityEngine;
+using UnityTools;
 using UnityTools.Single;
+using UnityTools.MonoComponent;
 
-namespace UnityTools.MonoComponent
+/// <summary>
+/// 自动清除：删除/放回对象池
+/// </summary>
+public class AutoClear : MonoBehaviour
 {
     /// <summary>
-    /// 自动清理组件
+    /// 是否自动清除:在prefab中设置好值： isEffect==true || lifeTIme>0
     /// </summary>
-    public class AutoClear : MonoBehaviour
+    /// <param name="autoClear"></param>
+    /// <returns></returns>
+    public static bool IsAutoClear(GameObject autoClear)
     {
-        /// 是否自动清除
-        public bool autoClear
-        {
-            get { return lifeTime > 0; }
-        }
-        /// <summary>
-        /// 自动清理的生命周期
-        /// </summary>
-        public float lifeTime;
-        /// <summary>
-        /// 死亡创建的GameObject
-        /// </summary>
-        public GameObject dieCreateObj;
-        /// <summary>
-        /// 特效完毕之后的回调
-        /// </summary>
-        private EventAction finish;
-        /// <summary>
-        /// 设置特效播放完毕的回调
-        /// </summary>
-        /// <param name="_finish"></param>
-        public void SetFinishAction(EventAction _finish)
-        {
-            if (autoClear)
-                finish = _finish;
-            else
-                UnityTools.Debuger.LogError("不是自动清除的特效", this.gameObject);
-        }
+        AutoClear ac = autoClear.GetComponent<AutoClear>();
+        if (ac != null) return ac.autoClear;
+        return false;
+    }
 
-        public void OnEnable()
+    [SerializeField] private bool isEffect;
+    /// 是否自动清除
+    public bool autoClear
+    {
+        get { return lifeTime > 0; }
+    }
+    [SerializeField] private float lifeTime;
+    [SerializeField] private GameObject deathObj;
+    //特效播放完毕的回调
+    private EventAction finish;
+
+    private void Awake()
+    {
+        if (isEffect)
         {
-            if (lifeTime > 0)
+            ParticleSystem[] pas = this.transform.GetComponentsInChildren<ParticleSystem>();
+            for (int i = 0; i < pas.Length; i++)
             {
-                Schedule.GetInstance(this.gameObject).Once(() =>
-                {
-                    finish?.Invoke();
-                    finish = null;
-                    Pool.Recover(this.gameObject);
-                }, lifeTime);
+                ParticleSystem p = pas[i];
+                lifeTime = Mathf.Max(lifeTime, p.main.duration);
             }
+            Animator animator = this.transform.GetComponent<Animator>();
+            if (animator != null) lifeTime = Mathf.Max(lifeTime, animator.GetCurrentAnimatorStateInfo(0).length);
         }
-        public void OnDisable()
+    }
+
+    /// <summary>
+    /// 设置特效播放完毕的回调
+    /// </summary>
+    /// <param name="_finish"></param>
+    public void SetFinishAction(EventAction _finish)
+    {
+        if (autoClear)
+            this.finish = _finish;
+        else
+            UnityTools.Debuger.LogError("不是自动清除的特效", this.gameObject);
+    }
+
+    //通过对象池使用，每次Get的时候调用
+    private void OnEnable()
+    {
+        if (lifeTime > 0)
         {
-            if (dieCreateObj != null)
-            {
-                GameObject effect = Pool.GetInstance().Init(dieCreateObj).GetObj(dieCreateObj.name);
-                effect.transform.position = this.transform.position;
-                effect.transform.rotation = this.transform.rotation;
-            }
+            Schedule.GetInstance(this.gameObject).Once(() => this.Recover(), lifeTime);
         }
+    }
+
+    private void OnDisable()
+    {
+        if (deathObj != null && Pool.instance)
+        {
+            GameObject effect = Pool.instance.Init(deathObj).GetObj(deathObj.name);
+            effect.transform.position = this.transform.position;
+            effect.transform.rotation = this.transform.rotation;
+        }
+    }
+
+    private void Recover()
+    {
+        if (this.finish != null)
+        {
+            this.finish();
+            this.finish = null;
+        }
+        Pool.Recover(this.gameObject);
     }
 }
