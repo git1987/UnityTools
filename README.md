@@ -1,4 +1,5 @@
 # 自定义Unity运行类库
+# 在Unity编辑器内调试和修改（Unity版本2021.2.18f1）
 ## UnityTools.Tools(工具类)
 Debuger：自定义日志类，`disable`为日志禁用状态，通过`Enable()`和`UnEnable()`来打开和关闭日志
 

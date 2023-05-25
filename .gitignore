@@ -1,3 +1,11 @@
-/.vs
-/bin
+/.vsconfig
+/Library
+/Logs
+/Packages
+/ProjectSettings
+/UserSettings
+/Assembly-CSharp.csproj
+/Temp
+/UnityTools.sln
 /obj
+/.vs
