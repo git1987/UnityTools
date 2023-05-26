@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityTools.Single;
+
 namespace UnityTools.Extend
 {
     public static class ClassExtend
@@ -152,6 +154,25 @@ namespace UnityTools.Extend
                 {
                     child.ForAction(action, includeGrandchildren);
                 }
+            }
+        }
+        /// <summary>
+        /// 移除Transform的所有子级：释放到Pool内
+        /// </summary>
+        /// <param name="transform"></param>
+        public static void RemoveChild(this Transform transform)
+        {
+            if (Pool.instance != null)
+            {
+                if (Pool.instance.transform == transform)
+                {
+                    Debuger.LogError("不能对Pool的transform清除子级");
+                    return;
+                }
+            }
+            while (transform.childCount > 0)
+            {
+                Pool.Recover(transform.GetChild(0).gameObject);
             }
         }
         #endregion

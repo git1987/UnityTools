@@ -8,7 +8,7 @@ namespace UnityTools.Single
     public class Pool : SingleMono<Pool>
     {
         /// <summary>
-        /// 回收GameObject对象
+        /// 回收GameObject对象，如果没有创建Pool则被Destroy掉
         /// </summary>
         /// <param name="go"></param>
         /// <param name="resetTransform">是否重置transform</param>
@@ -188,7 +188,7 @@ namespace UnityTools.Single
             return temp;
         }
         /// <summary>
-        /// 回收对象
+        /// 回收对象：如果不属于对象池的GameObject则被Destroy
         /// <para>resetTransform:</para>
         /// <para>localPosition = Vector3.zero</para>
         /// <para>localRotation = Quaternion.identity[Vector3.zero]</para>
