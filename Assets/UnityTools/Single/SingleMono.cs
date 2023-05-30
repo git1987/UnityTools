@@ -18,8 +18,7 @@ namespace UnityTools.Single
         {
             get
             {
-                if (_instance == null)
-                    Debuger.LogError(typeof(T).Name + " is not create!");
+                if (_instance == null) Debuger.LogError(typeof(T).Name + " is not create!");
                 return _instance;
             }
         }
@@ -33,8 +32,7 @@ namespace UnityTools.Single
             {
                 if (Application.isPlaying)
                 {
-                    if (componentGameObject == null)
-                        componentGameObject = new GameObject(typeof(T).Name);
+                    if (componentGameObject == null) componentGameObject = new GameObject(typeof(T).Name);
                     Debuger.LogWarning($"create {typeof(T).Name}!", componentGameObject);
                     _instance = componentGameObject.AddComponent<T>();
                 }
@@ -52,15 +50,14 @@ namespace UnityTools.Single
             {
                 if (_instance != this)
                 {
-                    Debuger.LogErrorFormat(string.Format("The [{0}] already exists", this.GetType().Name), this.gameObject);
+                    Debuger.LogError($"The [{this.GetType().Name}] already exists", this.gameObject);
                     Destroy(this);
                 }
             }
         }
         protected virtual void OnDestroy()
         {
-            if (_instance == this)
-                _instance = null;
+            if (_instance == this) _instance = null;
         }
     }
 }

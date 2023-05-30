@@ -1,30 +1,57 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityTools.Extend;
-
 namespace UnityTools
 {
     /// <summary>
     /// 无参无返回值委托
     /// </summary>
     public delegate void EventAction();
+
     /// <summary>
     /// 1参无返回值委托
     /// </summary>
     public delegate void EventAction<A>(A a);
+
     /// <summary>
     /// 2参无返回值委托
     /// </summary>
     public delegate void EventAction<A, B>(A a, B b);
+
+    /// <summary>
+    /// 3参无返回值委托
+    /// </summary>
+    public delegate void EventAction<A, B, C>(A a, B b, C c);
+
+    /// <summary>
+    /// 4参无返回值委托
+    /// </summary>
+    public delegate void EventAction<A, B, C, D>(A a, B b, C c, D d);
+
+    /// <summary>
+    /// 5参无返回值委托
+    /// </summary>
+    public delegate void EventAction<A, B, C, D, E>(A a, B b, C c, D d, E e);
+
+    /// <summary>
+    /// 6参无返回值委托
+    /// </summary>
+    public delegate void EventAction<A, B, C, D, E, F>(A a, B b, C c, D d, E e, F f);
+
     /// <summary>
     /// 无参1返回值委托
     /// </summary>
     public delegate R EventFunction<R>();
+
     /// <summary>
     /// 1参1返回值委托
     /// </summary>
     public delegate R EventFunction<in A, R>(A a);
 
+    /// <summary>
+    /// 2参1返回值委托
+    /// </summary>
+    public delegate R EventFunction<in A, in B, R>(A a, B b);
 
     /// <summary>
     /// 无参数事件监听
@@ -36,6 +63,7 @@ namespace UnityTools
             public string key;
             public List<EventAction> actionList;
         }
+
         /// <summary>
         /// 带参数的EventManager事件监听清除
         /// </summary>
@@ -44,7 +72,7 @@ namespace UnityTools
         static EventManager()
         {
             eventManagerClear = new List<EventAction>();
-            eventList = new List<EventData>();
+            eventList         = new List<EventData>();
         }
         /// <summary>
         /// 标记key，添加一个事件监听
@@ -74,7 +102,10 @@ namespace UnityTools
                 eventList.Add(new EventData()
                 {
                     key = key,
-                    actionList = new List<EventAction> { action }
+                    actionList = new List<EventAction>
+                    {
+                        action
+                    }
                 });
             }
         }
@@ -84,7 +115,9 @@ namespace UnityTools
         /// <param name="key"></param>
         /// <param name="action"></param>
         static public void AddListener<E>(E key, EventAction action) where E : System.Enum
-        { AddListener(key.ToString(), action); }
+        {
+            AddListener(key.ToString(), action);
+        }
         /// <summary>
         /// 移除委托
         /// </summary>
@@ -156,7 +189,9 @@ namespace UnityTools
         /// <param name="key"></param>
         /// <param name="action"></param>
         static public void RemoveListener<E>(E key, EventAction action) where E : System.Enum
-        { RemoveListener(key.ToString(), action); }
+        {
+            RemoveListener(key.ToString(), action);
+        }
         /// <summary>
         /// 广播
         /// </summary>
@@ -177,15 +212,16 @@ namespace UnityTools
         /// </summary>
         /// <param name="key"></param>
         static public void Broadcast<E>(E key) where E : System.Enum
-        { Broadcast(key.ToString()); }
+        {
+            Broadcast(key.ToString());
+        }
         /// <summary>
         /// 清除所有委托
         /// </summary>
         static public void Clear()
         {
             eventList.Clear();
-            for (int i = 0; i < eventManagerClear.Count; i++)
-                eventManagerClear[i]?.Invoke();
+            for (int i = 0; i < eventManagerClear.Count; i++) eventManagerClear[i]?.Invoke();
         }
     }
 
@@ -199,6 +235,7 @@ namespace UnityTools
             public string key;
             public List<EventAction<T>> actionList;
         }
+
         static private List<EventData> eventList;
         static EventManager()
         {
@@ -234,7 +271,10 @@ namespace UnityTools
                 eventList.Add(new EventData()
                 {
                     key = key,
-                    actionList = new List<EventAction<T>> { action }
+                    actionList = new List<EventAction<T>>
+                    {
+                        action
+                    }
                 });
             }
         }
@@ -244,7 +284,9 @@ namespace UnityTools
         /// <param name="key"></param>
         /// <param name="action"></param>
         static public void AddListener<E>(E key, EventAction<T> action) where E : System.Enum
-        { AddListener(key.ToString(), action); }
+        {
+            AddListener(key.ToString(), action);
+        }
         /// <summary>
         /// 移除委托
         /// </summary>
@@ -273,7 +315,6 @@ namespace UnityTools
         {
             return RemoveListener(key.ToString());
         }
-
         /// <summary>
         /// 移除监听
         /// </summary>
@@ -317,7 +358,9 @@ namespace UnityTools
         /// <param name="key"></param>
         /// <param name="action"></param>
         static public void RemoveListener<E>(E key, EventAction<T> action) where E : System.Enum
-        { RemoveListener(key.ToString(), action); }
+        {
+            RemoveListener(key.ToString(), action);
+        }
         /// <summary>
         /// 广播
         /// </summary>
@@ -344,7 +387,9 @@ namespace UnityTools
         /// <param name="key"></param>
         /// <param name="t"></param>
         static public void Broadcast<E>(E key, T t) where E : System.Enum
-        { Broadcast(key.ToString(), t); }
+        {
+            Broadcast(key.ToString(), t);
+        }
         /// <summary>
         /// 清除所有委托
         /// </summary>
@@ -365,6 +410,7 @@ namespace UnityTools
             public string key;
             public List<EventAction<T1, T2>> actionList;
         }
+
         static private List<EventData> eventList;
         static EventManager()
         {
@@ -372,7 +418,6 @@ namespace UnityTools
             //通过调用EventManager的静态成员，提前调用EventManager静态的构造方法
             EventManager.eventManagerClear.Add(() => EventManager<T1, T2>.Clear());
         }
-
         /// <summary>
         /// 标记key，添加一个事件监听
         /// </summary>
@@ -401,7 +446,10 @@ namespace UnityTools
                 eventList.Add(new EventData()
                 {
                     key = key,
-                    actionList = new List<EventAction<T1, T2>> { action }
+                    actionList = new List<EventAction<T1, T2>>
+                    {
+                        action
+                    }
                 });
             }
         }
@@ -411,7 +459,9 @@ namespace UnityTools
         /// <param name="key"></param>
         /// <param name="action"></param>
         static public void AddListener<E>(E key, EventAction<T1, T2> action) where E : System.Enum
-        { AddListener(key.ToString(), action); }
+        {
+            AddListener(key.ToString(), action);
+        }
         /// <summary>
         /// 移除委托
         /// </summary>
@@ -440,7 +490,6 @@ namespace UnityTools
         {
             return RemoveListener(key.ToString());
         }
-
         /// <summary>
         /// 移除监听
         /// </summary>
@@ -484,7 +533,9 @@ namespace UnityTools
         /// <param name="key"></param>
         /// <param name="action"></param>
         static public void RemoveListener<E>(E key, EventAction<T1, T2> action) where E : System.Enum
-        { RemoveListener(key.ToString(), action); }
+        {
+            RemoveListener(key.ToString(), action);
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -509,7 +560,9 @@ namespace UnityTools
         /// <param name="t1"></param>
         /// <param name="t2"></param>
         static public void Broadcast<E>(E key, T1 t1, T2 t2) where E : System.Enum
-        { Broadcast(key.ToString(), t1, t2); }
+        {
+            Broadcast(key.ToString(), t1, t2);
+        }
         /// <summary>
         /// 清除所有委托
         /// </summary>

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 namespace UnityTools.Single
 {
     public sealed class Game : SingleMono<Game>
@@ -16,9 +15,10 @@ namespace UnityTools.Single
             public DelayedData(EventAction ea, float time)
             {
                 this.action = ea;
-                this.timer = time;
+                this.timer  = time;
             }
         }
+
         /// <summary>
         /// 清除所有延时调用方法
         /// </summary>
@@ -39,7 +39,8 @@ namespace UnityTools.Single
                 Debuger.LogError("已经存在回调了，添加了两次");
                 return;
             }
-            if (time <= 0) GetInstance().DelayedFrame(action);
+            if (time <= 0)
+                GetInstance().DelayedFrame(action);
             else
             {
                 //新添加的回调，在当前帧就要执行Update，所以要提前加当前deltaTime补上
@@ -54,16 +55,24 @@ namespace UnityTools.Single
         /// <returns></returns>
         public static bool RemoveDelayed(EventAction action)
         {
-            DelayedData ed = GetInstance().GetDelayedData(action);
-            if (ed != null)
+            if (GetInstance().RemoveDelayedData(action))
             {
-                GetInstance().delayedList.Remove(ed);
                 return true;
             }
             Debuger.LogError("没有该延时调用的方法");
             return false;
         }
+        /// <summary>
+        /// 暂停
+        /// </summary>
+        public static void Pause() { GetInstance().pause = true; }
+        /// <summary>
+        /// 继续
+        /// </summary>
+        public static void KeepOn() { GetInstance().pause = false; }
         private List<DelayedData> delayedList = new List<DelayedData>();
+        //暂停
+        private bool pause;
         private DelayedData GetDelayedData(EventAction ea)
         {
             for (int i = 0; i < delayedList.Count; i++)
@@ -74,6 +83,18 @@ namespace UnityTools.Single
                 }
             }
             return null;
+        }
+        private bool RemoveDelayedData(EventAction ea)
+        {
+            for (int i = 0; i < delayedList.Count; i++)
+            {
+                if (delayedList[i].action == ea)
+                {
+                    delayedList.RemoveAt(i);
+                    return true;
+                }
+            }
+            return false;
         }
         /// <summary>
         /// 延迟一帧执行监听
@@ -88,9 +109,9 @@ namespace UnityTools.Single
             yield return null;
             action();
         }
-
         private void Update()
         {
+            if (pause) return;
             if (delayedList != null && delayedList.Count > 0)
             {
                 for (int i = 0; i < delayedList.Count; i++)

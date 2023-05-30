@@ -13,24 +13,26 @@ public class AutoClear : MonoBehaviour
     /// </summary>
     /// <param name="autoClear"></param>
     /// <returns></returns>
-    public static bool IsAutoClear(GameObject autoClear)
+    public static bool IsAutoClear(GameObject autoClear, float time)
     {
         AutoClear ac = autoClear.GetComponent<AutoClear>();
+        ac.lifeTime = time;
         if (ac != null) return ac.autoClear;
         return false;
     }
-
-    [SerializeField] private bool isEffect;
+    [SerializeField]
+    private bool isEffect;
     /// 是否自动清除
     public bool autoClear
     {
         get { return lifeTime > 0; }
     }
-    [SerializeField] private float lifeTime;
-    [SerializeField] private GameObject deathObj;
+    [SerializeField]
+    private float lifeTime;
+    [SerializeField]
+    private GameObject deathObj;
     //特效播放完毕的回调
     private EventAction finish;
-
     private void Awake()
     {
         if (isEffect)
@@ -41,11 +43,10 @@ public class AutoClear : MonoBehaviour
                 ParticleSystem p = pas[i];
                 lifeTime = Mathf.Max(lifeTime, p.main.duration);
             }
-            Animator animator = this.transform.GetComponent<Animator>();
+            Animator animator              = this.transform.GetComponent<Animator>();
             if (animator != null) lifeTime = Mathf.Max(lifeTime, animator.GetCurrentAnimatorStateInfo(0).length);
         }
     }
-
     /// <summary>
     /// 设置特效播放完毕的回调
     /// </summary>
@@ -63,10 +64,9 @@ public class AutoClear : MonoBehaviour
     {
         if (lifeTime > 0)
         {
-            Schedule.GetInstance(this.gameObject).Once(() => this.Recover(), lifeTime);
+            Schedule.GetInstance(this.gameObject).Once(() => this.Disable(), lifeTime);
         }
     }
-
     private void OnDisable()
     {
         if (deathObj != null && Pool.instance)
@@ -76,8 +76,7 @@ public class AutoClear : MonoBehaviour
             effect.transform.rotation = this.transform.rotation;
         }
     }
-
-    private void Recover()
+    private void Disable()
     {
         if (this.finish != null)
         {

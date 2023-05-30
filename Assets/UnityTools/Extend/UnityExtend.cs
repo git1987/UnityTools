@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityTools.Single;
-
 namespace UnityTools.Extend
 {
     public static class ClassExtend
@@ -34,7 +33,6 @@ namespace UnityTools.Extend
                 action(list[i], i);
             }
         }
-
         /// <summary>
         /// 遍历List
         /// </summary>
@@ -44,7 +42,8 @@ namespace UnityTools.Extend
         /// <param name="breakFunc">判断是否从遍历中break的bool返回值委托</param>
         public static void ForAction<T>(this List<T> list, EventAction<T> action, EventFunction<bool> breakFunc)
         {
-            if (breakFunc == null) list.ForAction(action);
+            if (breakFunc == null)
+                list.ForAction(action);
             else
             {
                 for (int i = 0; i < list.Count; i++)
@@ -54,7 +53,6 @@ namespace UnityTools.Extend
                 }
             }
         }
-
         /// <summary>
         /// 遍历List
         /// </summary>
@@ -64,7 +62,8 @@ namespace UnityTools.Extend
         /// <param name="breakFunc">判断是否从遍历中break的bool返回值委托</param>
         public static void ForAction<T>(this List<T> list, EventAction<T, int> action, EventFunction<bool> breakFunc)
         {
-            if (breakFunc == null) list.ForAction(action);
+            if (breakFunc == null)
+                list.ForAction(action);
             else
             {
                 for (int i = 0; i < list.Count; i++)
@@ -75,6 +74,7 @@ namespace UnityTools.Extend
             }
         }
     }
+
     /// <summary>
     /// UnityEngine命名空间下类扩展方法
     /// </summary>
@@ -88,8 +88,7 @@ namespace UnityTools.Extend
         public static Component MateComponent(this GameObject go, Type type)
         {
             UnityEngine.Component t = go.GetComponent(type);
-            if (t == null)
-                t = go.AddComponent(type);
+            if (t == null) t        = go.AddComponent(type);
             return t;
         }
         /// <summary>
@@ -98,9 +97,8 @@ namespace UnityTools.Extend
         /// <returns>T</returns>
         public static T MateComponent<T>(this GameObject go) where T : Component
         {
-            T t = go.GetComponent<T>();
-            if (t == null)
-                t = go.AddComponent<T>();
+            T t              = go.GetComponent<T>();
+            if (t == null) t = go.AddComponent<T>();
             return t;
         }
         #endregion
@@ -114,10 +112,9 @@ namespace UnityTools.Extend
         {
             transform.SetParent(parent);
             transform.localPosition = Vector3.zero;
-            if (transform is RectTransform)
-                ((RectTransform)transform).anchoredPosition3D = Vector3.zero;
+            if (transform is RectTransform) ((RectTransform)transform).anchoredPosition3D = Vector3.zero;
             transform.localRotation = Quaternion.identity;
-            transform.localScale = Vector3.one;
+            transform.localScale    = Vector3.one;
         }
         /// <summary>
         /// 根据名字获取子级的transform
@@ -130,11 +127,9 @@ namespace UnityTools.Extend
             for (int i = 0; i < transform.childCount; i++)
             {
                 Transform child = transform.GetChild(i);
-                if (child.name == name)
-                    return child;
+                if (child.name == name) return child;
                 child = child.GetChildByName(name);
-                if (child != null)
-                    return child;
+                if (child != null) return child;
             }
             return null;
         }
@@ -144,7 +139,8 @@ namespace UnityTools.Extend
         /// <param name="transform"></param>
         /// <param name="action">将子级作为参数的回调</param>
         /// <param name="includeGrandchildren">是否包含孙集</param>
-        public static void ForAction(this Transform transform, EventAction<Transform> action, bool includeGrandchildren = false)
+        public static void ForAction(this Transform transform, EventAction<Transform> action,
+                                     bool includeGrandchildren = false)
         {
             for (int i = 0; i < transform.childCount; i++)
             {
@@ -172,7 +168,10 @@ namespace UnityTools.Extend
             }
             while (transform.childCount > 0)
             {
-                Pool.Recover(transform.GetChild(0).gameObject);
+                //先移除父级，再Dsstroy
+                GameObject child = transform.GetChild(0).gameObject;
+                child.transform.SetParent(null);
+                Pool.Recover(child);
             }
         }
         #endregion

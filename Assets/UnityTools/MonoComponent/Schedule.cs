@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-
 namespace UnityTools.MonoComponent
 {
     /// <summary>
@@ -34,11 +33,13 @@ namespace UnityTools.MonoComponent
             /// </summary>
             public int repeat;
         }
+
         public static Schedule GetInstance(GameObject go)
         {
             Schedule schedule = go.AddComponent<Schedule>();
             return schedule;
         }
+
         //是否已经结束
         bool over;
         //开关
@@ -57,8 +58,7 @@ namespace UnityTools.MonoComponent
         {
             scheduleData = new ScheduleData()
             {
-                maxTime = time,
-                action = action,
+                maxTime = time, action = action,
             };
             if (time <= 0)
             {
@@ -86,18 +86,19 @@ namespace UnityTools.MonoComponent
         /// <param name="repeat"></param>
         /// <param name="maxTime"></param>
         /// <param name="finish"></param>
-        public void Repeated(EventAction<int> repeatedAction, float startTime, float periodTime, int repeat, float maxTime, EventAction finish)
+        public void Repeated(EventAction<int> repeatedAction, float startTime, float periodTime, int repeat,
+                             float maxTime, EventAction finish)
         {
             enable = true;
             scheduleData = new ScheduleData()
             {
-                maxTime = maxTime + Time.deltaTime,
+                maxTime        = maxTime + Time.deltaTime,
                 repeatedAction = repeatedAction,
-                periodTime = periodTime,
-                repeat = repeat,
-                finish = finish
+                periodTime     = periodTime,
+                repeat         = repeat,
+                finish         = finish
             };
-            timer = startTime;
+            timer       = startTime;
             repeatIndex = 0;
         }
         /// <summary>
@@ -115,20 +116,21 @@ namespace UnityTools.MonoComponent
         public void Stop(bool isComplete)
         {
             over = true;
-            if (isComplete) { scheduleData.finish?.Invoke(); }
+            if (isComplete)
+            {
+                scheduleData.finish?.Invoke();
+            }
             Destroy(this);
         }
         private void Update()
         {
             if (!enable) return;
-            if (scheduleData.maxTime < float.MaxValue)
-                scheduleData.maxTime -= Time.deltaTime;
+            if (scheduleData.maxTime < float.MaxValue) scheduleData.maxTime -= Time.deltaTime;
             if (timer <= 0)
             {
                 scheduleData.action?.Invoke();
                 scheduleData.repeatedAction?.Invoke(repeatIndex++);
-                if (scheduleData.repeat < int.MaxValue)
-                    scheduleData.repeat--;
+                if (scheduleData.repeat < int.MaxValue) scheduleData.repeat--;
                 if (scheduleData.repeat <= 0)
                 {
                     //次数用完了
@@ -141,19 +143,18 @@ namespace UnityTools.MonoComponent
                 }
                 else
                 {
-                    timer = scheduleData.periodTime;
+                    timer += scheduleData.periodTime;
                 }
             }
             else
             {
-                timer -= Time.deltaTime;
+                if (timer < float.MaxValue) timer -= Time.deltaTime;
             }
         }
         private void OnDisable()
         {
             //如果计时器没有结束，被隐藏了，自动调用Stop，并且不触发回调
-            if (!over)
-                Stop(false);
+            if (!over) Stop(false);
         }
     }
 }
