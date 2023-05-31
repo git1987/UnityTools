@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEditor;
 using UnityTools.Extend;
 
 public class Test : MonoBehaviour
 {
-    [CustomEditor(typeof(Test))]
-    class TestEditor : Editor
+#if UNITY_EDITOR
+    [UnityEditor.CustomEditor(typeof(Test))]
+    class TestEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
@@ -19,9 +20,9 @@ public class Test : MonoBehaviour
             }
         }
     }
+#endif
 
     void OnClickTest()
     {
-        transform.RemoveChild();
     }
 }

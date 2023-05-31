@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityTools.Single;
@@ -34,7 +35,7 @@ namespace UnityTools.Extend
             }
         }
         /// <summary>
-        /// 遍历List
+        /// 遍历List：通过breakFunc返回值委托判断是否从循环遍历中跳出
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
@@ -54,7 +55,7 @@ namespace UnityTools.Extend
             }
         }
         /// <summary>
-        /// 遍历List
+        /// 遍历List：通过breakFunc返回值委托判断是否从循环遍历中跳出
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
@@ -73,6 +74,36 @@ namespace UnityTools.Extend
                 }
             }
         }
+        /// <summary>
+        /// 遍历List：通过isBreak变量判断是否从循环遍历中跳出
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="action"></param>
+        /// <param name="isBreak">满足break条件的bool变量</param>
+        public static void ForAction<T>(this List<T> list, EventAction<T> action, in bool isBreak)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                action(list[i]);
+                if (isBreak) break;
+            }
+        }
+        /// <summary>
+        /// 遍历List：通过isBreak变量判断是否冲循环遍历中跳出
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="action"></param>
+        /// <param name="isBreak">满足break条件的bool变量</param>
+        public static void ForAction<T>(this List<T> list, EventAction<T, int> action, ref bool isBreak)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                action(list[i], i);
+                if (isBreak) break;
+            }
+        }
     }
 
     /// <summary>
@@ -88,7 +119,7 @@ namespace UnityTools.Extend
         public static Component MateComponent(this GameObject go, Type type)
         {
             UnityEngine.Component t = go.GetComponent(type);
-            if (t == null) t        = go.AddComponent(type);
+            if (t == null) t = go.AddComponent(type);
             return t;
         }
         /// <summary>
@@ -97,7 +128,7 @@ namespace UnityTools.Extend
         /// <returns>T</returns>
         public static T MateComponent<T>(this GameObject go) where T : Component
         {
-            T t              = go.GetComponent<T>();
+            T t = go.GetComponent<T>();
             if (t == null) t = go.AddComponent<T>();
             return t;
         }
@@ -114,7 +145,7 @@ namespace UnityTools.Extend
             transform.localPosition = Vector3.zero;
             if (transform is RectTransform) ((RectTransform)transform).anchoredPosition3D = Vector3.zero;
             transform.localRotation = Quaternion.identity;
-            transform.localScale    = Vector3.one;
+            transform.localScale = Vector3.one;
         }
         /// <summary>
         /// 根据名字获取子级的transform

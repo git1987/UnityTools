@@ -72,7 +72,7 @@ namespace UnityTools
         static EventManager()
         {
             eventManagerClear = new List<EventAction>();
-            eventList         = new List<EventData>();
+            eventList = new List<EventData>();
         }
         /// <summary>
         /// 标记key，添加一个事件监听
@@ -82,7 +82,7 @@ namespace UnityTools
         static public void AddListener(string key, EventAction action)
         {
             bool isKey = false;
-            eventList.ForAction((eventData, index) =>
+            eventList.ForAction((eventData) =>
             {
                 if (eventData.key == key)
                 {
@@ -204,6 +204,7 @@ namespace UnityTools
                 if (eventData.key == key)
                 {
                     eventData.actionList.ForAction(e => e?.Invoke());
+                    isKey = true;
                 }
             }, () => isKey);
         }
@@ -374,6 +375,7 @@ namespace UnityTools
                 if (eventData.key == key)
                 {
                     eventData.actionList.ForAction(e => e?.Invoke(t));
+                    isKey = true;
                 }
             }, () => isKey);
             if (!isKey)
@@ -550,6 +552,7 @@ namespace UnityTools
                 if (eventData.key == key)
                 {
                     eventData.actionList.ForAction(e => e?.Invoke(t1, t2));
+                    isKey = true;
                 }
             }, () => isKey);
         }
