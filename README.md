@@ -1,11 +1,9 @@
 # Unity中一些常用的类和方法
 # 在Unity编辑器内调试和修改（Unity版本2021.2.18f1）
 ## UnityTools.Tools(工具类)
-Debuger：自定义日志类，`disable`为日志禁用状态，通过`Enable()`和`UnEnable()`来打开和关闭日志
-
-EventManager：事件管理器
-
-Tools：静态方法类
+Debuger(Dll的形式)：自定义日志类，`disable`为日志禁用状态，通过`Enable()`和`UnEnable()`来打开和关闭日志  
+EventManager：事件管理器  
+Tools：静态方法类  
 
 ## UnityTools.Single(MonoBehaviour类型单例类)
 SingleMono：单例类基类  
