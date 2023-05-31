@@ -10,3 +10,5 @@
 /obj
 /.vs
 /.idea
+/UnityTools.sln.DotSettings.user
+/Assembly-CSharp-Editor.csproj
