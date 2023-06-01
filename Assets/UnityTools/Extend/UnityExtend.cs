@@ -4,6 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityTools.Single;
+
 namespace UnityTools.Extend
 {
     public static class ClassExtend
@@ -18,7 +19,7 @@ namespace UnityTools.Extend
         {
             for (int i = 0; i < list.Count; i++)
             {
-                action(list[i]);
+                action?.Invoke(list[i]);
             }
         }
         /// <summary>
@@ -31,7 +32,7 @@ namespace UnityTools.Extend
         {
             for (int i = 0; i < list.Count; i++)
             {
-                action(list[i], i);
+                action?.Invoke(list[i], i);
             }
         }
         /// <summary>
@@ -49,7 +50,7 @@ namespace UnityTools.Extend
             {
                 for (int i = 0; i < list.Count; i++)
                 {
-                    action(list[i]);
+                    action?.Invoke(list[i]);
                     if (breakFunc.Invoke()) break;
                 }
             }
@@ -69,7 +70,7 @@ namespace UnityTools.Extend
             {
                 for (int i = 0; i < list.Count; i++)
                 {
-                    action(list[i], i);
+                    action?.Invoke(list[i], i);
                     if (breakFunc.Invoke()) break;
                 }
             }
@@ -85,7 +86,7 @@ namespace UnityTools.Extend
         {
             for (int i = 0; i < list.Count; i++)
             {
-                action(list[i]);
+                action?.Invoke(list[i]);
                 if (isBreak) break;
             }
         }
@@ -100,8 +101,46 @@ namespace UnityTools.Extend
         {
             for (int i = 0; i < list.Count; i++)
             {
-                action(list[i], i);
+                action?.Invoke(list[i], i);
                 if (isBreak) break;
+            }
+        }
+        /// <summary>
+        /// 遍历Dictionary
+        /// </summary>
+        /// <param name="dic"></param>
+        /// <param name="action"></param>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        public static void ForAction<K, V>(this Dictionary<K, V> dic, EventAction<K, V> action)
+        {
+            foreach (K k in dic.Keys)
+            {
+                action?.Invoke(k, dic[k]);
+            }
+        }
+        /// <summary>
+        /// 遍历Dictionary：通过isBreak变量判断是否冲循环遍历中跳出
+        /// </summary>
+        /// <param name="dic"></param>
+        /// <param name="action"></param>
+        /// <param name="breakAction"></param>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        public static void ForAction<K, V>(this Dictionary<K, V> dic, EventAction<K, V> action,
+                                           EventFunction<bool> breakAction)
+        {
+            if (breakAction == null)
+            {
+                dic.ForAction(action);
+            }
+            else
+            {
+                foreach (K k in dic.Keys)
+                {
+                    action?.Invoke(k, dic[k]);
+                    if (breakAction.Invoke()) break;
+                }
             }
         }
     }
@@ -111,7 +150,7 @@ namespace UnityTools.Extend
     /// </summary>
     public static class UnityEngineExtend
     {
-        #region GameObject
+#region GameObject
         /// <summary>
         /// 获取Component，如果没有则Add一个
         /// </summary>
@@ -132,8 +171,8 @@ namespace UnityTools.Extend
             if (t == null) t = go.AddComponent<T>();
             return t;
         }
-        #endregion
-        #region Transform
+#endregion
+#region Transform
         /// <summary>
         /// transform，如果是RectTransform，也重置anchoredPosition3D
         /// </summary>
@@ -145,7 +184,7 @@ namespace UnityTools.Extend
             transform.localPosition = Vector3.zero;
             if (transform is RectTransform) ((RectTransform)transform).anchoredPosition3D = Vector3.zero;
             transform.localRotation = Quaternion.identity;
-            transform.localScale = Vector3.one;
+            transform.localScale    = Vector3.one;
         }
         /// <summary>
         /// 根据名字获取子级的transform
@@ -205,6 +244,6 @@ namespace UnityTools.Extend
                 Pool.Recover(child);
             }
         }
-        #endregion
+#endregion
     }
 }
