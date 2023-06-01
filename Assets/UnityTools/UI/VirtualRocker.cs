@@ -10,6 +10,7 @@ namespace UnityTools.UI
     /// </summary>
     public class VirtualRocker : MonoBehaviour
     {
+#if UNITY_EDITOR
         /// <summary>
         /// 选择CanvasGameObject创建一个虚拟摇杆
         /// </summary>
@@ -63,6 +64,7 @@ namespace UnityTools.UI
             rocker.transform.localScale = Vector3.one;
             return rocker;
         }
+#endif
         public bool isClick { private set; get; }
 
         /// <summary>
@@ -110,10 +112,7 @@ namespace UnityTools.UI
         public Vector3 clickMousePos;
         public Vector2 rate = new Vector2(1080, 1920);
 
-        public Vector2 Direction
-        {
-            get { return _point.anchoredPosition / _pointBg.sizeDelta.x / 2; }
-        }
+        public Vector2 Direction { get { return _point.anchoredPosition / _pointBg.sizeDelta.x / 2; } }
         protected virtual void Awake()
         {
             CanvasScaler cs = this.GetComponentInParent<CanvasScaler>();
@@ -134,27 +133,15 @@ namespace UnityTools.UI
                 showPoint = _point.GetComponent<Image>().sprite != null;
                 _point.gameObject.SetActive(showPoint);
             }
-            else
-            {
-                Debug.LogWarning("point is null!");
-            }
+            else { Debug.LogWarning("point is null!"); }
             if (_pointer != null)
             {
                 showPointer = _point.GetComponent<Image>().sprite != null;
                 _pointer.gameObject.SetActive(showPoint);
             }
-            else
-            {
-                Debug.LogWarning("pointer is null!");
-            }
-            if (_pointBg)
-            {
-                _pointBg.gameObject.SetActive(_pointBg.GetComponent<Image>().sprite == null);
-            }
-            else
-            {
-                Debug.LogWarning("pointBg is null!");
-            }
+            else { Debug.LogWarning("pointer is null!"); }
+            if (_pointBg) { _pointBg.gameObject.SetActive(_pointBg.GetComponent<Image>().sprite == null); }
+            else { Debug.LogWarning("pointBg is null!"); }
         }
         /// <summary>
         /// 是否触发虚拟摇杆UI
@@ -235,14 +222,8 @@ namespace UnityTools.UI
 
         protected virtual void Update()
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                CheckShowRocker();
-            }
-            else if (Input.GetMouseButtonUp(0))
-            {
-                ResetRocker();
-            }
+            if (Input.GetMouseButtonDown(0)) { CheckShowRocker(); }
+            else if (Input.GetMouseButtonUp(0)) { ResetRocker(); }
             UpdateRocker();
         }
     }
