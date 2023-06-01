@@ -22,7 +22,8 @@ public class Test : MonoBehaviour
     }
 #endif
 
-    void OnClickTest()
+    public void OnClickTest()
     {
+        UnityTools.Debuger.Log("Test.OnClickTest()");
     }
 }

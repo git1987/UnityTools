@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-namespace UnityTools
+namespace UnityTools.UI
 {
     /// <summary>
     /// 不渲染的Graphic，raycastTarget有效

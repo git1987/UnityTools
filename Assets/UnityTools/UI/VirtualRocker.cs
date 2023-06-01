@@ -82,14 +82,14 @@ namespace UnityTools.UI
         /// </summary>
         [SerializeField] private RectTransform _pointBg;
 
-        public RectTransform pointBg => pointBg;
+        public RectTransform pointBg => _pointBg;
 
         /// <summary>
         /// 摇杆点
         /// </summary>
         [SerializeField] private RectTransform _point;
 
-        public RectTransform point => point;
+        public RectTransform point => _point;
 
         //是否显示虚拟摇杆点
         private bool showPoint;
@@ -99,7 +99,7 @@ namespace UnityTools.UI
         /// </summary>
         [SerializeField] private RectTransform _pointer;
 
-        public RectTransform pointer => pointer;
+        public RectTransform pointer => _pointer;
 
         //是否显示虚拟摇杆指针
         private bool showPointer;
@@ -112,7 +112,7 @@ namespace UnityTools.UI
         public Vector3 clickMousePos;
         public Vector2 rate = new Vector2(1080, 1920);
 
-        public Vector2 Direction { get { return _point.anchoredPosition / _pointBg.sizeDelta.x / 2; } }
+        public Vector2 Direction => _point.anchoredPosition / _pointBg.sizeDelta.x / 2;
         protected virtual void Awake()
         {
             CanvasScaler cs = this.GetComponentInParent<CanvasScaler>();

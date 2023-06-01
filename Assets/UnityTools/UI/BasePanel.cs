@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+
 namespace UnityTools.UI
 {
     /// <summary>
@@ -22,12 +23,9 @@ namespace UnityTools.UI
         /// <returns></returns>
         protected P Open<P>() where P : BasePanel
         {
-            if (panelLv == 0)
-            {
-                Debuger.LogError(this.GetType().Name + "面板没有在UIManager中打开过，没有设置面板层级，无法打开其他面板");
-                panelLv = 1;
-            }
-            return UIManager.OpenPanel<P>(panelLv);
+            if (panelLv != 0) return UIManager.OpenPanel<P>(panelLv);
+            Debuger.LogError(this.GetType().Name + "面板没有在UIManager中打开过，没有设置面板层级，无法打开其他面板");
+            return UIManager.OpenPanel<P>(1);
         }
         /// <summary>
         /// 打开面板

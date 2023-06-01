@@ -17,10 +17,7 @@ namespace UnityTools.Extend
         /// <param name="action">传参list中的item的回调</param>
         public static void ForAction<T>(this List<T> list, EventAction<T> action)
         {
-            for (int i = 0; i < list.Count; i++)
-            {
-                action?.Invoke(list[i]);
-            }
+            for (int i = 0; i < list.Count; i++) { action?.Invoke(list[i]); }
         }
         /// <summary>
         /// 遍历List
@@ -30,10 +27,7 @@ namespace UnityTools.Extend
         /// <param name="action">传参list中的item和index的回调</param>
         public static void ForAction<T>(this List<T> list, EventAction<T, int> action)
         {
-            for (int i = 0; i < list.Count; i++)
-            {
-                action?.Invoke(list[i], i);
-            }
+            for (int i = 0; i < list.Count; i++) { action?.Invoke(list[i], i); }
         }
         /// <summary>
         /// 遍历List：通过breakFunc返回值委托判断是否从循环遍历中跳出
@@ -97,7 +91,7 @@ namespace UnityTools.Extend
         /// <param name="list"></param>
         /// <param name="action"></param>
         /// <param name="isBreak">满足break条件的bool变量</param>
-        public static void ForAction<T>(this List<T> list, EventAction<T, int> action, ref bool isBreak)
+        public static void ForAction<T>(this List<T> list, EventAction<T, int> action, in bool isBreak)
         {
             for (int i = 0; i < list.Count; i++)
             {
@@ -114,26 +108,20 @@ namespace UnityTools.Extend
         /// <typeparam name="V"></typeparam>
         public static void ForAction<K, V>(this Dictionary<K, V> dic, EventAction<K, V> action)
         {
-            foreach (K k in dic.Keys)
-            {
-                action?.Invoke(k, dic[k]);
-            }
+            foreach (K k in dic.Keys) { action?.Invoke(k, dic[k]); }
         }
         /// <summary>
-        /// 遍历Dictionary：通过isBreak变量判断是否冲循环遍历中跳出
+        /// 遍历Dictionary：通过breakAction回调判断是否冲循环遍历中跳出
         /// </summary>
         /// <param name="dic"></param>
         /// <param name="action"></param>
-        /// <param name="breakAction"></param>
+        /// <param name="breakAction">调出遍历回调</param>
         /// <typeparam name="K"></typeparam>
         /// <typeparam name="V"></typeparam>
         public static void ForAction<K, V>(this Dictionary<K, V> dic, EventAction<K, V> action,
                                            EventFunction<bool> breakAction)
         {
-            if (breakAction == null)
-            {
-                dic.ForAction(action);
-            }
+            if (breakAction == null) { dic.ForAction(action); }
             else
             {
                 foreach (K k in dic.Keys)
@@ -141,6 +129,22 @@ namespace UnityTools.Extend
                     action?.Invoke(k, dic[k]);
                     if (breakAction.Invoke()) break;
                 }
+            }
+        }
+        /// <summary>
+        /// 遍历Dictionary：通过isBreak变量判断是否冲循环遍历中跳出
+        /// </summary>
+        /// <param name="dic"></param>
+        /// <param name="action"></param>
+        /// <param name="isBreak">调出遍历</param>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        public static void ForAction<K, V>(this Dictionary<K, V> dic, EventAction<K, V> action, in bool isBreak)
+        {
+            foreach (K k in dic.Keys)
+            {
+                action?.Invoke(k, dic[k]);
+                if (isBreak) break;
             }
         }
     }
@@ -216,10 +220,7 @@ namespace UnityTools.Extend
             {
                 Transform child = transform.GetChild(i);
                 action?.Invoke(child);
-                if (includeGrandchildren)
-                {
-                    child.ForAction(action, includeGrandchildren);
-                }
+                if (includeGrandchildren) { child.ForAction(action, includeGrandchildren); }
             }
         }
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+
 namespace UnityTools
 {
     /// <summary>
@@ -15,7 +16,7 @@ namespace UnityTools
         /// <param name="axis">朝向目标点的轴向</param>
         /// <param name="relativeTo">坐标系</param>
         /// <returns></returns>
-        static public Quaternion AxisLookAt(Transform tran, Vector3 target, Vector3 axis, Space relativeTo = Space.Self)
+        public static Quaternion AxisLookAt(Transform tran, Vector3 target, Vector3 axis, Space relativeTo = Space.Self)
         {
             Vector3 targetDir = target - tran.position;
             //指定哪根轴朝向目标,自行修改Vector3的方向
@@ -35,10 +36,12 @@ namespace UnityTools
         /// 设置RectTransform四周围绕适配
         /// </summary>
         /// <param name="rect"></param>
-        static public void RectTransformSetSurround(RectTransform rect)
+        public static void RectTransformSetSurround(RectTransform rect)
         {
             rect.anchorMin          = Vector2.zero;
             rect.anchorMax          = Vector2.one;
+            rect.offsetMin          = Vector2.zero;
+            rect.offsetMax          = Vector2.zero;
             rect.anchoredPosition3D = Vector3.zero;
             rect.sizeDelta          = Vector2.zero;
             rect.localScale         = Vector3.one;

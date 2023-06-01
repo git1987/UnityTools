@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+
 namespace UnityTools.Single
 {
     /// <summary>
@@ -10,11 +11,12 @@ namespace UnityTools.Single
         /// <summary>
         /// 
         /// </summary>
-        static protected T _instance = null;
+        protected static T _instance = null;
+
         /// <summary>
         /// 单例类对象：需要自行判断是否为空，若想使用不为空的单例，使用GetInstance()
         /// </summary>
-        static public T instance
+        public static T instance
         {
             get
             {
@@ -26,7 +28,7 @@ namespace UnityTools.Single
         /// 获取单例类对象，若没有则创建一个
         /// </summary>
         /// <returns></returns>
-        static public T GetInstance(GameObject componentGameObject = null)
+        public static T GetInstance(GameObject componentGameObject = null)
         {
             if (_instance == null)
             {

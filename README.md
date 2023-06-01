@@ -20,6 +20,7 @@ UICtrl：场景UI控制器基类（每个场景只有一个）
 BasePanel：面板基类  
 MaskGraphic：不渲染的Graphic，raycastTarget有效  
 VirtualRocker：虚拟摇杆  
+GraphicPointer：鼠标手势事件监听，鼠标左、右、中键点击事件
 
 ## UnityTools.MonoComponent（继承MonoBehaviour的组件）
 AutoClear:自动清除的组件（特效类型），最终调用Pool.Recover(this.gameObject)  

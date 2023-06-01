@@ -40,7 +40,7 @@ namespace UnityTools.UI
         {
             GameBegin();
         }
-        protected virtual void OnDestory()
+        protected virtual void OnDestroy()
         {
             UIManager.RemoveUICtrl(this);
         }
