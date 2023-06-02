@@ -14,6 +14,10 @@ namespace UnityTools.Config
         public static bool middleMouseDown  =>  UnityEngine.InputSystem.Mouse.current.middleButton.wasPressedThisFrame; 
         public static bool middleMouseUp  =>  UnityEngine.InputSystem.Mouse.current.middleButton.wasReleasedThisFrame; 
         public static bool middleMouse  => UnityEngine.InputSystem.Mouse.current.middleButton.isPressed;
+        /// <summary>
+        /// 屏幕当前鼠标点击的位置
+        /// </summary>
+        public static Vector2 screenPosition =>  UnityEngine.InputSystem.Mouse.current.position.ReadValue();
 #else
         public static bool leftMouseDown => Input.GetMouseButtonDown(0);
         public static bool leftMouseUp => Input.GetMouseButtonUp(0);
@@ -24,6 +28,10 @@ namespace UnityTools.Config
         public static bool middleMouseDown => Input.GetMouseButtonDown(2);
         public static bool middleMouseUp => Input.GetMouseButtonUp(2);
         public static bool middleMouse => Input.GetMouseButton(2);
+        /// <summary>
+        /// 屏幕当前鼠标点击的位置
+        /// </summary>
+        public static Vector2 screenPosition => Input.mousePosition;
 #endif
     }
 }

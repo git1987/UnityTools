@@ -44,7 +44,7 @@ namespace UnityTools.Single
         /// </summary>
         /// <param name="gameObjectName"></param>
         /// <returns></returns>
-        public GameObject this[string gameObjectName] { get => this.GetObj(name); set => RecoverObj(value, false); }
+        public GameObject this[string gameObjectName] { get => this.GetObj(gameObjectName); set => RecoverObj(value, false); }
         /// <summary>
         /// 初始化对象池
         /// </summary>

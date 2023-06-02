@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Linq;
+using UnityEngine;
 using UnityTools;
 using UnityTools.Single;
 using UnityTools.MonoComponent;
@@ -10,25 +12,23 @@ namespace UnityTools.MonoComponent
     /// </summary>
     public class AutoClear : MonoBehaviour
     {
-        /// <summary>
-        /// 是否自动清除:在prefab中设置好值： isEffect==true || lifeTIme>0
-        /// </summary>
-        /// <param name="autoClear"></param>
-        /// <param name="time">自动清除的时间</param>
-        /// <returns></returns>
-        public static bool IsAutoClear(GameObject autoClear, float time)
-        {
-            AutoClear ac = autoClear.GetComponent<AutoClear>();
-            ac.lifeTime = time;
-            if (ac != null) return ac.autoClear;
-            return false;
-        }
-        [SerializeField] private bool isEffect;
+        [SerializeField]
+        private bool isEffect;
+
         /// 是否自动清除
         public bool autoClear => lifeTime > 0;
-        [SerializeField] private float lifeTime;
 
-        [SerializeField] private GameObject deathObj;
+        [SerializeField]
+        private float _lifeTime;
+
+        public float lifeTime
+        {
+            private set => _lifeTime = value;
+            get => _lifeTime;
+        }
+
+        [SerializeField]
+        private GameObject deathObj;
 
         //特效播放完毕的回调
         private EventAction finish;
@@ -53,22 +53,21 @@ namespace UnityTools.MonoComponent
             if (autoClear)
                 this.finish = _finish;
             else
-                UnityTools.Debuger.LogError("不是自动清除的特效", this.gameObject);
+                Debuger.LogError("不是自动清除的特效", this.gameObject);
         }
 
         //通过对象池使用，每次Get的时候调用
         private void OnEnable()
         {
-            if (lifeTime > 0) { Schedule.GetInstance(this.gameObject).Once(this.Disable, lifeTime); }
+            if (lifeTime <= 0) return;
+            Schedule.GetInstance(this.gameObject).Once(this.Disable, lifeTime);
         }
         private void OnDisable()
         {
-            if (deathObj != null && Pool.instance)
-            {
-                GameObject effect = Pool.instance.Init(deathObj).GetObj(deathObj.name);
-                Transform tran = this.transform;
-                effect.transform.SetPositionAndRotation(tran.position, tran.rotation);
-            }
+            if (deathObj == null || Pool.instance == null) return;
+            GameObject effect = Pool.instance.Init(deathObj).GetObj(deathObj.name);
+            Transform tran = this.transform;
+            effect.transform.SetPositionAndRotation(tran.position, tran.rotation);
         }
         private void Disable()
         {
