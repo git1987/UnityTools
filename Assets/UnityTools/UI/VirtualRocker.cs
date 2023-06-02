@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityTools.Config;
 using UnityTools.Extend;
 
 namespace UnityTools.UI
@@ -222,8 +223,8 @@ namespace UnityTools.UI
 
         protected virtual void Update()
         {
-            if (Input.GetMouseButtonDown(0)) { CheckShowRocker(); }
-            else if (Input.GetMouseButtonUp(0)) { ResetRocker(); }
+            if (Configs.leftMouseDown) { CheckShowRocker(); }
+            else if (Configs.leftMouseUp) { ResetRocker(); }
             UpdateRocker();
         }
     }
