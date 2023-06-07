@@ -226,8 +226,8 @@ namespace UnityTools.UI
             }
             showPoint = _point.GetComponent<Image>().sprite != null;
             _point.gameObject.SetActive(showPoint);
-            showPointer = _point.GetComponent<Image>().sprite != null;
-            _pointer.gameObject.SetActive(showPoint);
+            showPointer = _pointer.GetComponent<Image>().sprite != null;
+            _pointer.gameObject.SetActive(showPointer);
             ResetRocker();
         }
         /// <summary>
