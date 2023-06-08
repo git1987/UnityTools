@@ -20,7 +20,7 @@ namespace UnityTools.Single
         {
             get
             {
-                if (_instance == null) Debuger.LogError(typeof(T).Name + " is not create!");
+                if (_instance == null) Debuger.LogWarning(typeof(T).Name + " is not create!");
                 return _instance;
             }
         }
