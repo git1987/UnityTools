@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace UnityTools.Config
+namespace UnityTools
 {
-    public class Configs
+    public class Config
     {
 #if ENABLE_INPUT_SYSTEM
         public static bool leftMouseDown  => UnityEngine.InputSystem.Mouse.current.leftButton.wasPressedThisFrame; 
@@ -33,5 +33,20 @@ namespace UnityTools.Config
         /// </summary>
         public static Vector2 screenPosition => Input.mousePosition;
 #endif
+
+        public class RichTextColor
+        {
+            public static string White => "FFFFFF";
+            public static string Black => "000000";
+            public static string Gray => "808080";
+
+            public static string Red => "FF0000";
+            public static string Orange => "FF8000";
+            public static string Yellow => "FFFF00";
+            public static string Green => "00FF00";
+            public static string Cyan => "00FFFF";
+            public static string Blue => "0000FF";
+            public static string Purple => "8000FF";
+        }
     }
 }

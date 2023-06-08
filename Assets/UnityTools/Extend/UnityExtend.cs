@@ -229,9 +229,9 @@ namespace UnityTools.Extend
         /// <param name="transform"></param>
         public static void RemoveChild(this Transform transform)
         {
-            if (Pool.instance != null)
+            if (GameObjectPool.instance != null)
             {
-                if (Pool.instance.transform == transform)
+                if (GameObjectPool.instance.transform == transform)
                 {
                     Debuger.LogError("不能对Pool的transform清除子级");
                     return;
@@ -242,7 +242,7 @@ namespace UnityTools.Extend
                 //先移除父级，再Dsstroy
                 GameObject child = transform.GetChild(0).gameObject;
                 child.transform.SetParent(null);
-                Pool.Recover(child);
+                GameObjectPool.Recover(child);
             }
         }
 #endregion

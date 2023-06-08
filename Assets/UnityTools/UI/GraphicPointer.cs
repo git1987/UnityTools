@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityTools.Config;
 
 namespace UnityTools.UI
 {
@@ -60,13 +59,13 @@ namespace UnityTools.UI
             switch (clickType)
             {
                 case MouseClickType.Left:
-                    if (Configs.leftMouseDown) { downAction_Left?.Invoke(); }
+                    if (Config.leftMouseDown) { downAction_Left?.Invoke(); }
                     break;
                 case MouseClickType.Middle:
-                    if (Configs.middleMouseDown) { downAction_Middle?.Invoke(); }
+                    if (Config.middleMouseDown) { downAction_Middle?.Invoke(); }
                     break;
                 case MouseClickType.Right:
-                    if (Configs.rightMouseDown) { downAction_Right?.Invoke(); }
+                    if (Config.rightMouseDown) { downAction_Right?.Invoke(); }
                     break;
             }
         }
@@ -84,13 +83,13 @@ namespace UnityTools.UI
             switch (clickType)
             {
                 case MouseClickType.Left:
-                    if (Configs.leftMouseUp) { upAction_Left?.Invoke(); }
+                    if (Config.leftMouseUp) { upAction_Left?.Invoke(); }
                     break;
                 case MouseClickType.Middle:
-                    if (Configs.middleMouseUp) { upAction_Middle?.Invoke(); }
+                    if (Config.middleMouseUp) { upAction_Middle?.Invoke(); }
                     break;
                 case MouseClickType.Right:
-                    if (Configs.rightMouseUp) { upAction_Right?.Invoke(); }
+                    if (Config.rightMouseUp) { upAction_Right?.Invoke(); }
                     break;
             }
         }

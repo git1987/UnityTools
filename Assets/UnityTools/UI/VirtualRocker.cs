@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using UnityTools.Config;
 using UnityTools.Extend;
 
 namespace UnityTools.UI
@@ -9,6 +8,7 @@ namespace UnityTools.UI
     /// <summary>
     /// 虚拟摇杆
     /// </summary>
+    [AddComponentMenu("UnitTools/UI/虚拟摇杆")]
     public class VirtualRocker : MonoBehaviour
     {
 #if UNITY_EDITOR
@@ -218,7 +218,7 @@ namespace UnityTools.UI
             {
                 gp.SetDownAction(() =>
                     {
-                        clickMousePos = Configs.screenPosition;
+                        clickMousePos = Config.screenPosition;
                         SetPoint();
                     }
                 );
@@ -244,7 +244,7 @@ namespace UnityTools.UI
                       areaRect.sizeDelta.y * areaRect.pivot.y,
                   maxY = areaRect.anchoredPosition.y + areaRect.anchorMin.y * canvasRect.sizeDelta.y +
                       areaRect.sizeDelta.y * areaRect.pivot.y;
-            clickMousePos = Configs.screenPosition;
+            clickMousePos = Config.screenPosition;
             Vector2 canvasPos = clickMousePos * canvasRect.sizeDelta / new Vector2(Screen.width, Screen.height);
             if (canvasPos.x >= minX && canvasPos.x <= maxX && canvasPos.y >= minY && canvasPos.y <= maxY)
             {
@@ -274,6 +274,7 @@ namespace UnityTools.UI
                 _pointBg.anchoredPosition += areaRect.sizeDelta / 2;
                 _point.anchoredPosition   =  Vector2.zero;
                 _pointBg.gameObject.SetActive(true);
+                _pointer.gameObject.SetActive(false);
             }
         }
         /// <summary>
@@ -285,7 +286,7 @@ namespace UnityTools.UI
             /*设置point位置点*/
             if (showPoint)
             {
-                _point.anchoredPosition = Configs.screenPosition - clickMousePos;
+                _point.anchoredPosition = Config.screenPosition - clickMousePos;
                 if (_point.anchoredPosition.magnitude > _pointBg.sizeDelta.x / 2 - _point.sizeDelta.x / 2)
                     _point.anchoredPosition = _point.anchoredPosition.normalized *
                         (_pointBg.sizeDelta.x / 2 - _point.sizeDelta.x / 2);
@@ -293,6 +294,7 @@ namespace UnityTools.UI
             /*设置pointer的方向*/
             if (showPointer)
             {
+                _pointer.gameObject.SetActive(true);
                 float angle = Vector2.SignedAngle(Vector2.up, Direction);
                 _pointer.eulerAngles = new Vector3(0, 0, angle);
                 _pointer.gameObject.SetActive(Direction != Vector2.zero);
@@ -302,11 +304,11 @@ namespace UnityTools.UI
         {
             if (gp == null)
             {
-                if (Configs.leftMouseDown)
+                if (Config.leftMouseDown)
                 {
                     CheckShowRocker();
                 }
-                else if (Configs.leftMouseUp)
+                else if (Config.leftMouseUp)
                 {
                     ResetRocker();
                 }

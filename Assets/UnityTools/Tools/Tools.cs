@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityTools.Single;
 
 namespace UnityTools
 {
@@ -38,14 +39,29 @@ namespace UnityTools
         /// <param name="rect"></param>
         public static void RectTransformSetSurround(RectTransform rect)
         {
-            rect.anchorMin          = Vector2.zero;
-            rect.anchorMax          = Vector2.one;
-            rect.offsetMin          = Vector2.zero;
-            rect.offsetMax          = Vector2.zero;
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
             rect.anchoredPosition3D = Vector3.zero;
-            rect.sizeDelta          = Vector2.zero;
-            rect.localScale         = Vector3.one;
-            rect.localRotation      = Quaternion.identity;
+            rect.sizeDelta = Vector2.zero;
+            rect.localScale = Vector3.one;
+            rect.localRotation = Quaternion.identity;
+        }
+        /// <summary>
+        /// 设置文字富文本颜色和大小
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="color"></param>
+        /// <returns></returns>
+        public static string SetTextColor(string content, string colorHtml = "ffffffff", uint size = 0)
+        {
+            string text = $"<color=#{colorHtml}>{content}</color>";
+            if (size > 0)
+            {
+                text = $"<size={size}>{text}</size>";
+            }
+            return text;
         }
     }
 }

@@ -6,7 +6,8 @@ namespace UnityTools.Single
     /// <summary>
     /// GameObject对象池
     /// </summary>
-    public class Pool : SingleMono<Pool>
+    [AddComponentMenu("UnitTools/Single/GameObject对象池")]
+    public class GameObjectPool : SingleMono<GameObjectPool>
     {
         /// <summary>
         /// 回收GameObject对象，如果没有创建Pool则被Destroy掉
@@ -30,6 +31,17 @@ namespace UnityTools.Single
             Debuger.LogError("There is no Pool component in the scene");
             return null;
         }
+        /// <summary>
+        /// 移除GameObject对象
+        /// </summary>
+        /// <param name="name"></param>
+        public static void Remove(string name)
+        {
+            if (instance == null)
+                Debuger.Log(Tools.SetTextColor("There is no Pool component in the scene", Config.RichTextColor.Red));
+            else
+                instance.RemoveObj(name);
+        }
         private readonly Dictionary<string, GameObject> poolPrefab = new Dictionary<string, GameObject>();
         private readonly Dictionary<string, Queue<GameObject>> pools = new Dictionary<string, Queue<GameObject>>();
         private readonly Dictionary<string, int> poolCount = new Dictionary<string, int>();
@@ -52,7 +64,7 @@ namespace UnityTools.Single
         /// <param name="count">初始化数量</param>
         /// <param name="reset">重置transform</param>
         /// <returns>Pool</returns>
-        public Pool Init(GameObject prefab, int count = 0, bool reset = false)
+        public GameObjectPool Init(GameObject prefab, int count = 0, bool reset = false)
         {
             if (prefab == null) { Debuger.LogError("the prefab is null"); }
             else
@@ -72,7 +84,7 @@ namespace UnityTools.Single
                         {
                             tran.localPosition = Vector3.zero;
                             tran.localRotation = Quaternion.Euler(Vector3.zero);
-                            tran.localScale    = Vector3.one;
+                            tran.localScale = Vector3.one;
                         }
                         tran.SetParent(this.transform);
                         go.SetActive(false);
@@ -152,7 +164,7 @@ namespace UnityTools.Single
                     }
                     else
                     {
-                        temp      = Instantiate(go);
+                        temp = Instantiate(go);
                         temp.name = gameObjectName;
                     }
                     temp.SetActive(true);
@@ -183,7 +195,7 @@ namespace UnityTools.Single
                     Transform tran = go.transform;
                     tran.localPosition = Vector3.zero;
                     tran.localRotation = Quaternion.identity;
-                    tran.localScale    = Vector3.one;
+                    tran.localScale = Vector3.one;
                 }
                 go.SetActive(false);
                 pools[go.name].Enqueue(go);

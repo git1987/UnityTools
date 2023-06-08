@@ -64,8 +64,8 @@ namespace UnityTools.MonoComponent
         }
         private void OnDisable()
         {
-            if (deathObj == null || Pool.instance == null) return;
-            GameObject effect = Pool.instance.Init(deathObj).GetObj(deathObj.name);
+            if (deathObj == null || GameObjectPool.instance == null) return;
+            GameObject effect = GameObjectPool.instance.Init(deathObj).GetObj(deathObj.name);
             Transform tran = this.transform;
             effect.transform.SetPositionAndRotation(tran.position, tran.rotation);
         }
@@ -76,7 +76,7 @@ namespace UnityTools.MonoComponent
                 this.finish();
                 this.finish = null;
             }
-            Pool.Recover(this.gameObject);
+            GameObjectPool.Recover(this.gameObject);
         }
     }
 }
