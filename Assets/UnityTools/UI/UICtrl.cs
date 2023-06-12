@@ -78,7 +78,7 @@ namespace UnityTools.UI
             else
             {
                 maskRect.gameObject.SetActive(false);
-                maskRect.SetAsFirstSibling();
+                //maskRect.SetAsFirstSibling();
             }
         }
     }

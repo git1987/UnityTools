@@ -108,7 +108,13 @@ namespace UnityTools.Extend
         /// <typeparam name="V"></typeparam>
         public static void ForAction<K, V>(this Dictionary<K, V> dic, EventAction<K, V> action)
         {
-            foreach (K k in dic.Keys) { action?.Invoke(k, dic[k]); }
+            List<K> kList = new List<K>(dic.Keys);
+            List<V> vList = new List<V>(dic.Values);
+            for (int i = 0; i < kList.Count; i++)
+            {
+                action?.Invoke(kList[i], vList[i]);
+            }
+            //foreach (K k in dic.Keys) { action?.Invoke(k, dic[k]); }
         }
         /// <summary>
         /// 遍历Dictionary：通过breakAction回调判断是否冲循环遍历中跳出
@@ -124,11 +130,18 @@ namespace UnityTools.Extend
             if (breakAction == null) { dic.ForAction(action); }
             else
             {
-                foreach (K k in dic.Keys)
+                List<K> kList = new List<K>(dic.Keys);
+                List<V> vList = new List<V>(dic.Values);
+                for (int i = 0; i < kList.Count; i++)
                 {
-                    action?.Invoke(k, dic[k]);
+                    action?.Invoke(kList[i], vList[i]);
                     if (breakAction.Invoke()) break;
                 }
+                //foreach (K k in dic.Keys)
+                //{
+                //    action?.Invoke(k, dic[k]);
+                //    if (breakAction.Invoke()) break;
+                //}
             }
         }
         /// <summary>
@@ -141,11 +154,18 @@ namespace UnityTools.Extend
         /// <typeparam name="V"></typeparam>
         public static void ForAction<K, V>(this Dictionary<K, V> dic, EventAction<K, V> action, in bool isBreak)
         {
-            foreach (K k in dic.Keys)
+            List<K> kList = new List<K>(dic.Keys);
+            List<V> vList = new List<V>(dic.Values);
+            for (int i = 0; i < kList.Count; i++)
             {
-                action?.Invoke(k, dic[k]);
+                action?.Invoke(kList[i], vList[i]);
                 if (isBreak) break;
             }
+            //foreach (K k in dic.Keys)
+            //{
+            //    action?.Invoke(k, dic[k]);
+            //    if (isBreak) break;
+            //}
         }
     }
 
@@ -154,7 +174,7 @@ namespace UnityTools.Extend
     /// </summary>
     public static class UnityEngineExtend
     {
-#region GameObject
+        #region GameObject
         /// <summary>
         /// 获取Component，如果没有则Add一个
         /// </summary>
@@ -175,8 +195,8 @@ namespace UnityTools.Extend
             if (t == null) t = go.AddComponent<T>();
             return t;
         }
-#endregion
-#region Transform
+        #endregion
+        #region Transform
         /// <summary>
         /// transform，如果是RectTransform，也重置anchoredPosition3D
         /// </summary>
@@ -188,7 +208,7 @@ namespace UnityTools.Extend
             transform.localPosition = Vector3.zero;
             if (transform is RectTransform) ((RectTransform)transform).anchoredPosition3D = Vector3.zero;
             transform.localRotation = Quaternion.identity;
-            transform.localScale    = Vector3.one;
+            transform.localScale = Vector3.one;
         }
         /// <summary>
         /// 根据名字获取子级的transform
@@ -245,6 +265,6 @@ namespace UnityTools.Extend
                 GameObjectPool.Recover(child);
             }
         }
-#endregion
+        #endregion
     }
 }

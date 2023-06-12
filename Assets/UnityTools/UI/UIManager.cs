@@ -22,7 +22,7 @@ namespace UnityTools.UI
         public static UICtrl uiCtrl { private set; get; }
 
         /// <summary>
-        /// 根据面板名称的全称呼自动加载panel prefab的委托
+        /// 根据面板名称的全称自动加载panel prefab的委托
         /// </summary>
         private static EventFunction<string, GameObject> getPanelPrefabFunction = null;
 

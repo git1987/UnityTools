@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace UnityTools.Single
 {
@@ -189,6 +190,11 @@ namespace UnityTools.Single
             if (go == null) return;
             if (poolPrefab.ContainsKey(go.name))
             {
+                if (pools[go.name].Contains(go))
+                {
+                    Debuger.LogError($"[{go.name}] has already been placed in the Pool！", go);
+                    return;
+                }
                 go.transform.SetParent(this.transform);
                 if (resetTransform)
                 {
