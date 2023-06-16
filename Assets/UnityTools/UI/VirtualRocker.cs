@@ -1,8 +1,9 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityTools.Extend;
-
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 namespace UnityTools.UI
 {
     /// <summary>
@@ -12,8 +13,8 @@ namespace UnityTools.UI
     public class VirtualRocker : MonoBehaviour
     {
 #if UNITY_EDITOR
-        [UnityEditor.CustomEditor(typeof(VirtualRocker))]
-        public class VirtualRockerEditor : UnityEditor.Editor
+        [CustomEditor(typeof(VirtualRocker))]
+        public class VirtualRockerEditor : Editor
         {
             private Vector2 direction;
             private void OnEnable()
@@ -29,15 +30,16 @@ namespace UnityTools.UI
             {
                 if (Application.isPlaying)
                 {
-                    direction = UnityEditor.EditorGUILayout.Vector2Field("当前方向", direction);
+                    direction = EditorGUILayout.Vector2Field("当前方向", direction);
                     VirtualRocker virtualRocker = target as VirtualRocker;
                     virtualRocker.unenableHide =
-                        UnityEditor.EditorGUILayout.Toggle("未激活时隐藏摇杆", virtualRocker.unenableHide);
+                       EditorGUILayout.Toggle("未激活时隐藏摇杆", virtualRocker.unenableHide);
+                    virtualRocker.showGUI = EditorGUILayout.Toggle("显示Log信息", virtualRocker.showGUI);
                     return;
                 }
                 // base.OnInspectorGUI();
                 VirtualRocker vr = target as VirtualRocker;
-                using (new UnityEditor.EditorGUI.DisabledScope(true))
+                using (new EditorGUI.DisabledScope(true))
                 {
                     if (vr.canvasRect == null)
                     {
@@ -46,31 +48,31 @@ namespace UnityTools.UI
                     }
                     if (vr._point == null || vr._pointer == null || vr._pointBg == null || vr.areaRect == null)
                     {
-                        UnityEditor.EditorGUILayout.HelpBox("子级丢失，请重新创建", UnityEditor.MessageType.Error);
+                        EditorGUILayout.HelpBox("子级丢失，请重新创建", MessageType.Error);
                         return;
                     }
                     if (vr.canvasRect == null)
                     {
-                        UnityEditor.EditorGUILayout.HelpBox("放在Canvas子级里", UnityEditor.MessageType.Error);
+                        EditorGUILayout.HelpBox("放在Canvas子级里", MessageType.Error);
                         return;
                     }
-                    UnityEditor.EditorGUILayout.ObjectField("Canvas", vr.canvasRect, typeof(RectTransform), true);
+                    EditorGUILayout.ObjectField("Canvas", vr.canvasRect, typeof(RectTransform), true);
                     if (vr.gp != null)
                     {
-                        UnityEditor.EditorGUILayout.ObjectField("GraphicPointer", vr.gp, typeof(GraphicPointer), true);
+                        EditorGUILayout.ObjectField("GraphicPointer", vr.gp, typeof(GraphicPointer), true);
                     }
                     if (vr.areaRect == null)
                         GUILayout.Label("虚拟摇杆触发区域丢失，请重新创建");
                     else
-                        UnityEditor.EditorGUILayout.ObjectField("虚拟摇杆触发区域", vr.areaRect, typeof(RectTransform), true);
-                    UnityEditor.EditorGUILayout.ObjectField("虚拟摇杆背景", vr._pointBg, typeof(RectTransform), true);
-                    UnityEditor.EditorGUILayout.ObjectField("虚拟摇杆点", vr._point, typeof(RectTransform), true);
-                    UnityEditor.EditorGUILayout.ObjectField("虚拟摇杆指针", vr._pointer, typeof(RectTransform), true);
+                        EditorGUILayout.ObjectField("虚拟摇杆触发区域", vr.areaRect, typeof(RectTransform), true);
+                    EditorGUILayout.ObjectField("虚拟摇杆背景", vr._pointBg, typeof(RectTransform), true);
+                    EditorGUILayout.ObjectField("虚拟摇杆点", vr._point, typeof(RectTransform), true);
+                    EditorGUILayout.ObjectField("虚拟摇杆指针", vr._pointer, typeof(RectTransform), true);
                 }
                 GUILayout.Space(5);
-                vr.unenableHide = UnityEditor.EditorGUILayout.Toggle("未激活时隐藏摇杆", vr.unenableHide);
+                vr.unenableHide = EditorGUILayout.Toggle("未激活时隐藏摇杆", vr.unenableHide);
                 GUILayout.Space(5);
-                vr.ignoreUI = UnityEditor.EditorGUILayout.Toggle("是否忽略UI遮挡", vr.ignoreUI);
+                vr.ignoreUI = EditorGUILayout.Toggle("是否忽略UI遮挡", vr.ignoreUI);
                 vr._pointBg.gameObject.SetActive(!vr.unenableHide);
                 RectTransform area = vr.transform.Find("area") as RectTransform;
                 if (area == null) throw new System.NullReferenceException("area is null!");
@@ -142,13 +144,12 @@ namespace UnityTools.UI
             areaImage.raycastTarget = false;
             return rocker;
         }
+        bool showGUI;
         private void OnGUI()
         {
-            if (isClick)
+            if (isClick && showGUI)
             {
-                Vector2 direction = Direction;
-                EditorGUILayout.Vector2Field("虚拟摇杆方向：", direction);
-                UnityTools.Debuger.Log(Direction.ToString());
+                EditorGUILayout.Vector2Field("方向", Direction);
             }
         }
 #endif
