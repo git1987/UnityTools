@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityTools.Extend;
-
 namespace UnityTools.UI
 {
     /// <summary>
@@ -90,12 +89,6 @@ namespace UnityTools.UI
                 RectTransform rect = panelObj.GetComponent<RectTransform>();
                 rect.SetParentReset(uiCtrl.rect);
                 Tools.RectTransformSetSurround(rect);
-                //设置四边完全自适应
-                // rect.anchorMin  = Vector2.zero;
-                // rect.anchorMax  = Vector2.one;
-                // rect.offsetMin  = Vector2.zero;
-                // rect.offsetMax  = Vector2.zero;
-                // rect.localScale = Vector3.one;
             }
             return p;
         }
@@ -155,10 +148,6 @@ namespace UnityTools.UI
                         RectTransform rect = go.AddComponent<RectTransform>();
                         rect.SetParentReset(uiCtrl.rect);
                         Tools.RectTransformSetSurround(rect);
-                        // rect.anchorMin = Vector2.zero;
-                        // rect.anchorMax = Vector2.one;
-                        // rect.offsetMin = Vector2.zero;
-                        // rect.offsetMax = Vector2.zero;
                     }
                     index++;
                 }

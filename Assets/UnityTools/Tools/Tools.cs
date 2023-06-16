@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using UnityTools.Single;
-
 namespace UnityTools
 {
     /// <summary>
