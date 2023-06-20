@@ -45,20 +45,21 @@ public class ResManager : SingleMono<ResManager>
             this.basePath = basePath;
         }
     }
+
     public static AssetPath assetPath = null;
     #region 静态方法
     public static void SetAssetPath()
     {
         AssetPath ap = new AssetPath("Assets/Res")
         {
-            prefabPath = "Prefabs/",
-            effectPrefabPath = "Effects/Prefabs/",
-            texturePath = "Textures/",
-            materialPath = "UI/Materials/",
-            uiPrefabPath = "UI/Prefabs/",
-            uiSpritePath = "UI/Sprites/",
-            uiMaterialPath = "UI/Materials/",
-            audioPath = "UI/Audios/",
+            prefabPath       = "Prefabs",
+            effectPrefabPath = "Effects/Prefabs",
+            texturePath      = "Textures",
+            materialPath     = "UI/Materials",
+            uiPrefabPath     = "UI/Prefabs",
+            uiSpritePath     = "UI/Sprites",
+            uiMaterialPath   = "UI/Materials",
+            audioPath        = "UI/Audios",
         };
         SetAssetPath(ap);
     }
@@ -67,13 +68,10 @@ public class ResManager : SingleMono<ResManager>
         if (assetPath == null)
             assetPath = _assetPath;
         else
-            Debuger.LogError("调用了多次SetAssetPath方法");
+            Debuger.LogError("重复调用了SetAssetPath方法");
     }
     #endregion
-
-    List<AssetBundle> abs = new List<AssetBundle>();
-
-
+    Dictionary<string, AssetBundle> abs = new Dictionary<string, AssetBundle>();
     Dictionary<string, GameObject> prefabs;
     Dictionary<string, GameObject> uiPrefabs;
     Dictionary<string, GameObject> effectPrefabs;
@@ -81,7 +79,6 @@ public class ResManager : SingleMono<ResManager>
     Dictionary<string, Sprite> sprites;
     Dictionary<string, Texture> textures;
     Dictionary<string, AudioClip> audios;
-
     protected override void Awake()
     {
         base.Awake();
@@ -93,33 +90,48 @@ public class ResManager : SingleMono<ResManager>
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        prefabs = null;
-        uiPrefabs = null;
-        effectPrefabs = null;
-        materials = null;
-        sprites = null;
-        textures = null;
-        audios = null;
-        abs.ForAction(ab => ab?.Unload(true));
-        abs = null;
+        this.Clear();
     }
-
+    public void Clear()
+    {
+        prefabs?.Clear();
+        uiPrefabs?.Clear();
+        effectPrefabs?.Clear();
+        materials?.Clear();
+        sprites?.Clear();
+        textures?.Clear();
+        audios?.Clear();
+        abs?.ForAction((name, ab) => ab?.Unload(true));
+        abs?.Clear();
+    }
     private AssetBundle LoadAB(string abName)
     {
-        //AssetBundle ab = AssetBundle.LoadFromFile(ap)
-        return null;
+        if (abs.TryGetValue(abName, out AssetBundle ab))
+        {
+            return ab;
+        }
+        ab = AssetBundle.LoadFromFile(abName + ".assetbundle");
+        abs.Add(abName, ab);
+        AssetBundleManifest abm = ab.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
+        foreach (string abPath in abm.GetAllDependencies(abName))
+        {
+            LoadAB(abPath);
+            //UnityTools.Debuger.Log(abPath);
+        }
+        return ab;
     }
     private GameObject _GetPrefab(string path, string prefabName)
     {
         GameObject prefab = null;
         if (isResources)
         {
-            prefab = Resources.Load<GameObject>($"{assetPath.prefabPath}{prefabName}");
+            prefab = Resources.Load<GameObject>($"{assetPath.prefabPath}/{prefabName}");
         }
 #if UNITY_EDITOR
         else if (isEditor)
         {
-            prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"{assetPath.basePath}/{assetPath.prefabPath}{prefabName}");
+            prefab =
+                AssetDatabase.LoadAssetAtPath<GameObject>($"{assetPath.basePath}/{assetPath.prefabPath}{prefabName}");
         }
         else
 #endif
@@ -127,10 +139,22 @@ public class ResManager : SingleMono<ResManager>
             if (prefabs == null)
             {
                 prefabs = new Dictionary<string, GameObject>();
-                AssetBundle ab =
+                AssetBundle ab = LoadAB("prefab");
+                foreach (GameObject go in ab.LoadAllAssets<GameObject>())
+                {
+                    prefabs.Add(go.name, go);
+                    if (prefabName == go.name)
+                    {
+                        prefab = go;
+                    }
+                }
+            }
+            else
+            {
+                prefabs.TryGetValue(prefabName, out prefab);
             }
         }
-
+        if (prefab == null) UnityTools.Debuger.LogError($"[{prefabName}]加载失败");
         return prefab;
     }
 }
