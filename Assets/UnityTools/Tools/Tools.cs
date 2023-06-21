@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+
 namespace UnityTools
 {
     /// <summary>
@@ -6,7 +7,6 @@ namespace UnityTools
     /// </summary>
     public sealed class Tools
     {
-        private Tools() { }
         /// <summary>
         /// 指定tran的轴向朝向目标点的Quaternion
         /// </summary>
@@ -37,14 +37,14 @@ namespace UnityTools
         /// <param name="rect"></param>
         public static void RectTransformSetSurround(RectTransform rect)
         {
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
+            rect.anchorMin          = Vector2.zero;
+            rect.anchorMax          = Vector2.one;
+            rect.offsetMin          = Vector2.zero;
+            rect.offsetMax          = Vector2.zero;
             rect.anchoredPosition3D = Vector3.zero;
-            rect.sizeDelta = Vector2.zero;
-            rect.localScale = Vector3.one;
-            rect.localRotation = Quaternion.identity;
+            rect.sizeDelta          = Vector2.zero;
+            rect.localScale         = Vector3.one;
+            rect.localRotation      = Quaternion.identity;
         }
         /// <summary>
         /// 设置文字富文本颜色和大小
