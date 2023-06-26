@@ -104,7 +104,7 @@ namespace UnityTools.Single
         /// </summary>
         /// <param name="gameObjectName"></param>
         /// <returns></returns>
-        public bool Has(string gameObjectName) { return poolPrefab.ContainsKey(name); }
+        public bool Has(string gameObjectName) { return poolPrefab.ContainsKey(gameObjectName); }
         /// <summary>
         /// 设置对象容量
         /// </summary>
