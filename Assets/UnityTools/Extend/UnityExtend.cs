@@ -7,6 +7,25 @@ namespace UnityTools.Extend
 {
     public static class ClassExtend
     {
+#region string
+        public static int ToInt(this string str, int defaultInt = 0)
+        {
+            if (int.TryParse(str, out int i))
+            {
+                return i;
+            }
+            return defaultInt;
+        }
+        public static float ToFloat(this string str, float defaultFloat = 0)
+        {
+            if (float.TryParse(str, out float f))
+            {
+                return f;
+            }
+            return defaultFloat;
+        }
+#endregion
+#region List
         /// <summary>
         /// 遍历List
         /// </summary>
@@ -97,6 +116,8 @@ namespace UnityTools.Extend
                 if (isBreak) break;
             }
         }
+#endregion
+#region Dictionary
         /// <summary>
         /// 遍历Dictionary
         /// </summary>
@@ -166,13 +187,14 @@ namespace UnityTools.Extend
             //}
         }
     }
+#endregion
 
     /// <summary>
     /// UnityEngine命名空间下类扩展方法
     /// </summary>
     public static class UnityEngineExtend
     {
-        #region GameObject
+#region GameObject
         /// <summary>
         /// 获取Component，如果没有则Add一个
         /// </summary>
@@ -193,8 +215,8 @@ namespace UnityTools.Extend
             if (t == null) t = go.AddComponent<T>();
             return t;
         }
-        #endregion
-        #region Transform
+#endregion
+#region Transform
         /// <summary>
         /// transform，如果是RectTransform，也重置anchoredPosition3D
         /// </summary>
@@ -206,7 +228,7 @@ namespace UnityTools.Extend
             transform.localPosition = Vector3.zero;
             if (transform is RectTransform) ((RectTransform)transform).anchoredPosition3D = Vector3.zero;
             transform.localRotation = Quaternion.identity;
-            transform.localScale = Vector3.one;
+            transform.localScale    = Vector3.one;
         }
         /// <summary>
         /// 根据名字获取子级的transform
@@ -263,6 +285,6 @@ namespace UnityTools.Extend
                 GameObjectPool.Recover(child);
             }
         }
-        #endregion
+#endregion
     }
 }
