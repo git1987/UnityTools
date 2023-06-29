@@ -80,7 +80,7 @@ namespace UnityTools.UI
             if (panels.TryGetValue(panelName, out BasePanel basePanel)) { p = basePanel as P; }
             else
             {
-                if (panelPrefab == null) { throw new NullReferenceException($"panelPrefab is null!"); }
+                if (panelPrefab == null) { throw new NullReferenceException($"[{panelName}] prefab is null!"); }
                 GameObject panelObj = GameObject.Instantiate<GameObject>(panelPrefab);
                 panelObj.SetActive(false);
                 p = panelObj.GetComponent<P>();
