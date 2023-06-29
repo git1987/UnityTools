@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 namespace UnityTools.Single
 {
     public sealed class Game : SingleMono<Game>
@@ -36,7 +37,7 @@ namespace UnityTools.Single
             DelayedData ed = GetInstance().GetDelayedData(action);
             if (ed != null)
             {
-                Debuger.LogError("已经存在回调了，添加了两次");
+                Debuger.LogError("已经存在回调了，重复添加");
                 return;
             }
             if (time <= 0)
@@ -65,11 +66,17 @@ namespace UnityTools.Single
         /// <summary>
         /// 暂停
         /// </summary>
-        public static void Pause() { GetInstance().pause = true; }
+        public static void Pause()
+        {
+            GetInstance().pause = true;
+        }
         /// <summary>
         /// 继续
         /// </summary>
-        public static void KeepOn() { GetInstance().pause = false; }
+        public static void KeepOn()
+        {
+            GetInstance().pause = false;
+        }
         private List<DelayedData> delayedList = new List<DelayedData>();
         //暂停
         private bool pause;
