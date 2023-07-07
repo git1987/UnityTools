@@ -125,7 +125,7 @@ namespace UnityTools.UI
             RectTransform rect = rocker.AddComponent<RectTransform>();
             Tools.RectTransformSetSurround(rect);
             GameObject bg = new GameObject("pointBg");
-            rect = bg.AddComponent<RectTransform>();
+            rect                   = bg.AddComponent<RectTransform>();
             virtualRocker._pointBg = rect;
             rect.SetParentReset(rocker.transform);
             rect.sizeDelta = Vector2.one * 200;
@@ -136,30 +136,30 @@ namespace UnityTools.UI
             bg.MateComponent<Image>().color = new Color(1, 1, 1, .5f);
             bg.MateComponent<Image>().sprite = dics["Knob"];
             GameObject pointer = new GameObject("pointer");
-            rect = pointer.AddComponent<RectTransform>();
+            rect                   = pointer.AddComponent<RectTransform>();
             virtualRocker._pointer = rect;
             rect.SetParentReset(bg.transform);
-            rect.sizeDelta = new Vector2(10, 100);
-            rect.anchoredPosition = Vector2.zero;
-            rect.pivot = new Vector2(.5f, 0);
+            rect.sizeDelta                              = new Vector2(10, 100);
+            rect.anchoredPosition                       = Vector2.zero;
+            rect.pivot                                  = new Vector2(.5f, 0);
             pointer.AddComponent<Image>().raycastTarget = false;
             GameObject point = new GameObject("point");
-            rect = point.AddComponent<RectTransform>();
+            rect                 = point.AddComponent<RectTransform>();
             virtualRocker._point = rect;
             rect.SetParentReset(bg.transform);
-            rect.sizeDelta = Vector2.one * 50;
-            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta                             = Vector2.one * 50;
+            rect.anchoredPosition                      = Vector2.zero;
             point.MateComponent<Image>().raycastTarget = false;
-            point.MateComponent<Image>().color = Color.red;
-            point.MateComponent<Image>().sprite = dics["Knob"];
+            point.MateComponent<Image>().color         = Color.red;
+            point.MateComponent<Image>().sprite        = dics["Knob"];
             GameObject area = new GameObject("area");
-            rect = area.AddComponent<RectTransform>();
+            rect                   = area.AddComponent<RectTransform>();
             virtualRocker.areaRect = rect;
             rect.SetParentReset(rocker.transform);
             rect.SetAsFirstSibling();
             rect.sizeDelta = Vector2.one * 500;
             Image areaImage = area.AddComponent<Image>();
-            areaImage.color = Vector4.one * .5f;
+            areaImage.color         = Vector4.one * .5f;
             areaImage.raycastTarget = false;
             return rocker;
         }
@@ -229,11 +229,19 @@ namespace UnityTools.UI
             if (gp != null)
             {
                 gp.SetDownAction(() =>
-                {
-                    if (canvasRect == null) throw new System.Exception("没有设置canvas[SetCanvas()]");
-                    clickMousePos = Config.screenPosition;
-                    SetPoint();
-                });
+                    {
+                        if (canvasRect == null)
+                        {
+                            Debuger.LogError("没有设置canvas[SetCanvas()]");
+                            return;
+                        }
+                        else
+                        {
+                            clickMousePos = Config.screenPosition;
+                            SetPoint();
+                        }
+                    }
+                );
                 gp.SetUpAction(ResetRocker);
             }
             showPoint = _point.GetComponent<Image>().sprite != null;
@@ -242,10 +250,6 @@ namespace UnityTools.UI
             _pointer.gameObject.SetActive(showPointer);
             ResetRocker();
         }
-        /// <summary>
-        /// 动态加载虚拟摇杆需要手动设置Canvas
-        /// </summary>
-        /// <param name="canvas">RectTransform</param>
         public void SetCanvas(RectTransform canvas)
         {
             canvasRect = canvas;
@@ -279,8 +283,12 @@ namespace UnityTools.UI
         /// </summary>
         protected virtual void ResetRocker()
         {
-            if (canvasRect == null) throw new System.Exception("没有设置canvas[SetCanvas()]");
-            isClick = false;
+            if (canvasRect == null)
+            {
+                Debuger.LogError("没有设置canvas[SetCanvas()]");
+                return;
+            }
+            isClick         = false;
             currentMousePos = Vector2.negativeInfinity;
             if (unenableHide)
             {
