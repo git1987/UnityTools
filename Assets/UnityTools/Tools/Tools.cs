@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 namespace UnityTools
 {
@@ -47,6 +48,53 @@ namespace UnityTools
             rect.localRotation      = Quaternion.identity;
         }
         /// <summary>
+        /// 设置文字：Get所有显示文字的组件（Text,TMP_Text,TextMesh）
+        /// </summary>
+        public static void SetText(Transform transform, string content, Color? textColor = null)
+        {
+            SetText(transform.gameObject, content, textColor);
+        }
+        /// <summary>
+        /// 设置文字：Get所有显示文字的组件（Text,TMP_Text,TextMesh）
+        /// </summary>
+        public static void SetText(GameObject gameObject, string content, Color? textColor = null)
+        {
+            var text = gameObject.GetComponent<Text>();
+            // if (content.IndexOf("\\n") > -1)
+            // {
+            //     UnityTools.Debuger.Log("有换行：" + content, transform.gameObject);
+            // }
+            //清空转义字符
+            // content = Regex.Unescape(content);
+            if (text == null)
+            {
+                TextMesh textMesh = gameObject.GetComponent<TextMesh>();
+                if (textMesh == null)
+                {
+                    TMPro.TMP_Text textPro = gameObject.GetComponent<TMPro.TMP_Text>();
+                    if (textPro == null)
+                    {
+                        Debuger.LogError("不存在任何Text渲染组件！！");
+                    }
+                    else
+                    {
+                        textPro.text = content;
+                        if (textColor != null) { textPro.color = textColor.GetValueOrDefault(); }
+                    }
+                }
+                else
+                {
+                    textMesh.text = content;
+                    if (textColor != null) { textMesh.color = textColor.GetValueOrDefault(); }
+                }
+            }
+            else
+            {
+                text.text = content;
+                if (textColor != null) { text.color = textColor.GetValueOrDefault(); }
+            }
+        }
+        /// <summary>
         /// 设置文字富文本颜色和大小
         /// </summary>
         /// <param name="content"></param>
@@ -60,6 +108,26 @@ namespace UnityTools
                 text = $"<size={size}>{text}</size>";
             }
             return text;
+        }
+        /// <summary>
+        /// 一半的成功率
+        /// </summary>
+        /// <returns></returns>
+        public static bool ProbabilityHalf()
+        {
+            return Probability100(50);
+        }
+        /// <summary>
+        /// 整数百分比成功率
+        /// </summary>
+        /// <param name="rate"></param>
+        /// <returns></returns>
+        public static bool Probability100(int rate)
+        {
+            if (rate >= 100) return true;
+            int temp = Random.Range(0, 100);
+            if (temp < rate) return true;
+            return false;
         }
     }
 }

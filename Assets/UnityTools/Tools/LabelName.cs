@@ -19,6 +19,9 @@ namespace UnityTools
         }
     }
 #endif
+    /// <summary>
+    /// 设定变量在Inspector中显示的名称
+    /// </summary>
     public class LabelNameAttribute : PropertyAttribute
     {
         public string name;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityTools.Extend;
+
 namespace UnityTools.UI
 {
     /// <summary>
@@ -13,18 +14,14 @@ namespace UnityTools.UI
         /// 当前场景中的所有 UIPanel集合
         /// </summary>
         private static readonly Dictionary<string, BasePanel> panels = new Dictionary<string, BasePanel>();
-
         /// <summary>
         /// 当前场景的UICtrl
         /// </summary>
-
         public static UICtrl uiCtrl { private set; get; }
-
         /// <summary>
         /// 根据面板名称的全称自动加载panel prefab的委托
         /// </summary>
         private static EventFunction<string, GameObject> getPanelPrefabFunction = null;
-
         /// <summary>
         /// 设置自动加载panel prefab的委托
         /// </summary>
@@ -47,6 +44,10 @@ namespace UnityTools.UI
             else { Debuger.LogError("之前场景没有清空UICtrl" + uiCtrl.GetType().Name); }
             uiCtrl = _uiCtrl;
         }
+        /// <summary>
+        /// 移除当前场景的UICtrl
+        /// </summary>
+        /// <param name="currentUICtrl"></param>
         public static void RemoveUICtrl(UICtrl currentUICtrl)
         {
             if (currentUICtrl == null) { Debuger.LogError("currentUICtrl is null"); }
@@ -92,7 +93,6 @@ namespace UnityTools.UI
             }
             return p;
         }
-
         /// <summary>
         /// 打开面板
         /// </summary>
@@ -122,6 +122,16 @@ namespace UnityTools.UI
             return panel;
         }
         /// <summary>
+        /// 是否存在该面板
+        /// </summary>
+        /// <typeparam name="P"></typeparam>
+        /// <returns></returns>
+        public static bool HasPanel<P>() where P : BasePanel
+        {
+            string panelName = typeof(P).Name;
+            return panels.ContainsKey((panelName));
+        }
+        /// <summary>
         /// 获取面板
         /// </summary>
         /// <typeparam name="P"></typeparam>
@@ -129,11 +139,14 @@ namespace UnityTools.UI
         public static P GetPanel<P>() where P : BasePanel
         {
             string panelName = typeof(P).Name;
-            if (panels.ContainsKey(panelName))
-                return panels[panelName] as P;
-            Debuger.LogFormat("没有初始化{0}面板", panelName);
+            if (panels.TryGetValue(panelName, out BasePanel panel))
+            {
+                return panel as P;
+            }
+            Debuger.LogError($"没有初始化{panelName}面板");
             return null;
         }
+        //获取对应面板等级的父级RectTransform
         static RectTransform GetPanelParent(int panelLv)
         {
             Transform panelParent = uiCtrl.rect.Find("Panel" + panelLv);

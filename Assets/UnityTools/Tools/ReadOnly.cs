@@ -15,5 +15,8 @@ namespace UnityTools
         }
     }
 #endif
+    /// <summary>
+    /// 在Inspector中只显示，不可以编辑
+    /// </summary>
     public class ReadOnlyAttribute : PropertyAttribute { }
 }

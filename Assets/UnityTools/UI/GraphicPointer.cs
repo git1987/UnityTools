@@ -59,7 +59,9 @@ namespace UnityTools.UI
             switch (clickType)
             {
                 case MouseClickType.Left:
-                    if (Config.leftMouseDown) { downAction_Left?.Invoke(); }
+                    // if (Config.leftMouseDown) { downAction_Left?.Invoke(); }
+                    //左键点击UI不需要判断mouse
+                    downAction_Left?.Invoke();
                     break;
                 case MouseClickType.Middle:
                     if (Config.middleMouseDown) { downAction_Middle?.Invoke(); }
@@ -83,7 +85,9 @@ namespace UnityTools.UI
             switch (clickType)
             {
                 case MouseClickType.Left:
-                    if (Config.leftMouseUp) { upAction_Left?.Invoke(); }
+                    // if (Config.leftMouseUp) { upAction_Left?.Invoke(); }
+                    //左键点击UI不需要判断mouse
+                    upAction_Left?.Invoke();
                     break;
                 case MouseClickType.Middle:
                     if (Config.middleMouseUp) { upAction_Middle?.Invoke(); }

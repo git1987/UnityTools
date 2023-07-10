@@ -28,11 +28,11 @@ namespace UnityTools.UI
             return UIManager.OpenPanel<P>(1);
         }
         /// <summary>
-        /// 打开面板
+        /// 显示面板
         /// </summary>
         public abstract void Show();
         /// <summary>
-        /// 关闭面板
+        /// 隐藏面板
         /// </summary>
         public abstract void Hide();
     }
