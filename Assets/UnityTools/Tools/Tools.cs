@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace UnityTools
@@ -128,6 +129,30 @@ namespace UnityTools
             int temp = Random.Range(0, 100);
             if (temp < rate) return true;
             return false;
+        }
+        /// <summary>
+        /// 从List中随机挑选count个元素返回新的List
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="count"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        static public List<T> GetRandomList<T>(List<T> list, int count)
+        {
+            if (list.Count <= count)
+                return list;
+            else
+            {
+                List<T> list2 = new List<T>(list);
+                List<T> tempList = new List<T>();
+                while (tempList.Count < count && list2.Count > 0)
+                {
+                    int index = Random.Range(0, list2.Count);
+                    tempList.Add(list2[index]);
+                    list2.RemoveAt(index);
+                }
+                return tempList;
+            }
         }
     }
 }
