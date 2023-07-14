@@ -142,7 +142,7 @@ namespace UnityTools.UI
             Transform panelParent = uiCtrl.rect.Find("Panel" + panelLv);
             if (panelParent == null)
             {
-                int index = 1;
+                int index = 0;
                 while (index <= panelLv)
                 {
                     if (index == panelLv || uiCtrl.rect.Find("Panel" + index) == null)
