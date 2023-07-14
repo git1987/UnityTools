@@ -44,10 +44,6 @@ namespace UnityTools.UI
             else { Debuger.LogError("之前场景没有清空UICtrl" + uiCtrl.GetType().Name); }
             uiCtrl = _uiCtrl;
         }
-        /// <summary>
-        /// 移除当前场景的UICtrl
-        /// </summary>
-        /// <param name="currentUICtrl"></param>
         public static void RemoveUICtrl(UICtrl currentUICtrl)
         {
             if (currentUICtrl == null) { Debuger.LogError("currentUICtrl is null"); }
@@ -111,25 +107,12 @@ namespace UnityTools.UI
             }
             if (panel != null)
             {
-                Transform panelParent = GetPanelParent(panelLv);
-                panel.transform.SetParent(panelParent);
-                panel.transform.SetAsLastSibling();
+                panel.SetPanelLv(panelLv);
                 panel.gameObject.SetActive(true);
                 panel.Show();
-                panel.SetPanelLv(panelLv);
             }
             else { UnityTools.Debuger.LogError($"{panelName}不存在"); }
             return panel;
-        }
-        /// <summary>
-        /// 是否存在该面板
-        /// </summary>
-        /// <typeparam name="P"></typeparam>
-        /// <returns></returns>
-        public static bool HasPanel<P>() where P : BasePanel
-        {
-            string panelName = typeof(P).Name;
-            return panels.ContainsKey((panelName));
         }
         /// <summary>
         /// 获取面板
@@ -139,14 +122,21 @@ namespace UnityTools.UI
         public static P GetPanel<P>() where P : BasePanel
         {
             string panelName = typeof(P).Name;
-            if (panels.TryGetValue(panelName, out BasePanel panel))
-            {
-                return panel as P;
-            }
-            Debuger.LogError($"没有初始化{panelName}面板");
+            if (panels.ContainsKey(panelName)) return panels[panelName] as P;
+            Debuger.LogFormat("没有初始化{0}面板", panelName);
             return null;
         }
-        //获取对应面板等级的父级RectTransform
+        /// <summary>
+        /// 设置面板等级
+        /// </summary>
+        /// <param name="panel"></param>
+        /// <param name="panelLv"></param>
+        public static void SetPanelLv(BasePanel panel, int panelLv)
+        {
+            Transform panelParent = GetPanelParent(panelLv);
+            panel.transform.SetParent(panelParent);
+            panel.transform.SetAsLastSibling();
+        }
         static RectTransform GetPanelParent(int panelLv)
         {
             Transform panelParent = uiCtrl.rect.Find("Panel" + panelLv);

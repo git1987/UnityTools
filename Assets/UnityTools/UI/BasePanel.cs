@@ -15,7 +15,14 @@ namespace UnityTools.UI
         /// 设置面板等级
         /// </summary>
         /// <param name="lv"></param>
-        public void SetPanelLv(int lv) { panelLv = lv; }
+        public void SetPanelLv(int lv)
+        {
+            if (lv != this.panelLv)
+            {
+                panelLv = lv;
+                UIManager.SetPanelLv(this, lv);
+            }
+        }
         /// <summary>
         /// 面板打开BasePanel，直接调用UIManager.OpenPanel，面板等级==当前面板
         /// </summary>
@@ -28,11 +35,11 @@ namespace UnityTools.UI
             return UIManager.OpenPanel<P>(1);
         }
         /// <summary>
-        /// 显示面板
+        /// 打开面板
         /// </summary>
         public abstract void Show();
         /// <summary>
-        /// 隐藏面板
+        /// 关闭面板
         /// </summary>
         public abstract void Hide();
     }
