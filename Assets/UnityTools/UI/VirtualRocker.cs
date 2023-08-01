@@ -117,8 +117,8 @@ namespace UnityTools.UI
                     dics.Add(obj.name, obj as Sprite);
                 }
             }
-            RectTransform canvasRect = canvas.transform as RectTransform;
-            GameObject rocker = new GameObject("VirtualRocker");
+            RectTransform canvasRect    = canvas.transform as RectTransform;
+            GameObject    rocker        = new GameObject("VirtualRocker");
             VirtualRocker virtualRocker = rocker.AddComponent<VirtualRocker>();
             virtualRocker.canvasRect = canvasRect;
             rocker.transform.SetParentReset(canvasRect);
@@ -229,19 +229,19 @@ namespace UnityTools.UI
             if (gp != null)
             {
                 gp.SetDownAction(() =>
-                    {
-                        if (canvasRect == null)
-                        {
-                            Debuger.LogError("没有设置canvas[SetCanvas()]");
-                            return;
-                        }
-                        else
-                        {
-                            clickMousePos = Config.screenPosition;
-                            SetPoint();
-                        }
-                    }
-                );
+                                 {
+                                     if (canvasRect == null)
+                                     {
+                                         Debuger.LogError("没有设置canvas[SetCanvas()]");
+                                         return;
+                                     }
+                                     else
+                                     {
+                                         clickMousePos = Config.screenPosition;
+                                         SetPoint();
+                                     }
+                                 }
+                                );
                 gp.SetUpAction(ResetRocker);
             }
             showPoint = _point.GetComponent<Image>().sprite != null;
@@ -324,7 +324,7 @@ namespace UnityTools.UI
                 _point.anchoredPosition = currentMousePos - clickMousePos;
                 if (_point.anchoredPosition.magnitude > _pointBg.sizeDelta.x / 2 - _point.sizeDelta.x / 2)
                     _point.anchoredPosition = _point.anchoredPosition.normalized *
-                        (_pointBg.sizeDelta.x / 2 - _point.sizeDelta.x / 2);
+                                              (_pointBg.sizeDelta.x / 2 - _point.sizeDelta.x / 2);
             }
             /*设置pointer的方向*/
             if (showPointer)

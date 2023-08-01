@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityTools.Extend;
-
 namespace UnityTools.UI
 {
     /// <summary>
@@ -41,7 +40,10 @@ namespace UnityTools.UI
                 //设置UICtrl时进入到新场景，将旧的面板词典清空
                 panels.Clear();
             }
-            else { Debuger.LogError("之前场景没有清空UICtrl" + uiCtrl.GetType().Name); }
+            else
+            {
+                Debuger.LogError("之前场景没有清空UICtrl" + uiCtrl.GetType().Name);
+            }
             uiCtrl = _uiCtrl;
         }
         /// <summary>
@@ -50,9 +52,18 @@ namespace UnityTools.UI
         /// <param name="currentUICtrl"></param>
         public static void RemoveUICtrl(UICtrl currentUICtrl)
         {
-            if (currentUICtrl == null) { Debuger.LogError("currentUICtrl is null"); }
-            else if (uiCtrl == null) { Debuger.LogError("UIManager.uiCtrl是空的，当前场景没有注册UICtrl"); }
-            else if (uiCtrl != currentUICtrl) { Debuger.LogError("当前场景uiCtrl和UIManger.uiCtrl不相同"); }
+            if (currentUICtrl == null)
+            {
+                Debuger.LogError("currentUICtrl is null");
+            }
+            else if (uiCtrl == null)
+            {
+                Debuger.LogError("UIManager.uiCtrl是空的，当前场景没有注册UICtrl");
+            }
+            else if (uiCtrl != currentUICtrl)
+            {
+                Debuger.LogError("当前场景uiCtrl和UIManger.uiCtrl不相同");
+            }
             uiCtrl = null;
         }
         /// <summary>
@@ -62,7 +73,10 @@ namespace UnityTools.UI
         /// <returns></returns>
         public static C GetUICtrl<C>() where C : UICtrl
         {
-            if (uiCtrl is C) { return uiCtrl as C; }
+            if (uiCtrl is C)
+            {
+                return uiCtrl as C;
+            }
             else
             {
                 Debuger.LogError($"场景中的UICtrl[{uiCtrl.GetType().Name}]不是{typeof(C).Name}");
@@ -76,16 +90,26 @@ namespace UnityTools.UI
         /// <param name="panelPrefab"></param>
         public static P CreatePanel<P>(GameObject panelPrefab) where P : BasePanel
         {
-            P p;
+            P      p;
             string panelName = typeof(P).Name;
-            if (panels.TryGetValue(panelName, out BasePanel basePanel)) { p = basePanel as P; }
+            if (panels.TryGetValue(panelName, out BasePanel basePanel))
+            {
+                p = basePanel as P;
+            }
             else
             {
-                if (panelPrefab == null) { throw new NullReferenceException($"[{panelName}] prefab is null!"); }
+                if (panelPrefab == null)
+                {
+                    throw new NullReferenceException($"[{panelName}] prefab is null!");
+                }
                 GameObject panelObj = GameObject.Instantiate<GameObject>(panelPrefab);
                 panelObj.SetActive(false);
                 p = panelObj.GetComponent<P>();
-                if (p == null) { throw new NullReferenceException($"{panelName} is null!"); }
+                if (p == null)
+                {
+                    throw new NullReferenceException($"{panelName} is null!");
+                }
+                p.panelLv = -1;
                 panels.Add(panelName, p);
                 RectTransform rect = panelObj.GetComponent<RectTransform>();
                 rect.SetParentReset(uiCtrl.rect);
@@ -97,28 +121,40 @@ namespace UnityTools.UI
         /// 打开面板
         /// </summary>
         /// <typeparam name="P">面板类</typeparam>
-        /// <param name="panelLv">设置的面板等级</param>
+        /// <param name="panelLv">设置的面板等级：默认等级为1</param>
         /// <returns></returns>
         public static P OpenPanel<P>(int panelLv = 1) where P : BasePanel
         {
-            P panel = null;
+            P      panel     = null;
             string panelName = typeof(P).Name;
-            if (panels.TryGetValue(panelName, out BasePanel basePanel)) { panel = basePanel as P; }
+            if (panels.TryGetValue(panelName, out BasePanel basePanel))
+            {
+                panel = basePanel as P;
+            }
             else
             {
-                if (getPanelPrefabFunction == null) { Debuger.LogError("没有设置自动加载panel prefab的委托"); }
-                else { panel = CreatePanel<P>(getPanelPrefabFunction(panelName)); }
+                if (getPanelPrefabFunction == null)
+                {
+                    Debuger.LogError("没有设置自动加载panel prefab的委托");
+                }
+                else
+                {
+                    panel = CreatePanel<P>(getPanelPrefabFunction(panelName));
+                }
             }
             if (panel != null)
             {
-                Transform panelParent = GetPanelParent(panelLv);
+                panel.panelLv = panelLv;
+                Transform panelParent = GetPanelParent(panel.panelLv);
                 panel.transform.SetParent(panelParent);
                 panel.transform.SetAsLastSibling();
                 panel.gameObject.SetActive(true);
                 panel.Show();
-                panel.SetPanelLv(panelLv);
             }
-            else { UnityTools.Debuger.LogError($"{panelName}不存在"); }
+            else
+            {
+                UnityTools.Debuger.LogError($"{panelName}不存在");
+            }
             return panel;
         }
         /// <summary>
@@ -143,7 +179,7 @@ namespace UnityTools.UI
             {
                 return panel as P;
             }
-            Debuger.LogError($"没有初始化{panelName}面板");
+            Debuger.LogWarning($"没有初始化{panelName}面板");
             return null;
         }
         //获取对应面板等级的父级RectTransform
@@ -152,12 +188,12 @@ namespace UnityTools.UI
             Transform panelParent = uiCtrl.rect.Find("Panel" + panelLv);
             if (panelParent == null)
             {
-                int index = 1;
+                int index = 0;
                 while (index <= panelLv)
                 {
                     if (index == panelLv || uiCtrl.rect.Find("Panel" + index) == null)
                     {
-                        GameObject go = new GameObject("Panel" + index);
+                        GameObject    go   = new GameObject("Panel" + index);
                         RectTransform rect = go.AddComponent<RectTransform>();
                         rect.SetParentReset(uiCtrl.rect);
                         Tools.RectTransformSetSurround(rect);

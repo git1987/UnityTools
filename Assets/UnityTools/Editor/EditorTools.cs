@@ -2,22 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-
-public class EditorTools
+namespace UnityTools.Editor
 {
-    public static O GetResourcesAsset<O>(string name) where O : Object
+    public class EditorTools
     {
-        Object[] objs = UnityEditor.AssetDatabase.LoadAllAssetsAtPath("Resources/unity_builtin_extra");
-        foreach (var o in objs)
+        public static O GetResourcesAsset<O>(string name) where O : Object
         {
-            if (o.name == name)
+            Object[] objs = UnityEditor.AssetDatabase.LoadAllAssetsAtPath("Resources/unity_builtin_extra");
+            foreach (var o in objs)
             {
-                if (o is O)
+                if (o.name == name)
                 {
-                    return o as O;
+                    if (o is O)
+                    {
+                        return o as O;
+                    }
                 }
             }
+            return null;
         }
-        return null;
     }
 }
