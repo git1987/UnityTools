@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-
 namespace UnityTools.MonoComponent
 {
     /// <summary>
@@ -13,27 +12,22 @@ namespace UnityTools.MonoComponent
             /// 普通回调
             /// </summary>
             public EventAction action;
-
             /// <summary>
             /// 重复回调：当前的次数（index）
             /// </summary>
             public EventAction<int> repeatedAction;
-
             /// <summary>
             /// 任务结束后的回调
             /// </summary>
             public EventAction finish;
-
             /// <summary>
             /// 持续的最长时间
             /// </summary>
             public float maxTime;
-
             /// <summary>
             /// 周期
             /// </summary>
-            public float periodTime;
-
+            public float interval;
             /// <summary>
             /// 重复次数
             /// </summary>
@@ -47,17 +41,22 @@ namespace UnityTools.MonoComponent
         }
 
         //是否已经结束
-        bool over;
+        private bool over;
 
         //开关
-        bool enable;
+        private bool enable;
 
         //计时器
-        float timer;
+        private float timer;
 
         //当前循环调用的方法次数
-        int repeatIndex;
+        private int repeatIndex;
+        private bool dontDestroy;
         ScheduleData scheduleData;
+        /// <summary>
+        /// 设置计时任务完成后不Destroy
+        /// </summary>
+        public void SetDontDestroy() { dontDestroy = true; }
         /// <summary>
         /// 延迟调用一次
         /// </summary>
@@ -65,21 +64,25 @@ namespace UnityTools.MonoComponent
         /// <param name="time">等待时间</param>
         public void Once(EventAction action, float time)
         {
-            scheduleData = new ScheduleData() { maxTime = time, action = action, };
+            if (action == null)
+            {
+                Debuger.LogError("callback is null！");
+                return;
+            }
+            scheduleData = new ScheduleData()
+            {
+                maxTime = time + Time.deltaTime, action = action,
+            };
             if (time <= 0)
             {
-                UnityTools.Debuger.Log("time<=0？");
+                Debuger.Log("time<=0？");
                 Stop(true);
-                action?.Invoke();
+                action.Invoke();
             }
             else
             {
                 enable = true;
-                if (action == null)
-                {
-                    UnityTools.Debuger.LogError("callback is null！");
-                    return;
-                }
+                /*当前帧要在Update里执行timer -= Time.DeltaTime，所以在当前帧要把deltaTime补回来*/
                 timer = time;
             }
         }
@@ -87,23 +90,24 @@ namespace UnityTools.MonoComponent
         /// 重复调用方法
         /// </summary>
         /// <param name="repeatedAction"></param>
-        /// <param name="startTime"></param>
-        /// <param name="periodTime"></param>
+        /// <param name="startTime">第一次调用方法的时间</param>
+        /// <param name="intervalTime">两次调用方法的间隔时间</param>
         /// <param name="repeat"></param>
-        /// <param name="maxTime"></param>
+        /// <param name="maxTime">计时任务的最大时间</param>
         /// <param name="finish"></param>
-        public void Repeated(EventAction<int> repeatedAction, float startTime, float periodTime, int repeat,
-                             float maxTime, EventAction finish)
+        public void Repeated(EventAction<int> repeatedAction, float startTime, float intervalTime, int repeat,
+                             float maxTime, EventAction finish = null)
         {
             enable = true;
             scheduleData = new ScheduleData()
             {
                 maxTime        = maxTime + Time.deltaTime,
                 repeatedAction = repeatedAction,
-                periodTime     = periodTime,
+                interval       = intervalTime,
                 repeat         = repeat,
                 finish         = finish
             };
+            /*当前帧要在Update里执行timer -= Time.DeltaTime，所以在当前帧要把deltaTime补回来*/
             timer       = startTime;
             repeatIndex = 0;
         }
@@ -122,8 +126,16 @@ namespace UnityTools.MonoComponent
         public void Stop(bool isComplete)
         {
             over = true;
-            if (isComplete) { scheduleData.finish?.Invoke(); }
-            Destroy(this);
+            if (isComplete)
+            {
+                scheduleData.finish?.Invoke();
+            }
+            if (!dontDestroy)
+                Destroy(this);
+            else
+            {
+                enable = false;
+            }
         }
         private void Update()
         {
@@ -145,7 +157,10 @@ namespace UnityTools.MonoComponent
                         //时间到了
                         Stop(true);
                     }
-                    else { timer += scheduleData.periodTime; }
+                    else
+                    {
+                        timer += scheduleData.interval;
+                    }
                     break;
                 case < float.MaxValue:
                     timer -= Time.deltaTime;
