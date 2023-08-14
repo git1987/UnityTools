@@ -32,7 +32,7 @@ namespace UnityTools.MonoComponent
             /// <summary>
             /// 周期
             /// </summary>
-            public float periodTime;
+            public float intervalTime;
 
             /// <summary>
             /// 重复次数
@@ -68,7 +68,7 @@ namespace UnityTools.MonoComponent
             scheduleData = new ScheduleData() { maxTime = time, action = action, };
             if (time <= 0)
             {
-                UnityTools.Debuger.Log("time<=0？");
+                UnityTools.Debuger.LogWarning("time <= 0？");
                 Stop(true);
                 action?.Invoke();
             }
@@ -88,11 +88,11 @@ namespace UnityTools.MonoComponent
         /// </summary>
         /// <param name="repeatedAction"></param>
         /// <param name="startTime"></param>
-        /// <param name="periodTime"></param>
+        /// <param name="intervalTime"></param>
         /// <param name="repeat"></param>
         /// <param name="maxTime"></param>
         /// <param name="finish"></param>
-        public void Repeated(EventAction<int> repeatedAction, float startTime, float periodTime, int repeat,
+        public void Repeated(EventAction<int> repeatedAction, float startTime, float intervalTime, int repeat,
                              float maxTime, EventAction finish)
         {
             enable = true;
@@ -100,7 +100,7 @@ namespace UnityTools.MonoComponent
             {
                 maxTime        = maxTime + Time.deltaTime,
                 repeatedAction = repeatedAction,
-                periodTime     = periodTime,
+                intervalTime   = intervalTime,
                 repeat         = repeat,
                 finish         = finish
             };
@@ -145,7 +145,7 @@ namespace UnityTools.MonoComponent
                         //时间到了
                         Stop(true);
                     }
-                    else { timer += scheduleData.periodTime; }
+                    else { timer += scheduleData.intervalTime; }
                     break;
                 case < float.MaxValue:
                     timer -= Time.deltaTime;

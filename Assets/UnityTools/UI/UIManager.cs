@@ -127,6 +127,19 @@ namespace UnityTools.UI
             return null;
         }
         /// <summary>
+        /// 移除面板
+        /// </summary>
+        /// <typeparam name="P"></typeparam>
+        public static void RemovePanel<P>() where P : BasePanel
+        {
+            string panelName = typeof(P).Name;
+            if (panels.TryGetValue(panelName, out BasePanel panel))
+            {
+                GameObject.Destroy(panel.gameObject);
+                panels.Remove(panelName);
+            }
+        }
+        /// <summary>
         /// 设置面板等级
         /// </summary>
         /// <param name="panel"></param>

@@ -107,11 +107,11 @@ namespace UnityTools.Single
         /// 延迟一帧执行监听
         /// </summary>
         /// <param name="action"></param>
-        public void DelayedFrame(EventAction action)
+        private void DelayedFrame(EventAction action)
         {
             StartCoroutine(_DelayedFrame(action));
         }
-        IEnumerator _DelayedFrame(EventAction action)
+        private IEnumerator _DelayedFrame(EventAction action)
         {
             yield return null;
             action();

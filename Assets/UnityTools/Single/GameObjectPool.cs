@@ -34,13 +34,13 @@ namespace UnityTools.Single
         /// <summary>
         /// 移除GameObject对象
         /// </summary>
-        /// <param name="name"></param>
-        public static void Remove(string name)
+        /// <param name="gameObjectName"></param>
+        public static void Remove(string gameObjectName)
         {
             if (instance == null)
                 Debuger.Log(Tools.SetTextColor("There is no Pool component in the scene", Config.RichTextColor.Red));
             else
-                instance.RemoveObj(name);
+                instance.RemoveObj(gameObjectName);
         }
         private readonly Dictionary<string, GameObject> poolPrefab = new Dictionary<string, GameObject>();
         private readonly Dictionary<string, Queue<GameObject>> pools = new Dictionary<string, Queue<GameObject>>();
@@ -66,7 +66,10 @@ namespace UnityTools.Single
         /// <returns>Pool</returns>
         public GameObjectPool Init(GameObject prefab, int count = 0, bool reset = false)
         {
-            if (prefab == null) { Debuger.LogError("the prefab is null"); }
+            if (prefab == null)
+            {
+                Debuger.LogError("the prefab is null");
+            }
             else
             {
                 if (poolPrefab.ContainsKey(prefab.name))
