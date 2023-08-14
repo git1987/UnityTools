@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
-
 namespace UnityTools.UI
 {
     /// <summary>
@@ -18,7 +17,6 @@ namespace UnityTools.UI
         }
 
         MouseClickType clickType;
-
         EventAction enterAction,
                     exitAction,
                     clickAction,
@@ -28,31 +26,36 @@ namespace UnityTools.UI
                     upAction_Middle,
                     downAction_Right,
                     upAction_Right;
-
         public void SetEnterAction(EventAction enter) { enterAction = enter; }
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (eventData.pointerEnter == this.gameObject)
-                enterAction?.Invoke();
+            if (eventData.pointerEnter == this.gameObject) enterAction?.Invoke();
         }
         public void SetExitAction(EventAction exit) { exitAction = exit; }
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (eventData.pointerEnter == this.gameObject)
-                exitAction?.Invoke();
+            if (eventData.pointerEnter == this.gameObject) exitAction?.Invoke();
         }
         public void SetClickAction(EventAction click) { clickAction = click; }
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (eventData.pointerEnter == this.gameObject)
-                clickAction?.Invoke();
+            if (eventData.pointerEnter == this.gameObject) clickAction?.Invoke();
         }
         public void SetDownAction(EventAction down, MouseClickType clickType = MouseClickType.Left)
         {
             this.clickType = clickType;
-            if (clickType == MouseClickType.Left) { downAction_Left          = down; }
-            else if (clickType == MouseClickType.Middle) { downAction_Middle = down; }
-            else if (clickType == MouseClickType.Right) { downAction_Right   = down; }
+            if (clickType == MouseClickType.Left)
+            {
+                downAction_Left = down;
+            }
+            else if (clickType == MouseClickType.Middle)
+            {
+                downAction_Middle = down;
+            }
+            else if (clickType == MouseClickType.Right)
+            {
+                downAction_Right = down;
+            }
         }
         public void OnPointerDown(PointerEventData eventData)
         {
@@ -64,10 +67,16 @@ namespace UnityTools.UI
                     downAction_Left?.Invoke();
                     break;
                 case MouseClickType.Middle:
-                    if (Config.middleMouseDown) { downAction_Middle?.Invoke(); }
+                    if (Config.middleMouseDown)
+                    {
+                        downAction_Middle?.Invoke();
+                    }
                     break;
                 case MouseClickType.Right:
-                    if (Config.rightMouseDown) { downAction_Right?.Invoke(); }
+                    if (Config.rightMouseDown)
+                    {
+                        downAction_Right?.Invoke();
+                    }
                     break;
             }
         }
@@ -76,9 +85,8 @@ namespace UnityTools.UI
             if (clickType == MouseClickType.Left)
                 upAction_Left = up;
             else if (clickType == MouseClickType.Middle)
-                upAction_Middle = up;
-            else if (clickType == MouseClickType.Right)
-                upAction_Right = up;
+                upAction_Middle                                        = up;
+            else if (clickType == MouseClickType.Right) upAction_Right = up;
         }
         public void OnPointerUp(PointerEventData eventData)
         {
@@ -90,10 +98,16 @@ namespace UnityTools.UI
                     upAction_Left?.Invoke();
                     break;
                 case MouseClickType.Middle:
-                    if (Config.middleMouseUp) { upAction_Middle?.Invoke(); }
+                    if (Config.middleMouseUp)
+                    {
+                        upAction_Middle?.Invoke();
+                    }
                     break;
                 case MouseClickType.Right:
-                    if (Config.rightMouseUp) { upAction_Right?.Invoke(); }
+                    if (Config.rightMouseUp)
+                    {
+                        upAction_Right?.Invoke();
+                    }
                     break;
             }
         }

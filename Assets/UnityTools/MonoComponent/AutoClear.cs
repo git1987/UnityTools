@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityTools.Single;
-
 namespace UnityTools.MonoComponent
 {
     /// <summary>
@@ -10,19 +9,15 @@ namespace UnityTools.MonoComponent
     {
         [SerializeField]
         private bool isEffect;
-
         /// 是否自动清除
         public bool autoClear => lifeTime > 0;
-
         [SerializeField]
         private float _lifeTime;
-
         public float lifeTime
         {
             private set => _lifeTime = value;
             get => _lifeTime;
         }
-
         [SerializeField]
         private GameObject deathObj;
 
@@ -37,7 +32,7 @@ namespace UnityTools.MonoComponent
                 ParticleSystem p = pas[i];
                 lifeTime = Mathf.Max(lifeTime, p.main.duration);
             }
-            Animator animator = this.transform.GetComponent<Animator>();
+            Animator animator              = this.transform.GetComponentInChildren<Animator>();
             if (animator != null) lifeTime = Mathf.Max(lifeTime, animator.GetCurrentAnimatorStateInfo(0).length);
         }
         /// <summary>
@@ -61,17 +56,14 @@ namespace UnityTools.MonoComponent
         private void OnDisable()
         {
             if (deathObj == null || GameObjectPool.instance == null) return;
-            GameObject effect = GameObjectPool.instance.Init(deathObj).GetObj(deathObj.name);
-            Transform tran = this.transform;
+            GameObject effect = GameObjectPool.instance.Init(deathObj).GetObj(deathObj.name, null);
+            Transform  tran   = this.transform;
             effect.transform.SetPositionAndRotation(tran.position, tran.rotation);
         }
         private void Disable()
         {
-            if (this.finish != null)
-            {
-                this.finish();
-                this.finish = null;
-            }
+            this.finish?.Invoke();
+            this.finish = null;
             GameObjectPool.Recover(this.gameObject);
         }
     }
