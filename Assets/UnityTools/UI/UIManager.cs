@@ -31,6 +31,18 @@ namespace UnityTools.UI
             getPanelPrefabFunction = function;
         }
         /// <summary>
+        /// 根据面板名称的全称自动加载panel prefab的委托
+        /// </summary>
+        private static EventAction<string> removePanelAction = null;
+        /// <summary>
+        /// 设置自动加载panel prefab的委托
+        /// </summary>
+        /// <param name="function"></param>
+        public static void SetRemovePanelAction(EventAction<string> action)
+        {
+            removePanelAction = action;
+        }
+        /// <summary>
         /// 设置当前场景的UICtrl
         /// </summary>
         /// <param name="_uiCtrl"></param>
@@ -135,8 +147,9 @@ namespace UnityTools.UI
             string panelName = typeof(P).Name;
             if (panels.TryGetValue(panelName, out BasePanel panel))
             {
-                GameObject.Destroy(panel.gameObject);
+                removePanelAction?.Invoke(panelName);
                 panels.Remove(panelName);
+                GameObject.Destroy(panel.gameObject);
             }
         }
         /// <summary>
