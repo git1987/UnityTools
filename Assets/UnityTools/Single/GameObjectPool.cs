@@ -46,6 +46,10 @@ namespace UnityTools.Single
         private readonly Dictionary<string, GameObject> poolPrefab = new Dictionary<string, GameObject>();
         private readonly Dictionary<string, Queue<GameObject>> pools = new Dictionary<string, Queue<GameObject>>();
         private readonly Dictionary<string, int> poolCount = new Dictionary<string, int>();
+        /// <summary>
+        /// 移除对象时的事件
+        /// </summary>
+        public event EventAction<string> removeObjAction;
 #if UNITY_EDITOR
         /// <summary>
         /// 便于编辑器内查看
@@ -254,6 +258,7 @@ namespace UnityTools.Single
                 pools[gameObjectName].Clear();
                 pools.Remove(gameObjectName);
                 poolPrefab.Remove(gameObjectName);
+                removeObjAction?.Invoke(gameObjectName);
                 Debuger.LogWarning($"remove [{gameObjectName}]");
             }
             else
