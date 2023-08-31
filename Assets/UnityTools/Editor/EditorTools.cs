@@ -1,7 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.UI;
+
 namespace UnityTools.Editor
 {
     public class EditorTools
@@ -20,6 +20,23 @@ namespace UnityTools.Editor
                 }
             }
             return null;
+        }
+        [MenuItem("UnityTools/UI/HideRaycastTarget")]
+        //关闭UI中的RaycastTarget射线检测
+        private static void HideRaycastTarget()
+        {
+            GameObject[] gos = Selection.gameObjects;
+            if (gos != null)
+            {
+                foreach (GameObject go in gos)
+                {
+                    MaskableGraphic[] mgs = go.GetComponentsInChildren<MaskableGraphic>(true);
+                    foreach (MaskableGraphic mg in mgs)
+                    {
+                        mg.raycastTarget = false;
+                    }
+                }
+            }
         }
     }
 }

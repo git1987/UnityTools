@@ -12,7 +12,7 @@ namespace UnityTools.Editor
     /// </summary>
     public class MenuEditor
     {
-        [MenuItem("GameObject/UnitTools/创建虚拟摇杆", priority = 1)]
+        [MenuItem("GameObject/UnityTools/创建虚拟摇杆", priority = 1)]
         static void CreateVirtualRocker()
         {
             GameObject[] gos = SceneManager.GetActiveScene().GetRootGameObjects();

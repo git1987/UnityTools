@@ -10,19 +10,7 @@ namespace UnityTools.UI
         /// <summary>
         /// 面板等级
         /// </summary>
-        public int panelLv { private set; get; }
-        /// <summary>
-        /// 设置面板等级
-        /// </summary>
-        /// <param name="lv"></param>
-        public void SetPanelLv(int lv)
-        {
-            if (lv != this.panelLv)
-            {
-                panelLv = lv;
-                UIManager.SetPanelLv(this, lv);
-            }
-        }
+        public int panelLv { set; get; }
         /// <summary>
         /// 面板打开BasePanel，直接调用UIManager.OpenPanel，面板等级==当前面板
         /// </summary>

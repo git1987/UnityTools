@@ -5,8 +5,12 @@ namespace UnityTools.UI
     /// <summary>
     /// Graphic检测鼠标操作的监听事件
     /// </summary>
-    public class GraphicPointer : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler,
-                                  IPointerDownHandler, IPointerUpHandler
+    public class GraphicPointer : MonoBehaviour,
+                                    IPointerEnterHandler,
+                                    IPointerExitHandler,
+                                    IPointerClickHandler,
+                                    IPointerDownHandler,
+                                    IPointerUpHandler
     {
         //鼠标点击类型
         public enum MouseClickType
@@ -85,8 +89,9 @@ namespace UnityTools.UI
             if (clickType == MouseClickType.Left)
                 upAction_Left = up;
             else if (clickType == MouseClickType.Middle)
-                upAction_Middle                                        = up;
-            else if (clickType == MouseClickType.Right) upAction_Right = up;
+                upAction_Middle = up;
+            else if (clickType == MouseClickType.Right)
+                upAction_Right = up;
         }
         public void OnPointerUp(PointerEventData eventData)
         {

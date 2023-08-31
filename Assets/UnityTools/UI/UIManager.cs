@@ -94,6 +94,7 @@ namespace UnityTools.UI
                 panelObj.SetActive(false);
                 p = panelObj.GetComponent<P>();
                 if (p == null) { throw new NullReferenceException($"{panelName} is null!"); }
+                p.panelLv = -1;
                 panels.Add(panelName, p);
                 RectTransform rect = panelObj.GetComponent<RectTransform>();
                 rect.SetParentReset(uiCtrl.rect);
@@ -105,7 +106,7 @@ namespace UnityTools.UI
         /// 打开面板
         /// </summary>
         /// <typeparam name="P">面板类</typeparam>
-        /// <param name="panelLv">设置的面板等级</param>
+        /// <param name="panelLv">设置的面板等级(0级为预留最低层级)</param>
         /// <returns></returns>
         public static P OpenPanel<P>(int panelLv = 1) where P : BasePanel
         {
@@ -119,12 +120,21 @@ namespace UnityTools.UI
             }
             if (panel != null)
             {
-                panel.SetPanelLv(panelLv);
+                SetPanelLv(panel, panelLv);
                 panel.gameObject.SetActive(true);
                 panel.Show();
             }
             else { UnityTools.Debuger.LogError($"{panelName}不存在"); }
             return panel;
+        }
+        /// <summary>
+        /// 关闭面板
+        /// </summary>
+        /// <typeparam name="P"></typeparam>
+        /// <param name="p"></param>
+        public static void ClosePanel<P>(P p) where P : BasePanel
+        {
+            p?.Hide();
         }
         /// <summary>
         /// 获取面板
@@ -159,6 +169,7 @@ namespace UnityTools.UI
         /// <param name="panelLv"></param>
         public static void SetPanelLv(BasePanel panel, int panelLv)
         {
+            panel.panelLv = panelLv;
             Transform panelParent = GetPanelParent(panelLv);
             panel.transform.SetParent(panelParent);
             panel.transform.SetAsLastSibling();

@@ -47,12 +47,12 @@ namespace UnityTools.UI
         /// <summary>
         /// 动态加载场景时，关闭UICtrl.Start方法，手动调用GameBegin()
         /// </summary> 
-        public virtual void GameBegin()
+        public void GameBegin()
         {
             Init();
         }
         /// <summary>
-        /// 初始化UICtrl
+        /// 初始化UICtrl，由GameBegin调用
         /// </summary>
         protected abstract void Init();
         /// <summary>
@@ -70,15 +70,10 @@ namespace UnityTools.UI
         /// <param name="active"></param>
         public virtual void SetMask(bool active)
         {
+            maskRect.gameObject.SetActive(active);
             if (active)
             {
-                maskRect.gameObject.SetActive(true);
                 maskRect.SetAsLastSibling();
-            }
-            else
-            {
-                maskRect.gameObject.SetActive(false);
-                //maskRect.SetAsFirstSibling();
             }
         }
     }
