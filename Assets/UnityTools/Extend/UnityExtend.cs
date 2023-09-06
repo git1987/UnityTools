@@ -17,7 +17,7 @@ namespace UnityTools.Extend
         public static Component MateComponent(this GameObject go, Type type)
         {
             UnityEngine.Component t = go.GetComponent(type);
-            if (t == null) t        = go.AddComponent(type);
+            if (t == null) t = go.AddComponent(type);
             return t;
         }
         /// <summary>
@@ -26,7 +26,7 @@ namespace UnityTools.Extend
         /// <returns>T</returns>
         public static T MateComponent<T>(this GameObject go) where T : Component
         {
-            T t              = go.GetComponent<T>();
+            T t = go.GetComponent<T>();
             if (t == null) t = go.AddComponent<T>();
             return t;
         }
@@ -43,7 +43,7 @@ namespace UnityTools.Extend
             transform.localPosition = Vector3.zero;
             if (transform is RectTransform) ((RectTransform)transform).anchoredPosition3D = Vector3.zero;
             transform.localRotation = Quaternion.identity;
-            transform.localScale    = Vector3.one;
+            transform.localScale = Vector3.one;
         }
         /// <summary>
         /// 根据名字获取子级的transform
@@ -123,6 +123,14 @@ namespace UnityTools.Extend
                 return f;
             }
             return defaultFloat;
+        }
+        public static long ToLong(this string str, long defaultLong = 0)
+        {
+            if (long.TryParse(str, out long l))
+            {
+                return l;
+            }
+            return defaultLong;
         }
         #endregion
         #region List
@@ -239,14 +247,13 @@ namespace UnityTools.Extend
             {
                 action?.Invoke(kList[i], vList[i]);
             }
-            //foreach (K k in dic.Keys) { action?.Invoke(k, dic[k]); }
         }
         /// <summary>
         /// 遍历Dictionary：通过breakAction回调判断是否冲循环遍历中跳出
         /// </summary>
         /// <param name="dic"></param>
         /// <param name="action"></param>
-        /// <param name="breakAction">调出遍历回调</param>
+        /// <param name="breakAction">跳出遍历回调</param>
         /// <typeparam name="K"></typeparam>
         /// <typeparam name="V"></typeparam>
         public static void ForAction<K, V>(this Dictionary<K, V> dic, EventAction<K, V> action,
@@ -265,11 +272,6 @@ namespace UnityTools.Extend
                     action?.Invoke(kList[i], vList[i]);
                     if (breakAction.Invoke()) break;
                 }
-                //foreach (K k in dic.Keys)
-                //{
-                //    action?.Invoke(k, dic[k]);
-                //    if (breakAction.Invoke()) break;
-                //}
             }
         }
         /// <summary>
@@ -277,7 +279,7 @@ namespace UnityTools.Extend
         /// </summary>
         /// <param name="dic"></param>
         /// <param name="action"></param>
-        /// <param name="isBreak">调出遍历</param>
+        /// <param name="isBreak">跳出遍历</param>
         /// <typeparam name="K"></typeparam>
         /// <typeparam name="V"></typeparam>
         public static void ForAction<K, V>(this Dictionary<K, V> dic, EventAction<K, V> action, in bool isBreak)
@@ -289,11 +291,6 @@ namespace UnityTools.Extend
                 action?.Invoke(kList[i], vList[i]);
                 if (isBreak) break;
             }
-            //foreach (K k in dic.Keys)
-            //{
-            //    action?.Invoke(k, dic[k]);
-            //    if (isBreak) break;
-            //}
         }
         #endregion
     }

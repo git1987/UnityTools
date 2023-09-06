@@ -1,6 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using UnityTools.Extend;
 using UnityTools.Single;
 using UnityTools.UI;
@@ -49,6 +50,23 @@ namespace UnityTools.Editor
                 pool.MateComponent<GameObjectPool>();
             }
             Debuger.LogWarning("创建GameObjectPool", pool);
+        }
+        [MenuItem("UnityTools/UI/HideRaycastTarget")]
+        //关闭UI中的RaycastTarget射线检测
+        private static void HideRaycastTarget()
+        {
+            GameObject[] gos = Selection.gameObjects;
+            if (gos != null)
+            {
+                foreach (GameObject go in gos)
+                {
+                    MaskableGraphic[] mgs = go.GetComponentsInChildren<MaskableGraphic>(true);
+                    foreach (MaskableGraphic mg in mgs)
+                    {
+                        mg.raycastTarget = false;
+                    }
+                }
+            }
         }
     }
 }
