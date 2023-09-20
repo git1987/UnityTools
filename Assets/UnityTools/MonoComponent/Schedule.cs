@@ -32,7 +32,7 @@ namespace UnityTools.MonoComponent
             /// <summary>
             /// 周期
             /// </summary>
-            public float intervalTime;
+            public float periodTime;
 
             /// <summary>
             /// 重复次数
@@ -58,54 +58,69 @@ namespace UnityTools.MonoComponent
         //当前循环调用的方法次数
         int repeatIndex;
         ScheduleData scheduleData;
+
+        bool unscaleTime;
         /// <summary>
         /// 延迟调用一次
         /// </summary>
         /// <param name="action"></param>
         /// <param name="time">等待时间</param>
-        public void Once(EventAction action, float time)
+        public void Once(EventAction action, float time, bool unscaleTime = false)
         {
-            scheduleData = new ScheduleData() { maxTime = time, action = action, };
             if (time <= 0)
             {
-                UnityTools.Debuger.LogWarning("time <= 0？");
+                UnityTools.Debuger.Log("time<=0？");
                 Stop(true);
                 action?.Invoke();
+                return;
             }
-            else
+            if (action == null)
             {
-                enable = true;
-                if (action == null)
-                {
-                    UnityTools.Debuger.LogError("callback is null！");
-                    return;
-                }
-                timer = time;
+                UnityTools.Debuger.LogError("callback is null！");
+                return;
             }
+            scheduleData = new ScheduleData() { action = action, maxTime = float.MaxValue };
+            enable = true;
+            this.unscaleTime = unscaleTime;
+            if (unscaleTime)
+                timer = time + Time.unscaledDeltaTime;
+            else
+                timer = time + Time.deltaTime;
         }
         /// <summary>
         /// 重复调用方法
         /// </summary>
         /// <param name="repeatedAction"></param>
         /// <param name="startTime"></param>
-        /// <param name="intervalTime"></param>
+        /// <param name="periodTime"></param>
         /// <param name="repeat"></param>
         /// <param name="maxTime"></param>
         /// <param name="finish"></param>
-        public void Repeated(EventAction<int> repeatedAction, float startTime, float intervalTime, int repeat,
-                             float maxTime, EventAction finish)
+        public void Repeated(EventAction<int> repeatedAction, float startTime, float periodTime, int repeat,
+                             float maxTime, EventAction finish, bool unscaleTime = false)
         {
             enable = true;
             scheduleData = new ScheduleData()
             {
-                maxTime        = maxTime + Time.deltaTime,
                 repeatedAction = repeatedAction,
-                intervalTime   = intervalTime,
-                repeat         = repeat,
-                finish         = finish
+                periodTime = periodTime,
+                repeat = repeat,
+                maxTime = maxTime,
+                finish = finish
             };
-            timer       = startTime;
+            if (unscaleTime)
+                timer = startTime + Time.unscaledDeltaTime;
+            else
+                timer = startTime + Time.deltaTime;
+            if (scheduleData.maxTime < float.MaxValue)
+            {
+                if (unscaleTime)
+                    scheduleData.maxTime += Time.unscaledDeltaTime;
+                else
+                    scheduleData.maxTime += Time.deltaTime;
+            }
             repeatIndex = 0;
+            this.unscaleTime = unscaleTime;
         }
         /// <summary>
         /// 暂停计时任务
@@ -128,7 +143,6 @@ namespace UnityTools.MonoComponent
         private void Update()
         {
             if (!enable) return;
-            if (scheduleData.maxTime < float.MaxValue) scheduleData.maxTime -= Time.deltaTime;
             switch (timer)
             {
                 case <= 0:
@@ -140,16 +154,27 @@ namespace UnityTools.MonoComponent
                         //次数用完了
                         Stop(true);
                     }
-                    else if (scheduleData.maxTime <= 0)
-                    {
-                        //时间到了
-                        Stop(true);
-                    }
-                    else { timer += scheduleData.intervalTime; }
+                    else { timer += scheduleData.periodTime; }
                     break;
                 case < float.MaxValue:
-                    timer -= Time.deltaTime;
+                    if (unscaleTime)
+                        timer -= Time.unscaledDeltaTime;
+                    else
+                        timer -= Time.deltaTime;
                     break;
+            }
+            if (scheduleData.maxTime < float.MaxValue)
+            {
+                if (unscaleTime)
+                    scheduleData.maxTime -= Time.unscaledDeltaTime;
+                else
+                    scheduleData.maxTime -= Time.deltaTime;
+                if (scheduleData.maxTime <= 0)
+                {
+                    //时间到了
+                    Stop(true);
+                    return;
+                }
             }
         }
         private void OnDisable()

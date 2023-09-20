@@ -25,10 +25,10 @@ namespace UnityTools.UI
         /// <summary>
         /// 打开面板
         /// </summary>
-        public abstract void Show();
+        public virtual void Show() { gameObject.SetActive(true); }
         /// <summary>
         /// 关闭面板
         /// </summary>
-        public virtual void Hide() { this.gameObject.SetActive(false); }
+        public virtual void Hide() { gameObject.SetActive(false); }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 namespace UnityTools.Single
 {
     public sealed class Game : SingleMono<Game>
@@ -13,10 +12,13 @@ namespace UnityTools.Single
         {
             public EventAction action;
             public float timer;
-            public DelayedData(EventAction ea, float time)
+            public bool unscaledTime;
+            public DelayedData() { }
+            public DelayedData(EventAction ea, float time, bool unscaledTime)
             {
                 this.action = ea;
-                this.timer  = time;
+                this.timer = time;
+                this.unscaledTime = unscaledTime;
             }
         }
 
@@ -32,20 +34,28 @@ namespace UnityTools.Single
         /// </summary>
         /// <param name="action"></param>
         /// <param name="time">== 0 ，隔一帧执行监听</param>
-        public static void Delayed(EventAction action, float time = 0)
+        public static void Delayed(EventAction action, float time = 0, bool unscaledTime = false)
         {
             DelayedData ed = GetInstance().GetDelayedData(action);
             if (ed != null)
             {
-                Debuger.LogError("已经存在回调了，重复添加");
+                Debuger.LogError("已经存在回调了，添加了两次");
                 return;
             }
             if (time <= 0)
                 GetInstance().DelayedFrame(action);
             else
             {
-                //新添加的回调，在当前帧就要执行Update，所以要提前加当前deltaTime补上
-                ed = new DelayedData(action, time + Time.deltaTime);
+                ed = new()
+                {
+                    action = action,
+                    unscaledTime = unscaledTime
+                };
+                //新添加的回调，在当前帧就要执行Update，所以要把当前deltaTime补上
+                if (unscaledTime)
+                    ed.timer = time + time + Time.unscaledDeltaTime;
+                else
+                    ed.timer = time + time + Time.deltaTime;
                 GetInstance().delayedList.Add(ed);
             }
         }
@@ -66,17 +76,11 @@ namespace UnityTools.Single
         /// <summary>
         /// 暂停
         /// </summary>
-        public static void Pause()
-        {
-            GetInstance().pause = true;
-        }
+        public static void Pause() { GetInstance().pause = true; }
         /// <summary>
         /// 继续
         /// </summary>
-        public static void KeepOn()
-        {
-            GetInstance().pause = false;
-        }
+        public static void KeepOn() { GetInstance().pause = false; }
         private List<DelayedData> delayedList = new List<DelayedData>();
         //暂停
         private bool pause;
@@ -107,11 +111,11 @@ namespace UnityTools.Single
         /// 延迟一帧执行监听
         /// </summary>
         /// <param name="action"></param>
-        private void DelayedFrame(EventAction action)
+        public void DelayedFrame(EventAction action)
         {
             StartCoroutine(_DelayedFrame(action));
         }
-        private IEnumerator _DelayedFrame(EventAction action)
+        IEnumerator _DelayedFrame(EventAction action)
         {
             yield return null;
             action();
@@ -123,7 +127,10 @@ namespace UnityTools.Single
             {
                 for (int i = 0; i < delayedList.Count; i++)
                 {
-                    delayedList[i].timer -= Time.deltaTime;
+                    if (delayedList[i].unscaledTime)
+                        delayedList[i].timer -= Time.unscaledDeltaTime;
+                    else
+                        delayedList[i].timer -= Time.deltaTime;
                     if (delayedList[i].timer <= 0)
                     {
                         delayedList[i].action.Invoke();

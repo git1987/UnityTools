@@ -23,12 +23,24 @@ namespace UnityTools.UI
         /// </summary>
         private static EventFunction<string, GameObject> getPanelPrefabFunction = null;
         /// <summary>
+        /// 根据面板名称的获取已经实例化的panel的委托
+        /// </summary>
+        private static EventFunction<string, GameObject> getPanelFunction = null;
+        /// <summary>
         /// 设置自动加载panel prefab的委托
         /// </summary>
         /// <param name="function"></param>
         public static void SetBuildPanelFunction(EventFunction<string, GameObject> function)
         {
             getPanelPrefabFunction = function;
+        }
+        /// <summary>
+        /// 设置获取panel实例的委托
+        /// </summary>
+        /// <param name="function"></param>
+        public static void SetGetPanelFunction(EventFunction<string, GameObject> function)
+        {
+            getPanelFunction = function;
         }
         /// <summary>
         /// 根据面板名称的全称自动加载panel prefab的委托
@@ -53,7 +65,7 @@ namespace UnityTools.UI
                 //设置UICtrl时进入到新场景，将旧的面板词典清空
                 panels.Clear();
             }
-            else { Debuger.LogError("之前场景没有清空UICtrl" + uiCtrl.GetType().Name); }
+            else { Debuger.LogError($"之前场景没有清空UICtrl[{uiCtrl}]", uiCtrl.gameObject); }
             uiCtrl = _uiCtrl;
         }
         public static void RemoveUICtrl(UICtrl currentUICtrl)
@@ -81,19 +93,19 @@ namespace UnityTools.UI
         /// 创建面板
         /// </summary>
         /// <typeparam name="P"></typeparam>
-        /// <param name="panelPrefab"></param>
-        public static P CreatePanel<P>(GameObject panelPrefab) where P : BasePanel
+        /// <param name="panelObj"></param>
+        public static P CreatePanel<P>(GameObject panelObj) where P : BasePanel
         {
-            P p;
             string panelName = typeof(P).Name;
+            if (panelObj == null) { throw new NullReferenceException($"[{panelName}] GameObejct is null!"); }
+            P p;
             if (panels.TryGetValue(panelName, out BasePanel basePanel)) { p = basePanel as P; }
             else
             {
-                if (panelPrefab == null) { throw new NullReferenceException($"[{panelName}] prefab is null!"); }
-                GameObject panelObj = GameObject.Instantiate<GameObject>(panelPrefab);
+                //GameObject panelObj = GameObject.Instantiate<GameObject>(panelObj);
                 panelObj.SetActive(false);
                 p = panelObj.GetComponent<P>();
-                if (p == null) { throw new NullReferenceException($"{panelName} is null!"); }
+                if (p == null) { throw new NullReferenceException($"[{panelName}] Component is null!"); }
                 p.panelLv = -1;
                 panels.Add(panelName, p);
                 RectTransform rect = panelObj.GetComponent<RectTransform>();
@@ -115,13 +127,21 @@ namespace UnityTools.UI
             if (panels.TryGetValue(panelName, out BasePanel basePanel)) { panel = basePanel as P; }
             else
             {
-                if (getPanelPrefabFunction == null) { Debuger.LogError("没有设置自动加载panel prefab的委托"); }
-                else { panel = CreatePanel<P>(getPanelPrefabFunction(panelName)); }
+                GameObject panelObj = null;
+                if (getPanelPrefabFunction != null)
+                    panelObj = GameObject.Instantiate(getPanelPrefabFunction(panelName));
+                else if (getPanelFunction != null)
+                    panelObj = getPanelFunction(panelName);
+                if (panelObj == null)
+                {
+                    throw new NullReferenceException($"[{panelName}] GameObejct is null!");
+                }
+                panelObj.name = panelName;
+                panel = CreatePanel<P>(panelObj);
             }
             if (panel != null)
             {
                 SetPanelLv(panel, panelLv);
-                panel.gameObject.SetActive(true);
                 panel.Show();
             }
             else { UnityTools.Debuger.LogError($"{panelName}不存在"); }
@@ -132,9 +152,9 @@ namespace UnityTools.UI
         /// </summary>
         /// <typeparam name="P"></typeparam>
         /// <param name="p"></param>
-        public static void ClosePanel<P>(P p) where P : BasePanel
+        public static void ClosePanel<P>() where P : BasePanel
         {
-            p?.Hide();
+            GetPanel<P>()?.Hide();
         }
         /// <summary>
         /// 获取面板

@@ -45,6 +45,12 @@ namespace UnityTools.UI
                     if (vr.canvasRect == null)
                     {
                         Canvas c = vr.GetComponentInParent<Canvas>();
+                        if (c == null)
+                        {
+                            EditorGUILayout.HelpBox("进入编辑模式或者实例化在场景中，并设置父级为Canvas",
+                                MessageType.Warning);
+                            return;
+                        }
                         vr.canvasRect = c.transform as RectTransform;
                     }
                     if (vr._point == null || vr._pointer == null || vr._pointBg == null || vr.areaRect == null)
@@ -91,6 +97,11 @@ namespace UnityTools.UI
                     if (vr.gp != null) DestroyImmediate(vr.gp);
                     vr.gp = null;
                 }
+                if (GUILayout.Button("保存"))
+                {
+                    EditorUtility.SetDirty(vr.gameObject);
+                    AssetDatabase.SaveAssetIfDirty(vr.gameObject);
+                }
             }
         }
 
@@ -117,15 +128,15 @@ namespace UnityTools.UI
                     dics.Add(obj.name, obj as Sprite);
                 }
             }
-            RectTransform canvasRect    = canvas.transform as RectTransform;
-            GameObject    rocker        = new GameObject("VirtualRocker");
+            RectTransform canvasRect = canvas.transform as RectTransform;
+            GameObject rocker = new GameObject("VirtualRocker");
             VirtualRocker virtualRocker = rocker.AddComponent<VirtualRocker>();
             virtualRocker.canvasRect = canvasRect;
             rocker.transform.SetParentReset(canvasRect);
             RectTransform rect = rocker.AddComponent<RectTransform>();
             Tools.RectTransformSetSurround(rect);
             GameObject bg = new GameObject("pointBg");
-            rect                   = bg.AddComponent<RectTransform>();
+            rect = bg.AddComponent<RectTransform>();
             virtualRocker._pointBg = rect;
             rect.SetParentReset(rocker.transform);
             rect.sizeDelta = Vector2.one * 200;
@@ -136,30 +147,30 @@ namespace UnityTools.UI
             bg.MateComponent<Image>().color = new Color(1, 1, 1, .5f);
             bg.MateComponent<Image>().sprite = dics["Knob"];
             GameObject pointer = new GameObject("pointer");
-            rect                   = pointer.AddComponent<RectTransform>();
+            rect = pointer.AddComponent<RectTransform>();
             virtualRocker._pointer = rect;
             rect.SetParentReset(bg.transform);
-            rect.sizeDelta                              = new Vector2(10, 100);
-            rect.anchoredPosition                       = Vector2.zero;
-            rect.pivot                                  = new Vector2(.5f, 0);
+            rect.sizeDelta = new Vector2(10, 100);
+            rect.anchoredPosition = Vector2.zero;
+            rect.pivot = new Vector2(.5f, 0);
             pointer.AddComponent<Image>().raycastTarget = false;
             GameObject point = new GameObject("point");
-            rect                 = point.AddComponent<RectTransform>();
+            rect = point.AddComponent<RectTransform>();
             virtualRocker._point = rect;
             rect.SetParentReset(bg.transform);
-            rect.sizeDelta                             = Vector2.one * 50;
-            rect.anchoredPosition                      = Vector2.zero;
+            rect.sizeDelta = Vector2.one * 50;
+            rect.anchoredPosition = Vector2.zero;
             point.MateComponent<Image>().raycastTarget = false;
-            point.MateComponent<Image>().color         = Color.red;
-            point.MateComponent<Image>().sprite        = dics["Knob"];
+            point.MateComponent<Image>().color = Color.red;
+            point.MateComponent<Image>().sprite = dics["Knob"];
             GameObject area = new GameObject("area");
-            rect                   = area.AddComponent<RectTransform>();
+            rect = area.AddComponent<RectTransform>();
             virtualRocker.areaRect = rect;
             rect.SetParentReset(rocker.transform);
             rect.SetAsFirstSibling();
             rect.sizeDelta = Vector2.one * 500;
             Image areaImage = area.AddComponent<Image>();
-            areaImage.color         = Vector4.one * .5f;
+            areaImage.color = Vector4.one * .5f;
             areaImage.raycastTarget = false;
             return rocker;
         }
@@ -288,7 +299,7 @@ namespace UnityTools.UI
                 Debuger.LogError("没有设置canvas[SetCanvas()]");
                 return;
             }
-            isClick         = false;
+            isClick = false;
             currentMousePos = Vector2.negativeInfinity;
             if (unenableHide)
             {
