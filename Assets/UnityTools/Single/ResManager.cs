@@ -55,11 +55,11 @@ public class ResManager : SingleMono<ResManager>
             prefabPath       = "Prefabs",
             effectPrefabPath = "Effects/Prefabs",
             texturePath      = "Textures",
-            materialPath     = "UI/Materials",
+            materialPath     = "Materials",
             uiPrefabPath     = "UI/Prefabs",
             uiSpritePath     = "UI/Sprites",
             uiMaterialPath   = "UI/Materials",
-            audioPath        = "UI/Audios",
+            audioPath        = "Audios",
         };
         SetAssetPath(ap);
     }

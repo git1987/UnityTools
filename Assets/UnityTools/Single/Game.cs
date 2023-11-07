@@ -13,13 +13,11 @@ namespace UnityTools.Single
             public EventAction action;
             public float timer;
             public bool unscaledTime;
-            public DelayedData() { }
-            public DelayedData(EventAction ea, float time, bool unscaledTime)
-            {
-                this.action = ea;
-                this.timer = time;
-                this.unscaledTime = unscaledTime;
-            }
+            //public DelayedData(EventAction ea, float time)
+            //{
+            //    this.action = ea;
+            //    this.timer = time;
+            //}
         }
 
         /// <summary>
@@ -46,16 +44,17 @@ namespace UnityTools.Single
                 GetInstance().DelayedFrame(action);
             else
             {
+                //新添加的回调，在当前帧就要执行Update，所以要提前加当前deltaTime补上
                 ed = new()
                 {
                     action = action,
                     unscaledTime = unscaledTime
                 };
-                //新添加的回调，在当前帧就要执行Update，所以要把当前deltaTime补上
                 if (unscaledTime)
                     ed.timer = time + time + Time.unscaledDeltaTime;
                 else
                     ed.timer = time + time + Time.deltaTime;
+
                 GetInstance().delayedList.Add(ed);
             }
         }
@@ -81,6 +80,14 @@ namespace UnityTools.Single
         /// 继续
         /// </summary>
         public static void KeepOn() { GetInstance().pause = false; }
+        /// <summary>
+        /// 是否已经有了延时监听
+        /// </summary>
+        /// <returns></returns>
+        public static bool HasAction(EventAction ea)
+        {
+            return instance.GetDelayedData(ea) != null;
+        }
         private List<DelayedData> delayedList = new List<DelayedData>();
         //暂停
         private bool pause;
