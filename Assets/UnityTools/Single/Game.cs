@@ -51,9 +51,9 @@ namespace UnityTools.Single
                     unscaledTime = unscaledTime
                 };
                 if (unscaledTime)
-                    ed.timer = time + time + Time.unscaledDeltaTime;
+                    ed.timer = time + Time.unscaledDeltaTime;
                 else
-                    ed.timer = time + time + Time.deltaTime;
+                    ed.timer = time + Time.deltaTime;
 
                 GetInstance().delayedList.Add(ed);
             }
