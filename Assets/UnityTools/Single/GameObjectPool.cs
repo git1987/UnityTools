@@ -56,6 +56,7 @@ namespace UnityTools.Single
         /// </summary>
         [SerializeField]
         private List<GameObject> tempList = new List<GameObject>();
+        private Transform objParent;
 #endif
         /// <summary>
         /// GetObj()
@@ -66,6 +67,13 @@ namespace UnityTools.Single
         {
             get => this.GetObj(gameObjectName, null);
             set => RecoverObj(value, false);
+        }
+        protected override void Awake()
+        {
+            base.Awake();
+#if UNITY_EDITOR
+            objParent = new GameObject("objParent").transform;
+#endif
         }
         /// <summary>
         /// 初始化对象池
@@ -182,7 +190,6 @@ namespace UnityTools.Single
                     if (pools[gameObjectName].Count > 0)
                     {
                         temp = pools[gameObjectName].Dequeue();
-                        temp.transform.SetParent(null);
                     }
                     else
                     {
@@ -191,6 +198,9 @@ namespace UnityTools.Single
                     }
                     temp.SetActive(true);
                     Transfer(gameObjectName, -1);
+#if UNITY_EDITOR
+                    temp.transform.SetParent(objParent);
+#endif
                 }
                 else
                 {
