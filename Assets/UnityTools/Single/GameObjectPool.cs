@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+
 namespace UnityTools.Single
 {
     /// <summary>
@@ -24,11 +25,16 @@ namespace UnityTools.Single
         /// <summary>
         /// 获取一个GameObject对象
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="gameObjectName"></param>
         /// <returns></returns>
-        public static GameObject Get(string name, Transform parent = null)
+        public static GameObject Get(string gameObjectName)
         {
-            if (instance != null) return instance.GetObj(name, parent);
+            if (gameObjectName == string.Empty)
+            {
+                Debuger.LogError("name is empty!");
+                return null;
+            }
+            if (instance != null) return instance[gameObjectName];
             Debuger.LogError("There is no Pool component in the scene");
             return null;
         }
@@ -46,17 +52,12 @@ namespace UnityTools.Single
         private readonly Dictionary<string, GameObject> poolPrefab = new Dictionary<string, GameObject>();
         private readonly Dictionary<string, Queue<GameObject>> pools = new Dictionary<string, Queue<GameObject>>();
         private readonly Dictionary<string, int> poolCount = new Dictionary<string, int>();
-        /// <summary>
-        /// 移除对象时的事件
-        /// </summary>
-        public event EventAction<string> removeObjAction;
 #if UNITY_EDITOR
         /// <summary>
         /// 便于编辑器内查看
         /// </summary>
         [SerializeField]
         private List<GameObject> tempList = new List<GameObject>();
-        private Transform objParent;
 #endif
         /// <summary>
         /// GetObj()
@@ -65,15 +66,8 @@ namespace UnityTools.Single
         /// <returns></returns>
         public GameObject this[string gameObjectName]
         {
-            get => this.GetObj(gameObjectName, null);
+            get => this.GetObj(gameObjectName);
             set => RecoverObj(value, false);
-        }
-        protected override void Awake()
-        {
-            base.Awake();
-#if UNITY_EDITOR
-            objParent = new GameObject("objParent").transform;
-#endif
         }
         /// <summary>
         /// 初始化对象池
@@ -84,10 +78,7 @@ namespace UnityTools.Single
         /// <returns>Pool</returns>
         public GameObjectPool Init(GameObject prefab, int count = 0, bool reset = false)
         {
-            if (prefab == null)
-            {
-                Debuger.LogError("the prefab is null");
-            }
+            if (prefab == null) { Debuger.LogError("the prefab is null"); }
             else
             {
                 if (poolPrefab.ContainsKey(prefab.name))
@@ -99,13 +90,13 @@ namespace UnityTools.Single
                     Queue<GameObject> goQueue = new Queue<GameObject>();
                     for (int i = 0; i < count; i++)
                     {
-                        GameObject go   = Instantiate(prefab);
-                        Transform  tran = go.transform;
+                        GameObject go = Instantiate(prefab);
+                        Transform tran = go.transform;
                         if (reset)
                         {
                             tran.localPosition = Vector3.zero;
                             tran.localRotation = Quaternion.Euler(Vector3.zero);
-                            tran.localScale    = Vector3.one;
+                            tran.localScale = Vector3.one;
                         }
                         tran.SetParent(this.transform);
                         go.SetActive(false);
@@ -125,7 +116,23 @@ namespace UnityTools.Single
         /// </summary>
         /// <param name="gameObjectName"></param>
         /// <returns></returns>
-        public bool Has(string gameObjectName) { return poolPrefab.ContainsKey(gameObjectName); }
+        public bool Has(string gameObjectName)
+        {
+            return poolPrefab.ContainsKey(gameObjectName);
+        }
+        public bool Has(string gameObjectName, out GameObject obj)
+        {
+            if (Has(gameObjectName))
+            {
+                obj = GetObj(gameObjectName);
+                return true;
+            }
+            else
+            {
+                obj = null;
+                return false;
+            }
+        }
         /// <summary>
         /// 设置对象容量
         /// </summary>
@@ -139,15 +146,9 @@ namespace UnityTools.Single
                 {
                     poolCount[gameObjectName] = Mathf.Max(count, queue.Count);
                 }
-                else
-                {
-                    poolCount.Add(gameObjectName, Mathf.Max(count, queue.Count));
-                }
+                else { poolCount.Add(gameObjectName, Mathf.Max(count, queue.Count)); }
             }
-            else
-            {
-                Debuger.LogError($"[{gameObjectName}] does not exist");
-            }
+            else { Debuger.LogError($"[{gameObjectName}] does not exist"); }
         }
         /// <summary>
         /// 库存：对象池中当前对象的个数
@@ -156,10 +157,7 @@ namespace UnityTools.Single
         /// <returns></returns>
         private int Stock(string gameObjectName)
         {
-            if (poolCount.TryGetValue(gameObjectName, out int count))
-            {
-                return count;
-            }
+            if (poolCount.TryGetValue(gameObjectName, out int count)) { return count; }
             return int.MaxValue;
         }
         /// <summary>
@@ -180,7 +178,7 @@ namespace UnityTools.Single
         /// </summary>
         /// <param name="gameObjectName"></param>
         /// <returns></returns>
-        public GameObject GetObj(string gameObjectName, Transform parent)
+        public GameObject GetObj(string gameObjectName)
         {
             GameObject temp = null;
             if (poolPrefab.TryGetValue(gameObjectName, out GameObject go))
@@ -190,27 +188,19 @@ namespace UnityTools.Single
                     if (pools[gameObjectName].Count > 0)
                     {
                         temp = pools[gameObjectName].Dequeue();
+                        temp.transform.SetParent(null);
                     }
                     else
                     {
-                        temp      = Instantiate(go);
+                        temp = Instantiate(go);
                         temp.name = gameObjectName;
                     }
                     temp.SetActive(true);
                     Transfer(gameObjectName, -1);
-#if UNITY_EDITOR
-                    temp.transform.SetParent(objParent);
-#endif
                 }
-                else
-                {
-                    Debuger.LogWarning("not enough " + gameObjectName);
-                }
+                else { Debuger.LogWarning("not enough " + gameObjectName); }
             }
-            else
-            {
-                Debuger.LogError($"[{gameObjectName}] does not exist");
-            }
+            else { Debuger.LogError($"[{gameObjectName}] does not exist"); }
             return temp;
         }
         /// <summary>
@@ -238,7 +228,7 @@ namespace UnityTools.Single
                     Transform tran = go.transform;
                     tran.localPosition = Vector3.zero;
                     tran.localRotation = Quaternion.identity;
-                    tran.localScale    = Vector3.one;
+                    tran.localScale = Vector3.one;
                 }
                 go.SetActive(false);
                 pools[go.name].Enqueue(go);
@@ -258,23 +248,16 @@ namespace UnityTools.Single
         {
             if (poolPrefab.ContainsKey(gameObjectName))
             {
-                foreach (GameObject go in pools[gameObjectName])
-                {
-                    Destroy(go);
-                }
+                foreach (GameObject go in pools[gameObjectName]) { Destroy(go); }
 #if UNITY_EDITOR
                 tempList.Remove(poolPrefab[gameObjectName]);
 #endif
                 pools[gameObjectName].Clear();
                 pools.Remove(gameObjectName);
                 poolPrefab.Remove(gameObjectName);
-                removeObjAction?.Invoke(gameObjectName);
                 Debuger.LogWarning($"remove [{gameObjectName}]");
             }
-            else
-            {
-                Debuger.LogError($"[{gameObjectName}] does not exist");
-            }
+            else { Debuger.LogWarning($"[{gameObjectName}] does not exist"); }
         }
     }
 }

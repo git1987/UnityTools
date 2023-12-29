@@ -30,5 +30,9 @@ namespace UnityTools.UI
         /// 关闭面板
         /// </summary>
         public virtual void Hide() { gameObject.SetActive(false); }
+        /// <summary>
+        /// 移除面板
+        /// </summary>
+        public virtual void Disable() { Destroy(this.gameObject); }
     }
 }

@@ -148,7 +148,7 @@ namespace UnityTools
         /// <param name="action"></param>
         public static void AddListener<E>(E key, EventAction action) where E : Enum
         {
-            AddListener(key.ToString(), action);
+            AddListener($"{typeof(E).Name}.{key.ToString()}", action);
         }
         /// <summary>
         /// 标记Enum，添加一个事件监听
@@ -364,12 +364,12 @@ namespace UnityTools
         /// <param name="action"></param>
         public static void AddListener<E>(E key, EventAction<T> action) where E : Enum
         {
-            AddListener(key.ToString(), action);
+            AddListener($"{typeof(E).Name}.{key.ToString()}", action);
         }
 
         public static void AddListener<E>(E key, EventAction<T> action, bool dontClear) where E : Enum
         {
-            AddListener(key.ToString(), action, dontClear);
+            AddListener($"{typeof(E).Name}.{key.ToString()}", action, dontClear);
         }
         /// <summary>
         /// 移除委托
@@ -566,7 +566,7 @@ namespace UnityTools
         /// <param name="action"></param>
         public static void AddListener<E>(E key, EventAction<T1, T2> action) where E : Enum
         {
-            AddListener(key.ToString(), action);
+            AddListener($"{typeof(E).Name}.{key.ToString()}", action);
         }
         /// <summary>
         /// 标记Enum，添加一个事件监听
@@ -576,7 +576,7 @@ namespace UnityTools
         /// <param name="dontClear">是否在Clear()内自动批量清除监听</param>
         public static void AddListener<E>(E key, EventAction<T1, T2> action, bool dontClear) where E : Enum
         {
-            AddListener(key.ToString(), action, dontClear);
+            AddListener($"{typeof(E).Name}.{key.ToString()}", action, dontClear);
         }
         /// <summary>
         /// 移除委托

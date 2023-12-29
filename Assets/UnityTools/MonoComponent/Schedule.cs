@@ -7,6 +7,9 @@ namespace UnityTools.MonoComponent
     /// </summary>
     public class Schedule : MonoBehaviour
     {
+        /// <summary>
+        /// 计时数据
+        /// </summary>
         public struct ScheduleData
         {
             /// <summary>
@@ -46,38 +49,35 @@ namespace UnityTools.MonoComponent
             return schedule;
         }
 
-        //是否已经结束
+        //计时任务是否结束
         bool over;
-
         //开关
         bool enable;
-
         //计时器
         float timer;
-
         //当前循环调用的方法次数
         int repeatIndex;
         ScheduleData scheduleData;
-
+        //是否受timeScale影响
         bool unscaleTime;
         /// <summary>
         /// 延迟调用一次
         /// </summary>
         /// <param name="action"></param>
         /// <param name="time">等待时间</param>
-        public void Once(EventAction action, float time, bool unscaleTime = false)
+        public Schedule Once(EventAction action, float time, bool unscaleTime = false)
         {
             if (time <= 0)
             {
-                UnityTools.Debuger.Log("time<=0？");
-                Stop(true);
+                Debuger.Log("time<=0？");
                 action?.Invoke();
-                return;
+                Stop(true);
+                return this;
             }
             if (action == null)
             {
-                UnityTools.Debuger.LogError("callback is null！");
-                return;
+                Debuger.LogError("callback is null！");
+                return this;
             }
             scheduleData = new ScheduleData() { action = action, maxTime = float.MaxValue };
             enable = true;
@@ -86,6 +86,7 @@ namespace UnityTools.MonoComponent
                 timer = time + Time.unscaledDeltaTime;
             else
                 timer = time + Time.deltaTime;
+            return this;
         }
         /// <summary>
         /// 重复调用方法
@@ -96,7 +97,7 @@ namespace UnityTools.MonoComponent
         /// <param name="repeat"></param>
         /// <param name="maxTime"></param>
         /// <param name="finish"></param>
-        public void Repeated(EventAction<int> repeatedAction, float startTime, float periodTime, int repeat,
+        public Schedule Repeated(EventAction<int> repeatedAction, float startTime, float periodTime, int repeat,
                              float maxTime, EventAction finish, bool unscaleTime = false)
         {
             enable = true;
@@ -121,15 +122,24 @@ namespace UnityTools.MonoComponent
             }
             repeatIndex = 0;
             this.unscaleTime = unscaleTime;
+            return this;
         }
         /// <summary>
         /// 暂停计时任务
         /// </summary>
-        public void Pause() { enable = false; }
+        public Schedule Pause()
+        {
+            enable = false;
+            return this;
+        }
         /// <summary>
         /// 继续计时任务
         /// </summary>
-        public void KeepOn() { enable = true; }
+        public Schedule KeepOn()
+        {
+            enable = true;
+            return this;
+        }
         /// <summary>
         /// 停止计时任务
         /// </summary>

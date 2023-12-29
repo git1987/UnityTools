@@ -43,7 +43,7 @@ namespace UnityTools.UI
             getPanelFunction = function;
         }
         /// <summary>
-        /// 根据面板名称的全称自动加载panel prefab的委托
+        /// 移除面板时的委托
         /// </summary>
         private static EventAction<string> removePanelAction = null;
         /// <summary>
@@ -68,6 +68,10 @@ namespace UnityTools.UI
             else { Debuger.LogError($"之前场景没有清空UICtrl[{uiCtrl}]", uiCtrl.gameObject); }
             uiCtrl = _uiCtrl;
         }
+        /// <summary>
+        /// 移除场景UICtrl控制器
+        /// </summary>
+        /// <param name="currentUICtrl"></param>
         public static void RemoveUICtrl(UICtrl currentUICtrl)
         {
             if (currentUICtrl == null) { Debuger.LogError("currentUICtrl is null"); }
@@ -75,6 +79,9 @@ namespace UnityTools.UI
             else if (uiCtrl != currentUICtrl) { Debuger.LogError("当前场景uiCtrl和UIManger.uiCtrl不相同"); }
             uiCtrl = null;
         }
+        //
+        public static void SetShowPanel(BasePanel panel) { }
+        public static void RemoveShowPanel(BasePanel panel) { }
         /// <summary>
         /// 泛型获取当前场景的UICtrl
         /// </summary>
@@ -178,8 +185,8 @@ namespace UnityTools.UI
             if (panels.TryGetValue(panelName, out BasePanel panel))
             {
                 removePanelAction?.Invoke(panelName);
+                panel.Disable();
                 panels.Remove(panelName);
-                GameObject.Destroy(panel.gameObject);
             }
         }
         /// <summary>
