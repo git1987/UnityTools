@@ -101,17 +101,20 @@ namespace UnityTools.UI
         /// </summary>
         /// <typeparam name="P"></typeparam>
         /// <param name="panelObj"></param>
-        public static P CreatePanel<P>(GameObject panelObj) where P : BasePanel
+        public static BasePanel CreatePanel(GameObject panelObj)
         {
-            string panelName = typeof(P).Name;
-            if (panelObj == null) { throw new NullReferenceException($"[{panelName}] GameObejct is null!"); }
-            P p;
-            if (panels.TryGetValue(panelName, out BasePanel basePanel)) { p = basePanel as P; }
+            if (panelObj == null) { throw new NullReferenceException($"panel GameObejct is null!"); }
+            string panelName = panelObj.name;
+            BasePanel p;
+            if (panels.TryGetValue(panelName, out BasePanel basePanel))
+            {
+                p = basePanel;
+            }
             else
             {
                 //GameObject panelObj = GameObject.Instantiate<GameObject>(panelObj);
                 panelObj.SetActive(false);
-                p = panelObj.GetComponent<P>();
+                p = panelObj.GetComponent<BasePanel>();
                 if (p == null) { throw new NullReferenceException($"[{panelName}] Component is null!"); }
                 p.panelLv = -1;
                 panels.Add(panelName, p);
@@ -140,18 +143,42 @@ namespace UnityTools.UI
                 else if (getPanelFunction != null)
                     panelObj = getPanelFunction(panelName);
                 if (panelObj == null)
-                {
                     throw new NullReferenceException($"[{panelName}] GameObejct is null!");
-                }
                 panelObj.name = panelName;
-                panel = CreatePanel<P>(panelObj);
+                panel = CreatePanel(panelObj) as P;
             }
             if (panel != null)
             {
                 SetPanelLv(panel, panelLv);
                 panel.Show();
             }
-            else { UnityTools.Debuger.LogError($"{panelName}不存在"); }
+            else { Debuger.LogError($"{panelName}不存在"); }
+            return panel;
+        }
+        /// <summary>
+        /// 根据面板名称打开面板
+        /// </summary>
+        /// <param name="panelName"></param>
+        /// <returns></returns>
+        /// <exception cref="NullReferenceException"></exception>
+        public static BasePanel OpenPanel(string panelName)
+        {
+            if (panels.TryGetValue(panelName, out BasePanel panel))
+            {
+                panel.Show();
+            }
+            else
+            {
+                GameObject panelObj = null;
+                if (getPanelPrefabFunction != null)
+                    panelObj = GameObject.Instantiate(getPanelPrefabFunction(panelName));
+                else if (getPanelFunction != null)
+                    panelObj = getPanelFunction(panelName);
+                if (panelObj == null)
+                    throw new NullReferenceException($"[{panelName}] GameObejct is null!");
+                panelObj.name = panelName;
+                panel = CreatePanel(panelObj);
+            }
             return panel;
         }
         /// <summary>
@@ -162,6 +189,12 @@ namespace UnityTools.UI
         public static void ClosePanel<P>() where P : BasePanel
         {
             GetPanel<P>()?.Hide();
+        }
+
+        public static void ClosePanel(string panelName)
+        {
+            if (panels.TryGetValue(panelName, out BasePanel panel))
+                panel.Hide();
         }
         /// <summary>
         /// 获取面板
@@ -175,6 +208,18 @@ namespace UnityTools.UI
             Debuger.LogFormat("没有初始化{0}面板", panelName);
             return null;
         }
+
+        /// <summary>
+        /// 获取面板
+        /// </summary>
+        /// <typeparam name="P"></typeparam>
+        /// <returns></returns>
+        public static BasePanel GetPanel(string panelName)
+        {
+            panels.TryGetValue(panelName, out BasePanel panel);
+            if (panel == null) Debuger.LogError($"没有初始化{0}面板");
+            return panel;
+        }
         /// <summary>
         /// 移除面板
         /// </summary>
@@ -182,6 +227,19 @@ namespace UnityTools.UI
         public static void RemovePanel<P>() where P : BasePanel
         {
             string panelName = typeof(P).Name;
+            if (panels.TryGetValue(panelName, out BasePanel panel))
+            {
+                removePanelAction?.Invoke(panelName);
+                panel.Disable();
+                panels.Remove(panelName);
+            }
+        }
+        /// <summary>
+        /// 移除面板
+        /// </summary>
+        /// <typeparam name="P"></typeparam>
+        public static void RemovePanel(string panelName)
+        {
             if (panels.TryGetValue(panelName, out BasePanel panel))
             {
                 removePanelAction?.Invoke(panelName);

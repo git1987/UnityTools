@@ -48,7 +48,8 @@ namespace UnityTools.UI
                         if (c == null)
                         {
                             EditorGUILayout.HelpBox("进入编辑模式或者实例化在场景中，并设置父级为Canvas",
-                                MessageType.Warning);
+                                MessageType.Warning
+                            );
                             return;
                         }
                         vr.canvasRect = c.transform as RectTransform;
@@ -81,6 +82,11 @@ namespace UnityTools.UI
                 if (!vr.unenableHide)
                 {
                     vr.restPos = EditorGUILayout.Toggle("未激活时是否回到原位", vr.restPos);
+                    vr.backCenterPos = EditorGUILayout.Toggle("是否回到区域中心位置", vr.backCenterPos);
+                    if (!vr.backCenterPos)
+                    {
+                        vr.oldPos = EditorGUILayout.Vector2Field("要回到的初始位置", vr.oldPos);
+                    }
                 }
                 if (vr) GUILayout.Space(5);
                 vr.ignoreUI = EditorGUILayout.Toggle("是否忽略UI遮挡", vr.ignoreUI);
@@ -201,6 +207,9 @@ namespace UnityTools.UI
         /// </summary>
         private bool restPos;
         [SerializeField]
+        private bool backCenterPos;
+        public Vector2 oldPos;
+        [SerializeField]
         private GraphicPointer gp;
         /// <summary>
         /// 摇杆区域背景
@@ -265,6 +274,21 @@ namespace UnityTools.UI
         {
             canvasRect = canvas;
         }
+
+        /// <summary>
+        /// 设置虚拟摇杆状态
+        /// </summary>
+        /// <param name="unenableHide"></param>
+        /// <param name="_restPos"></param>
+        /// <param name="backCenterPos"></param>
+        /// <param name="backPos"></param>
+        public void SetState(bool _unenableHide, bool _restPos, bool _backCenterPos, Vector2 _backPos)
+        {
+            unenableHide = _unenableHide;
+            backCenterPos = _backCenterPos;
+            oldPos = _backPos;
+            ResetRocker();
+        }
         /// <summary>
         /// 是否触发虚拟摇杆UI
         /// </summary>
@@ -314,7 +338,10 @@ namespace UnityTools.UI
                           maxX = areaRect.anchorMax.x * canvasRect.sizeDelta.x + areaRect.offsetMax.x,
                           minY = areaRect.anchorMin.y * canvasRect.sizeDelta.y + areaRect.offsetMin.y,
                           maxY = areaRect.anchorMax.y * canvasRect.sizeDelta.y + areaRect.offsetMax.y;
-                    _pointBg.anchoredPosition = new Vector2(minX + (maxX - minX) / 2, minY + (maxY - minY) / 2);
+                    if (backCenterPos)
+                        _pointBg.anchoredPosition = new Vector2(minX + (maxX - minX) / 2, minY + (maxY - minY) / 2);
+                    else
+                        _pointBg.anchoredPosition = oldPos;
                 }
                 _point.anchoredPosition = Vector2.zero;
                 _pointBg.gameObject.SetActive(true);
