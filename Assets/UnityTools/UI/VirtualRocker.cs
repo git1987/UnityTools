@@ -270,6 +270,28 @@ namespace UnityTools.UI
             _pointer.gameObject.SetActive(showPointer);
             ResetRocker();
         }
+        /// <summary>
+        /// 开启虚拟摇杆
+        /// </summary>
+        public void Enable()
+        {
+            gameObject.SetActive(true);
+        }
+        /// <summary>
+        /// 禁用虚拟摇杆
+        /// </summary>
+        public void Unenable()
+        {
+            Stop();
+            gameObject.SetActive(false);
+        }
+        /// <summary>
+        /// 停止虚拟摇杆
+        /// </summary>
+        public void Stop()
+        {
+            ResetRocker();
+        }
         public void SetCanvas(RectTransform canvas)
         {
             canvasRect = canvas;
