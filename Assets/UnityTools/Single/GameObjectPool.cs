@@ -53,32 +53,8 @@ namespace UnityTools.Single
         private readonly Dictionary<string, GameObject> poolPrefab = new Dictionary<string, GameObject>();
         private readonly Dictionary<string, Queue<GameObject>> pools = new Dictionary<string, Queue<GameObject>>();
         private readonly Dictionary<string, int> poolCount = new Dictionary<string, int>();
-        private Transform _poolParent;
-        private Transform poolParent
-        {
-            get
-            {
-                if (_poolParent == null)
-                {
-                    _poolParent = new GameObject("objParent").transform;
-                    _poolParent.SetParentReset(this.transform);
-                }
-                return _poolParent;
-            }
-        }
-        private Transform _useParent;
-        private Transform useParent
-        {
-            get
-            {
-                if (_useParent == null)
-                {
-                    _useParent = new GameObject("useParent").transform;
-                    _useParent.SetParentReset(this.transform);
-                }
-                return _useParent;
-            }
-        }
+        private Transform poolParent;
+        private Transform useParent;
 #if UNITY_EDITOR
         /// <summary>
         /// 便于编辑器内查看
@@ -95,6 +71,14 @@ namespace UnityTools.Single
         {
             get => this.GetObj(gameObjectName);
             set => RecoverObj(value, false);
+        }
+        protected override void Awake()
+        {
+            base.Awake();
+            useParent = new GameObject("useParent").transform;
+            useParent.SetParentReset(this.transform);
+            poolParent = new GameObject("objParent").transform;
+            poolParent.SetParentReset(this.transform);
         }
         /// <summary>
         /// 初始化对象池
