@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityTools.Extend;
 
 namespace UnityTools.Single
 {
@@ -52,6 +53,32 @@ namespace UnityTools.Single
         private readonly Dictionary<string, GameObject> poolPrefab = new Dictionary<string, GameObject>();
         private readonly Dictionary<string, Queue<GameObject>> pools = new Dictionary<string, Queue<GameObject>>();
         private readonly Dictionary<string, int> poolCount = new Dictionary<string, int>();
+        private Transform _poolParent;
+        private Transform poolParent
+        {
+            get
+            {
+                if (_poolParent == null)
+                {
+                    _poolParent = new GameObject("objParent").transform;
+                    _poolParent.SetParentReset(this.transform);
+                }
+                return _poolParent;
+            }
+        }
+        private Transform _useParent;
+        private Transform useParent
+        {
+            get
+            {
+                if (_useParent == null)
+                {
+                    _useParent = new GameObject("useParent").transform;
+                    _useParent.SetParentReset(this.transform);
+                }
+                return _useParent;
+            }
+        }
 #if UNITY_EDITOR
         /// <summary>
         /// 便于编辑器内查看
@@ -96,9 +123,9 @@ namespace UnityTools.Single
                         {
                             tran.localPosition = Vector3.zero;
                             tran.localRotation = Quaternion.Euler(Vector3.zero);
-                            tran.localScale = Vector3.one;
+                            tran.localScale    = Vector3.one;
                         }
-                        tran.SetParent(this.transform);
+                        tran.SetParent(poolParent);
                         go.SetActive(false);
                         goQueue.Enqueue(go);
                     }
@@ -188,13 +215,13 @@ namespace UnityTools.Single
                     if (pools[gameObjectName].Count > 0)
                     {
                         temp = pools[gameObjectName].Dequeue();
-                        temp.transform.SetParent(null);
                     }
                     else
                     {
-                        temp = Instantiate(go);
+                        temp      = Instantiate(go);
                         temp.name = gameObjectName;
                     }
+                    temp.transform.SetParent(useParent);
                     temp.SetActive(true);
                     Transfer(gameObjectName, -1);
                 }
@@ -222,13 +249,13 @@ namespace UnityTools.Single
                     Debuger.LogError($"[{go.name}] has already been placed in the Pool！", go);
                     return;
                 }
-                go.transform.SetParent(this.transform);
+                go.transform.SetParent(poolParent);
                 if (resetTransform)
                 {
                     Transform tran = go.transform;
                     tran.localPosition = Vector3.zero;
                     tran.localRotation = Quaternion.identity;
-                    tran.localScale = Vector3.one;
+                    tran.localScale    = Vector3.one;
                 }
                 go.SetActive(false);
                 pools[go.name].Enqueue(go);
