@@ -56,7 +56,7 @@ namespace UnityTools.MonoComponent
         private void OnDisable()
         {
             if (deathObj == null || GameObjectPool.instance == null) return;
-            GameObject effect = GameObjectPool.instance.Init(deathObj).GetObj(deathObj.name, null);
+            GameObject effect = GameObjectPool.instance.Init(deathObj).GetObj(deathObj.name);
             Transform  tran   = this.transform;
             effect.transform.SetPositionAndRotation(tran.position, tran.rotation);
         }
