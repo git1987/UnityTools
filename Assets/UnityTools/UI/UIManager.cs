@@ -27,6 +27,10 @@ namespace UnityTools.UI
         /// </summary>
         private static EventFunction<string, GameObject> getPanelFunction = null;
         /// <summary>
+        /// 已经显示的panel
+        /// </summary>
+        private static Dictionary<string, BasePanel> showPanels = new();
+        /// <summary>
         /// 设置自动加载panel prefab的委托
         /// </summary>
         /// <param name="function"></param>
@@ -79,9 +83,28 @@ namespace UnityTools.UI
             else if (uiCtrl != currentUICtrl) { Debuger.LogError("当前场景uiCtrl和UIManger.uiCtrl不相同"); }
             uiCtrl = null;
         }
-        //
-        public static void SetShowPanel(BasePanel panel) { }
-        public static void RemoveShowPanel(BasePanel panel) { }
+        /// <summary>
+        /// 设置面板为显示状态
+        /// </summary>
+        /// <param name="panel"></param>
+        public static void SetShowPanel(BasePanel panel)
+        {
+            if (!showPanels.ContainsKey(panel.PanelName))
+            {
+                showPanels.Add(panel.PanelName, panel);
+            }
+        }
+        /// <summary>
+        /// 设置面板为关闭状态
+        /// </summary>
+        /// <param name="panel"></param>
+        public static void SetHidePanel(BasePanel panel)
+        {
+            if (showPanels.ContainsKey(panel.PanelName))
+            {
+                showPanels.Remove(panel.PanelName);
+            }
+        }
         /// <summary>
         /// 泛型获取当前场景的UICtrl
         /// </summary>
@@ -116,7 +139,6 @@ namespace UnityTools.UI
                 panelObj.SetActive(false);
                 p = panelObj.GetComponent<BasePanel>();
                 if (p == null) { throw new NullReferenceException($"[{panelName}] Component is null!"); }
-                p.panelLv = -1;
                 panels.Add(panelName, p);
                 RectTransform rect = panelObj.GetComponent<RectTransform>();
                 rect.SetParentReset(uiCtrl.rect);
@@ -130,29 +152,14 @@ namespace UnityTools.UI
         /// <typeparam name="P">面板类</typeparam>
         /// <param name="panelLv">设置的面板等级(0级为预留最低层级)</param>
         /// <returns></returns>
-        public static P OpenPanel<P>(int panelLv = 1) where P : BasePanel
+        public static P OpenPanel<P>(int panelLv = 0) where P : BasePanel
         {
-            P panel = null;
             string panelName = typeof(P).Name;
-            if (panels.TryGetValue(panelName, out BasePanel basePanel)) { panel = basePanel as P; }
-            else
+            P panel = OpenPanel(panelName, panelLv) as P;
+            if (panel == null)
             {
-                GameObject panelObj = null;
-                if (getPanelPrefabFunction != null)
-                    panelObj = GameObject.Instantiate(getPanelPrefabFunction(panelName));
-                else if (getPanelFunction != null)
-                    panelObj = getPanelFunction(panelName);
-                if (panelObj == null)
-                    throw new NullReferenceException($"[{panelName}] GameObejct is null!");
-                panelObj.name = panelName;
-                panel = CreatePanel(panelObj) as P;
+                Debuger.LogError($"{panelName}不存在");
             }
-            if (panel != null)
-            {
-                SetPanelLv(panel, panelLv);
-                panel.Show();
-            }
-            else { Debuger.LogError($"{panelName}不存在"); }
             return panel;
         }
         /// <summary>
@@ -161,13 +168,10 @@ namespace UnityTools.UI
         /// <param name="panelName"></param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public static BasePanel OpenPanel(string panelName)
+        public static BasePanel OpenPanel(string panelName, int panelLv = 0)
         {
-            if (panels.TryGetValue(panelName, out BasePanel panel))
-            {
-                panel.Show();
-            }
-            else
+            BasePanel panel;
+            if (!panels.TryGetValue(panelName, out panel))
             {
                 GameObject panelObj = null;
                 if (getPanelPrefabFunction != null)
@@ -179,6 +183,8 @@ namespace UnityTools.UI
                 panelObj.name = panelName;
                 panel = CreatePanel(panelObj);
             }
+            panel.Show();
+            SetPanelLv(panel, panelLv > 0 ? panelLv : panel.panelLv);
             return panel;
         }
         /// <summary>
@@ -188,13 +194,15 @@ namespace UnityTools.UI
         /// <param name="p"></param>
         public static void ClosePanel<P>() where P : BasePanel
         {
-            GetPanel<P>()?.Hide();
+            ClosePanel(typeof(P).Name);
         }
 
         public static void ClosePanel(string panelName)
         {
             if (panels.TryGetValue(panelName, out BasePanel panel))
-                panel.Hide();
+            {
+                SetHidePanel(panel);
+            }
         }
         /// <summary>
         /// 获取面板
@@ -221,18 +229,31 @@ namespace UnityTools.UI
             return panel;
         }
         /// <summary>
+        /// 判断面板是否打开中
+        /// </summary>
+        /// <typeparam name="P"></typeparam>
+        /// <returns></returns>
+        public static bool IsOpen<P>()
+        {
+            return IsOpen(typeof(P).Name);
+        }
+        /// <summary>
+        /// 判断面板是否打开中
+        /// </summary>
+        /// <param name="panelName">面板名称</param>
+        /// <returns></returns>
+        public static bool IsOpen(string panelName)
+        {
+            return showPanels.ContainsKey(panelName);
+        }
+        /// <summary>
         /// 移除面板
         /// </summary>
         /// <typeparam name="P"></typeparam>
         public static void RemovePanel<P>() where P : BasePanel
         {
             string panelName = typeof(P).Name;
-            if (panels.TryGetValue(panelName, out BasePanel panel))
-            {
-                removePanelAction?.Invoke(panelName);
-                panel.Disable();
-                panels.Remove(panelName);
-            }
+            RemovePanel(panelName);
         }
         /// <summary>
         /// 移除面板
@@ -242,8 +263,8 @@ namespace UnityTools.UI
         {
             if (panels.TryGetValue(panelName, out BasePanel panel))
             {
-                removePanelAction?.Invoke(panelName);
                 panel.Disable();
+                removePanelAction?.Invoke(panelName);
                 panels.Remove(panelName);
             }
         }

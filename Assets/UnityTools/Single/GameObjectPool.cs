@@ -10,6 +10,22 @@ namespace UnityTools.Single
     [AddComponentMenu("UnitTools/Single/GameObject对象池")]
     public class GameObjectPool : SingleMono<GameObjectPool>
     {
+        public enum EventType
+        {
+            /// <summary>
+            /// 初始化GameObjectPool
+            /// </summary>
+            Init,
+            /// <summary>
+            /// 初始化一个对象：string[prefab name]
+            /// </summary>
+            InitObj,
+            /// <summary>
+            /// 移除一个对象：string[prfab name]
+            /// </summary>
+            RemoveObj
+        }
+        public readonly string EventKey = "Event_GameObjectPool";
         /// <summary>
         /// 回收GameObject对象，如果没有创建Pool则被Destroy掉
         /// </summary>
@@ -30,14 +46,11 @@ namespace UnityTools.Single
         /// <returns></returns>
         public static GameObject Get(string gameObjectName)
         {
-            if (gameObjectName == string.Empty)
+            if (instance == null)
             {
-                Debuger.LogError("name is empty!");
-                return null;
+                Debuger.LogError("There is no Pool component in the scene");
             }
-            if (instance != null) return instance[gameObjectName];
-            Debuger.LogError("There is no Pool component in the scene");
-            return null;
+            return instance.GetObj(gameObjectName);
         }
         /// <summary>
         /// 移除GameObject对象
@@ -74,11 +87,15 @@ namespace UnityTools.Single
         }
         protected override void Awake()
         {
+            if (_instance == null)
+            {
+                EventManager.Broadcast(EventType.Init);
+                useParent = new GameObject("useParent").transform;
+                useParent.SetParentReset(this.transform);
+                poolParent = new GameObject("objParent").transform;
+                poolParent.SetParentReset(this.transform);
+            }
             base.Awake();
-            useParent = new GameObject("useParent").transform;
-            useParent.SetParentReset(this.transform);
-            poolParent = new GameObject("objParent").transform;
-            poolParent.SetParentReset(this.transform);
         }
         /// <summary>
         /// 初始化对象池
@@ -106,8 +123,12 @@ namespace UnityTools.Single
                         if (reset)
                         {
                             tran.localPosition = Vector3.zero;
-                            tran.localRotation = Quaternion.Euler(Vector3.zero);
-                            tran.localScale    = Vector3.one;
+                            if (tran is RectTransform)
+                            {
+                                (tran as RectTransform).anchoredPosition3D = Vector3.zero;
+                            }
+                            tran.localRotation = Quaternion.identity;
+                            tran.localScale = Vector3.one;
                         }
                         tran.SetParent(poolParent);
                         go.SetActive(false);
@@ -115,6 +136,7 @@ namespace UnityTools.Single
                     }
                     pools.Add(prefab.name, goQueue);
                     poolPrefab.Add(prefab.name, prefab);
+                    EventManager<string>.Broadcast(EventType.InitObj, prefab.name);
 #if UNITY_EDITOR
                     tempList.Add(prefab);
 #endif
@@ -149,7 +171,7 @@ namespace UnityTools.Single
         /// </summary>
         /// <param name="gameObjectName"></param>
         /// <param name="count"></param>
-        public void SetResize(string gameObjectName, int count)
+        public GameObjectPool SetResize(string gameObjectName, int count)
         {
             if (pools.TryGetValue(gameObjectName, out Queue<GameObject> queue))
             {
@@ -160,6 +182,7 @@ namespace UnityTools.Single
                 else { poolCount.Add(gameObjectName, Mathf.Max(count, queue.Count)); }
             }
             else { Debuger.LogError($"[{gameObjectName}] does not exist"); }
+            return this;
         }
         /// <summary>
         /// 库存：对象池中当前对象的个数
@@ -191,6 +214,11 @@ namespace UnityTools.Single
         /// <returns></returns>
         public GameObject GetObj(string gameObjectName)
         {
+            if (gameObjectName is { Length: > 0 })
+            {
+                Debuger.LogError("name is empty!");
+                return null;
+            }
             GameObject temp = null;
             if (poolPrefab.TryGetValue(gameObjectName, out GameObject go))
             {
@@ -202,7 +230,7 @@ namespace UnityTools.Single
                     }
                     else
                     {
-                        temp      = Instantiate(go);
+                        temp = Instantiate(go);
                         temp.name = gameObjectName;
                     }
                     temp.transform.SetParent(useParent);
@@ -239,7 +267,7 @@ namespace UnityTools.Single
                     Transform tran = go.transform;
                     tran.localPosition = Vector3.zero;
                     tran.localRotation = Quaternion.identity;
-                    tran.localScale    = Vector3.one;
+                    tran.localScale = Vector3.one;
                 }
                 go.SetActive(false);
                 pools[go.name].Enqueue(go);
@@ -266,6 +294,7 @@ namespace UnityTools.Single
                 pools[gameObjectName].Clear();
                 pools.Remove(gameObjectName);
                 poolPrefab.Remove(gameObjectName);
+                EventManager<string>.Broadcast(EventType.RemoveObj, gameObjectName);
                 Debuger.LogWarning($"remove [{gameObjectName}]");
             }
             else { Debuger.LogWarning($"[{gameObjectName}] does not exist"); }
