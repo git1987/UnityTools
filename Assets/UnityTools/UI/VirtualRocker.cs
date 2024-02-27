@@ -9,7 +9,7 @@ namespace UnityTools.UI
     /// <summary>
     /// 虚拟摇杆
     /// </summary>
-    [AddComponentMenu("UnitTools/UI/虚拟摇杆")]
+    [AddComponentMenu("UnityTools/UI/虚拟摇杆")]
     public class VirtualRocker : MonoBehaviour
     {
 #if UNITY_EDITOR

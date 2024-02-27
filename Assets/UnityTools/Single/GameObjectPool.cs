@@ -7,7 +7,7 @@ namespace UnityTools.Single
     /// <summary>
     /// GameObject对象池
     /// </summary>
-    [AddComponentMenu("UnitTools/Single/GameObject对象池")]
+    [AddComponentMenu("UnityTools/Single/GameObject对象池")]
     public class GameObjectPool : SingleMono<GameObjectPool>
     {
         public enum EventType

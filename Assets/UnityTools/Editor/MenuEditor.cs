@@ -30,7 +30,7 @@ namespace UnityTools.Editor
             }
             Debuger.LogError("先创建Canvas!");
         }
-        [MenuItem("GameObject/UnitTools/GameObjectPool #&P", priority = 2)]
+        [MenuItem("GameObject/UnityTools/GameObjectPool #&P", priority = 2)]
         static void CreateGameObjectPool()
         {
             GameObject[] gos = SceneManager.GetActiveScene().GetRootGameObjects();

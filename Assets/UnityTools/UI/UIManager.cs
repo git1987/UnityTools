@@ -31,6 +31,10 @@ namespace UnityTools.UI
         /// </summary>
         private static Dictionary<string, BasePanel> showPanels = new();
         /// <summary>
+        /// 是否设置面板级别
+        /// </summary>
+        public static bool setPanelLv = true;
+        /// <summary>
         /// 设置自动加载panel prefab的委托
         /// </summary>
         /// <param name="function"></param>
@@ -82,6 +86,7 @@ namespace UnityTools.UI
             else if (uiCtrl == null) { Debuger.LogError("UIManager.uiCtrl是空的，当前场景没有注册UICtrl"); }
             else if (uiCtrl != currentUICtrl) { Debuger.LogError("当前场景uiCtrl和UIManger.uiCtrl不相同"); }
             uiCtrl = null;
+            BaseModel.ClearModel();
         }
         /// <summary>
         /// 设置面板为显示状态
@@ -152,10 +157,10 @@ namespace UnityTools.UI
         /// <typeparam name="P">面板类</typeparam>
         /// <param name="panelLv">设置的面板等级(0级为预留最低层级)</param>
         /// <returns></returns>
-        public static P OpenPanel<P>(int panelLv = 0) where P : BasePanel
+        public static P OpenPanel<P>(params object[] objs) where P : BasePanel
         {
             string panelName = typeof(P).Name;
-            P panel = OpenPanel(panelName, panelLv) as P;
+            P panel = OpenPanel(panelName, objs) as P;
             if (panel == null)
             {
                 Debuger.LogError($"{panelName}不存在");
@@ -168,7 +173,7 @@ namespace UnityTools.UI
         /// <param name="panelName"></param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public static BasePanel OpenPanel(string panelName, int panelLv = 0)
+        public static BasePanel OpenPanel(string panelName, params object[] objs)
         {
             BasePanel panel;
             if (!panels.TryGetValue(panelName, out panel))
@@ -183,8 +188,13 @@ namespace UnityTools.UI
                 panelObj.name = panelName;
                 panel = CreatePanel(panelObj);
             }
-            panel.Show();
-            SetPanelLv(panel, panelLv > 0 ? panelLv : panel.panelLv);
+            panel.Show(objs);
+            if (setPanelLv)
+            {
+                panel.SetPanelLv(panel.panelLv);
+            }
+            else
+                setPanelLv = true;
             return panel;
         }
         /// <summary>
@@ -275,7 +285,6 @@ namespace UnityTools.UI
         /// <param name="panelLv"></param>
         public static void SetPanelLv(BasePanel panel, int panelLv)
         {
-            panel.panelLv = panelLv;
             Transform panelParent = GetPanelParent(panelLv);
             panel.transform.SetParent(panelParent);
             panel.transform.SetAsLastSibling();

@@ -11,28 +11,37 @@ namespace UnityTools.UI
         /// 面板是否是显示状态
         /// </summary>
         public bool isShow { protected set; get; }
-        public string PanelName => GetType().Name;
-        [SerializeField]
-        protected int _panelLv;
+        public virtual string PanelName => GetType().Name;
         /// <summary>
-        /// 面板等级
+        /// 设置的面板等级
         /// </summary>
-        public int panelLv => _panelLv;
+        public int panelLv;
+        /// <summary>
+        /// 当前面板等级
+        /// </summary>
+        public int currentPanelLv;
         /// <summary>
         /// 面板打开BasePanel，直接调用UIManager.OpenPanel，面板等级==当前面板
         /// </summary>
         /// <typeparam name="P"></typeparam>
         /// <returns></returns>
-        protected P Open<P>() where P : BasePanel
+        protected P Open<P>(params object[] objs) where P : BasePanel
         {
-            if (panelLv >= 0) return UIManager.OpenPanel<P>(panelLv);
-            Debuger.LogError(this.GetType().Name + "面板没有在UIManager中打开过，没有设置面板层级，无法打开其他面板");
-            return UIManager.OpenPanel<P>();
+            UIManager.setPanelLv = false;
+            P panel = UIManager.OpenPanel<P>(objs);
+            panel.SetPanelLv(currentPanelLv);
+            return panel;
+        }
+
+        public virtual void SetPanelLv(int panelLv)
+        {
+            currentPanelLv = panelLv;
+            UIManager.SetPanelLv(this, currentPanelLv);
         }
         /// <summary>
         /// 打开面板
         /// </summary>
-        public virtual void Show()
+        public virtual void Show(params object[] objs)
         {
             if (!isShow)
             {
