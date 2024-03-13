@@ -214,7 +214,7 @@ namespace UnityTools.Single
         /// <returns></returns>
         public GameObject GetObj(string gameObjectName)
         {
-            if (gameObjectName is { Length: > 0 })
+            if (gameObjectName is { Length: < 1 })
             {
                 Debuger.LogError("name is empty!");
                 return null;
