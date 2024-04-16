@@ -241,6 +241,7 @@ namespace UnityTools.Extend
         /// <typeparam name="V"></typeparam>
         public static void ForAction<K, V>(this Dictionary<K, V> dic, EventAction<K, V> action)
         {
+            if (dic.Count == 0) return;
             List<K> kList = new List<K>(dic.Keys);
             List<V> vList = new List<V>(dic.Values);
             for (int i = 0; i < kList.Count; i++)
@@ -259,6 +260,7 @@ namespace UnityTools.Extend
         public static void ForAction<K, V>(this Dictionary<K, V> dic, EventAction<K, V> action,
                                            EventFunction<bool> breakAction)
         {
+            if (dic.Count == 0) return;
             if (breakAction == null)
             {
                 dic.ForAction(action);
@@ -284,6 +286,7 @@ namespace UnityTools.Extend
         /// <typeparam name="V"></typeparam>
         public static void ForAction<K, V>(this Dictionary<K, V> dic, EventAction<K, V> action, in bool isBreak)
         {
+            if (dic.Count == 0) return;
             List<K> kList = new List<K>(dic.Keys);
             List<V> vList = new List<V>(dic.Values);
             for (int i = 0; i < kList.Count; i++)

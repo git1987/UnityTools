@@ -21,6 +21,10 @@ namespace UnityTools.Single
             /// </summary>
             InitObj,
             /// <summary>
+            /// 清理一个对象：string[prefab name]
+            /// </summary>
+            ClearObj,
+            /// <summary>
             /// 移除一个对象：string[prfab name]
             /// </summary>
             RemoveObj
@@ -64,7 +68,7 @@ namespace UnityTools.Single
                 instance.RemoveObj(gameObjectName);
         }
         private readonly Dictionary<string, GameObject> poolPrefab = new Dictionary<string, GameObject>();
-        private readonly Dictionary<string, Queue<GameObject>> pools = new Dictionary<string, Queue<GameObject>>();
+        private readonly Dictionary<string, Stack<GameObject>> pools = new Dictionary<string, Stack<GameObject>>();
         private readonly Dictionary<string, int> poolCount = new Dictionary<string, int>();
         private Transform poolParent;
         private Transform useParent;
@@ -115,7 +119,7 @@ namespace UnityTools.Single
                 }
                 else
                 {
-                    Queue<GameObject> goQueue = new Queue<GameObject>();
+                    Stack<GameObject> goQueue = new Stack<GameObject>();
                     for (int i = 0; i < count; i++)
                     {
                         GameObject go = Instantiate(prefab);
@@ -132,7 +136,7 @@ namespace UnityTools.Single
                         }
                         tran.SetParent(poolParent);
                         go.SetActive(false);
-                        goQueue.Enqueue(go);
+                        goQueue.Push(go);
                     }
                     pools.Add(prefab.name, goQueue);
                     poolPrefab.Add(prefab.name, prefab);
@@ -173,7 +177,7 @@ namespace UnityTools.Single
         /// <param name="count"></param>
         public GameObjectPool SetResize(string gameObjectName, int count)
         {
-            if (pools.TryGetValue(gameObjectName, out Queue<GameObject> queue))
+            if (pools.TryGetValue(gameObjectName, out Stack<GameObject> queue))
             {
                 if (poolCount.ContainsKey(gameObjectName))
                 {
@@ -226,7 +230,7 @@ namespace UnityTools.Single
                 {
                     if (pools[gameObjectName].Count > 0)
                     {
-                        temp = pools[gameObjectName].Dequeue();
+                        temp = pools[gameObjectName].Pop();
                     }
                     else
                     {
@@ -270,7 +274,7 @@ namespace UnityTools.Single
                     tran.localScale = Vector3.one;
                 }
                 go.SetActive(false);
-                pools[go.name].Enqueue(go);
+                pools[go.name].Push(go);
                 Transfer(name, 1);
             }
             else
@@ -278,6 +282,21 @@ namespace UnityTools.Single
                 Debug.LogWarning($"[{go.name}] is not in Pool");
                 Destroy(go);
             }
+        }
+        /// <summary>
+        /// 清理对象：保留对象prefab，清除已生成的对象
+        /// </summary>
+        public void ClearObj(string gameObjectName)
+        {
+            if (poolPrefab.ContainsKey(gameObjectName))
+            {
+                foreach (GameObject go in pools[gameObjectName]) { Destroy(go); }
+
+                pools[gameObjectName].Clear();
+                EventManager<string>.Broadcast(EventType.ClearObj, gameObjectName);
+                Debuger.LogWarning($"clear [{gameObjectName}]");
+            }
+            else { Debuger.LogWarning($"[{gameObjectName}] does not exist"); }
         }
         /// <summary>
         /// 移除对象
