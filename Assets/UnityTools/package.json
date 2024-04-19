@@ -1,0 +1,13 @@
+{
+    "name": "com.JoH.UnityTools",
+    "displayName": "UnityTools",
+    "version": "0.0.1-prerelease",
+    "unity": "2021.2",
+    "unityRelease": "18f1",
+    "description": "工具集",
+    "keywords": ["Unity","Tools"],
+    "author": "Jo.H",
+    "dependencies":[],
+    "samples": [],
+    "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.cinemachine@2.9/manual/index.html",
+}
