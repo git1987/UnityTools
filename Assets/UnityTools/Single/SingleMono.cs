@@ -3,6 +3,32 @@
 namespace UnityTools.Single
 {
     /// <summary>
+    /// 普通类单例基类
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public abstract class Single<T> where T : Single<T>, new()
+    {
+        private static T ms_instance = default(T);
+
+        public static T instance
+        {
+            get
+            {
+                if (ms_instance == null)
+                {
+                    ms_instance = new T();
+                    ms_instance.InitSingleton();
+                }
+                return ms_instance;
+            }
+        }
+
+        protected virtual void InitSingleton()
+        {
+
+        }
+    }
+    /// <summary>
     /// MonoBehaviour单列基类
     /// </summary>
     /// <typeparam name="T"></typeparam>
