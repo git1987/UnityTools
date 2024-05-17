@@ -351,6 +351,7 @@ namespace UnityTools.UI
             }
             isClick         = false;
             currentMousePos = Vector2.negativeInfinity;
+            _point.anchoredPosition = Vector2.zero;
             if (unenableHide)
             {
                 _pointBg.gameObject.SetActive(false);
@@ -369,7 +370,6 @@ namespace UnityTools.UI
                     else
                         _pointBg.anchoredPosition = oldPos;
                 }
-                _point.anchoredPosition = Vector2.zero;
                 _pointBg.gameObject.SetActive(true);
                 _pointer.gameObject.SetActive(false);
             }

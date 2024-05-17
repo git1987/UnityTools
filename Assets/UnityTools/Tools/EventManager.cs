@@ -61,6 +61,11 @@ namespace UnityTools
     public delegate R EventFunction<in A, in B, in C, R>(A a, B b, C c);
 
     /// <summary>
+    /// 4参1返回值委托
+    /// </summary>
+    public delegate R EventFunction<in A, in B, in C, in D, R>(A a, B b, C c, D d);
+
+    /// <summary>
     /// 无参2返回值委托
     /// </summary>
     /// <typeparam name="R1"></typeparam>
@@ -89,6 +94,20 @@ namespace UnityTools
     /// <param name="b"></param>
     /// <returns></returns>
     public delegate (R1, R2) EventFunction2<in A, in B, R1, R2>(A a, B b);
+
+    /// <summary>
+    /// 3参2返回值委托
+    /// </summary>
+    /// <typeparam name="A"></typeparam>
+    /// <typeparam name="B"></typeparam>
+    /// <typeparam name="C"></typeparam>
+    /// <typeparam name="R1"></typeparam>
+    /// <typeparam name="R2"></typeparam>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <param name="c"></param>
+    /// <returns></returns>
+    public delegate (R1, R2) EventFunction2<in A, in B, in C, R1, R2>(A a, B b, C c);
 #endregion
 #region 无参监听事件
     /// <summary>
@@ -251,7 +270,7 @@ namespace UnityTools
         public static bool RemoveListener(EventAction action)
         {
             int removeCount = 0;
-            eventList.ForAction((eventData, index) =>
+            eventList.ForAction((eventData, _) =>
                 {
                     if (eventData.actionList.Remove(action)) { removeCount++; }
                 }
@@ -267,7 +286,7 @@ namespace UnityTools
         public static bool RemoveListener(string key, EventAction action)
         {
             bool isRemove = false;
-            eventList.ForAction((eventData, index) =>
+            eventList.ForAction((eventData, _) =>
                 {
                     if (eventData.actionList.Remove(action)) { isRemove = true; }
                 }, () => isRemove
@@ -291,7 +310,7 @@ namespace UnityTools
         public static void Broadcast(string key)
         {
             bool isKey = false;
-            eventList.ForAction((eventData, index) =>
+            eventList.ForAction((eventData, _) =>
                 {
                     if (eventData.key == key)
                     {
@@ -456,7 +475,7 @@ namespace UnityTools
         public static bool RemoveListener(EventAction<T> action)
         {
             int removeCount = 0;
-            eventList.ForAction((eventData, index) =>
+            eventList.ForAction((eventData, _) =>
                 {
                     if (eventData.actionList.Remove(action)) { removeCount++; }
                 }
@@ -472,7 +491,7 @@ namespace UnityTools
         public static bool RemoveListener(string key, EventAction<T> action)
         {
             bool isRemove = false;
-            eventList.ForAction((eventData, index) =>
+            eventList.ForAction((eventData, _) =>
                 {
                     if (eventData.actionList.Remove(action)) { isRemove = true; }
                 }, () => isRemove
@@ -497,7 +516,7 @@ namespace UnityTools
         public static void Broadcast(string key, T t)
         {
             bool isKey = false;
-            eventList.ForAction((eventData, index) =>
+            eventList.ForAction((eventData, _) =>
                 {
                     if (eventData.key == key)
                     {
@@ -669,7 +688,7 @@ namespace UnityTools
         public static bool RemoveListener(EventAction<T1, T2> action)
         {
             int removeCount = 0;
-            eventList.ForAction((eventData, index) =>
+            eventList.ForAction((eventData, _) =>
                 {
                     if (eventData.actionList.Remove(action)) { removeCount++; }
                 }
@@ -685,7 +704,7 @@ namespace UnityTools
         public static bool RemoveListener(string key, EventAction<T1, T2> action)
         {
             bool isRemove = false;
-            eventList.ForAction((eventData, index) =>
+            eventList.ForAction((eventData, _) =>
                 {
                     if (eventData.actionList.Remove(action)) { isRemove = true; }
                 }, () => isRemove
@@ -711,7 +730,7 @@ namespace UnityTools
         public static void Broadcast(string key, T1 t1, T2 t2)
         {
             bool isKey = false;
-            eventList.ForAction((eventData, index) =>
+            eventList.ForAction((eventData, _) =>
                 {
                     if (eventData.key == key)
                     {
@@ -768,7 +787,7 @@ namespace UnityTools
         public static void AddListener(string key, EventAction<T1, T2, T3> action)
         {
             bool isKey = false;
-            eventList.ForAction((eventData, index) =>
+            eventList.ForAction((eventData, _) =>
                 {
                     if (eventData.key == key)
                     {
@@ -788,7 +807,7 @@ namespace UnityTools
         /// </summary>
         /// <param name="key"></param>
         /// <param name="action"></param>
-        public static void AddListener<E>(E key, EventAction<T1, T2, T3> action) where E : System.Enum
+        public static void AddListener<E>(E key, EventAction<T1, T2, T3> action) where E : Enum
         {
             AddListener($"{typeof(E).Name}.{key.ToString()}", action);
         }
@@ -817,7 +836,7 @@ namespace UnityTools
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static bool RemoveListener<E>(E key) where E : System.Enum
+        public static bool RemoveListener<E>(E key) where E : Enum
         {
             return RemoveListener($"{typeof(E).Name}.{key.ToString()}");
         }
@@ -830,7 +849,7 @@ namespace UnityTools
         public static bool RemoveListener(EventAction<T1, T2, T3> action)
         {
             int removeCount = 0;
-            eventList.ForAction((eventData, index) =>
+            eventList.ForAction((eventData, _) =>
                 {
                     if (eventData.actionList.Remove(action)) { removeCount++; }
                 }
@@ -846,7 +865,7 @@ namespace UnityTools
         public static bool RemoveListener(string key, EventAction<T1, T2, T3> action)
         {
             bool isRemove = false;
-            eventList.ForAction((eventData, index) =>
+            eventList.ForAction((eventData, _) =>
                 {
                     if (eventData.actionList.Remove(action)) { isRemove = true; }
                 }, () => isRemove
@@ -859,7 +878,7 @@ namespace UnityTools
         /// </summary>
         /// <param name="key"></param>
         /// <param name="action"></param>
-        public static void RemoveListener<E>(E key, EventAction<T1, T2, T3> action) where E : System.Enum
+        public static void RemoveListener<E>(E key, EventAction<T1, T2, T3> action) where E : Enum
         {
             RemoveListener($"{typeof(E).Name}.{key.ToString()}", action);
         }
@@ -869,10 +888,11 @@ namespace UnityTools
         /// <param name="key"></param>
         /// <param name="t1"></param>
         /// <param name="t2"></param>
+        /// <param name="t3"></param>
         public static void Broadcast(string key, T1 t1, T2 t2, T3 t3)
         {
             bool isKey = false;
-            eventList.ForAction((eventData, index) =>
+            eventList.ForAction((eventData, _) =>
                 {
                     if (eventData.key == key)
                     {
@@ -888,9 +908,179 @@ namespace UnityTools
         /// <param name="key"></param>
         /// <param name="t1"></param>
         /// <param name="t2"></param>
-        public static void Broadcast<E>(E key, T1 t1, T2 t2, T3 t3) where E : System.Enum
+        /// <param name="t3"></param>
+        public static void Broadcast<E>(E key, T1 t1, T2 t2, T3 t3) where E : Enum
         {
             Broadcast($"{typeof(E).Name}.{key.ToString()}", t1, t2, t3);
+        }
+        /// <summary>
+        /// 清除所有委托
+        /// </summary>
+        public static void Clear()
+        {
+            Debuger.LogWarning($"clear <{typeof(T1).Name}, {typeof(T2).Name}> all events!");
+            eventList.Clear();
+        }
+    }
+#endregion
+#region 4参数监听事件
+    /// <summary>
+    /// 3参数事件监听
+    /// </summary>
+    public static class EventManager<T1, T2, T3, T4>
+    {
+        class EventData
+        {
+            public string key;
+            public List<EventAction<T1, T2, T3, T4>> actionList;
+        }
+
+        private static readonly List<EventData> eventList;
+        static EventManager()
+        {
+            eventList = new List<EventData>();
+            //通过调用EventManager的静态成员，提前调用EventManager静态的构造方法
+            EventManager.eventManagerClear.Add(Clear);
+        }
+        /// <summary>
+        /// 标记key，添加一个事件监听
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="action"></param>
+        public static void AddListener(string key, EventAction<T1, T2, T3, T4> action)
+        {
+            bool isKey = false;
+            eventList.ForAction((eventData, _) =>
+                {
+                    if (eventData.key == key)
+                    {
+                        if (eventData.actionList.Contains(action)) { Debuger.LogError(key + "重复添加事件监听"); }
+                        else { eventData.actionList.Add(action); }
+                        isKey = true;
+                    }
+                }, () => isKey
+            );
+            if (!isKey)
+            {
+                eventList.Add(new EventData()
+                    {
+                        key = key, actionList = new List<EventAction<T1, T2, T3, T4>> { action }
+                    }
+                );
+            }
+        }
+        /// <summary>
+        /// 标记key，添加一个事件监听
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="action"></param>
+        public static void AddListener<E>(E key, EventAction<T1, T2, T3, T4> action) where E : Enum
+        {
+            AddListener($"{typeof(E).Name}.{key.ToString()}", action);
+        }
+        /// <summary>
+        /// 移除委托
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static bool RemoveListener(string key)
+        {
+            bool isRemove = false;
+            eventList.ForAction((eventData, index) =>
+                {
+                    if (eventData.key == key)
+                    {
+                        eventData.actionList = null;
+                        eventList.RemoveAt(index);
+                        isRemove = true;
+                    }
+                }, () => isRemove
+            );
+            return isRemove;
+        }
+        /// <summary>
+        /// 移除委托
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static bool RemoveListener<E>(E key) where E : Enum
+        {
+            return RemoveListener($"{typeof(E).Name}.{key.ToString()}");
+        }
+        /// <summary>
+        /// 移除监听
+        /// </summary>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        [Obsolete("Use RemoveListener(key,action)!")]
+        public static bool RemoveListener(EventAction<T1, T2, T3, T4> action)
+        {
+            int removeCount = 0;
+            eventList.ForAction((eventData, _) =>
+                {
+                    if (eventData.actionList.Remove(action)) { removeCount++; }
+                }
+            );
+            Debuger.LogWarning("移除监听个数：" + removeCount);
+            return removeCount > 0;
+        }
+        /// <summary>
+        /// 根据标记移除监听
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="action"></param>
+        public static bool RemoveListener(string key, EventAction<T1, T2, T3, T4> action)
+        {
+            bool isRemove = false;
+            eventList.ForAction((eventData, _) =>
+                {
+                    if (eventData.actionList.Remove(action)) { isRemove = true; }
+                }, () => isRemove
+            );
+            if (!isRemove) Debuger.LogWarning($"{key}中不包含指定的回调");
+            return isRemove;
+        }
+        /// <summary>
+        /// 根据标记移除监听
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="action"></param>
+        public static void RemoveListener<E>(E key, EventAction<T1, T2, T3, T4> action) where E : Enum
+        {
+            RemoveListener($"{typeof(E).Name}.{key.ToString()}", action);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <param name="t3"></param>
+        /// <param name="t4"></param>
+        public static void Broadcast(string key, T1 t1, T2 t2, T3 t3, T4 t4)
+        {
+            bool isKey = false;
+            eventList.ForAction((eventData, _) =>
+                {
+                    if (eventData.key == key)
+                    {
+                        eventData.actionList.ForAction(e => e?.Invoke(t1, t2, t3, t4));
+                        isKey = true;
+                    }
+                }, () => isKey
+            );
+        }
+        /// <summary>
+        /// 广播
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <param name="t3"></param>
+        /// <param name="t4"></param>
+        public static void Broadcast<E>(E key, T1 t1, T2 t2, T3 t3, T4 t4) where E : Enum
+        {
+            Broadcast($"{typeof(E).Name}.{key.ToString()}", t1, t2, t3, t4);
         }
         /// <summary>
         /// 清除所有委托
