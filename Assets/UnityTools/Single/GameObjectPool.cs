@@ -13,10 +13,6 @@ namespace UnityTools.Single
         public enum EventType
         {
             /// <summary>
-            /// 初始化GameObjectPool
-            /// </summary>
-            Init,
-            /// <summary>
             /// 初始化一个对象：string[prefab name]
             /// </summary>
             InitObj,
@@ -29,7 +25,7 @@ namespace UnityTools.Single
             /// </summary>
             RemoveObj
         }
-        public readonly string EventKey = "Event_GameObjectPool";
+
         /// <summary>
         /// 回收GameObject对象，如果没有创建Pool则被Destroy掉
         /// </summary>
@@ -93,11 +89,14 @@ namespace UnityTools.Single
         {
             if (_instance == null)
             {
-                EventManager.Broadcast(EventType.Init);
+#if UNITY_EDITOR
                 useParent = new GameObject("useParent").transform;
                 useParent.SetParentReset(this.transform);
                 poolParent = new GameObject("objParent").transform;
                 poolParent.SetParentReset(this.transform);
+#else
+                poolParent = useParent = transform;
+#endif
             }
             base.Awake();
         }
@@ -132,7 +131,7 @@ namespace UnityTools.Single
                                 (tran as RectTransform).anchoredPosition3D = Vector3.zero;
                             }
                             tran.localRotation = Quaternion.identity;
-                            tran.localScale = Vector3.one;
+                            tran.localScale    = Vector3.one;
                         }
                         tran.SetParent(poolParent);
                         go.SetActive(false);
@@ -234,7 +233,7 @@ namespace UnityTools.Single
                     }
                     else
                     {
-                        temp = Instantiate(go);
+                        temp      = Instantiate(go);
                         temp.name = gameObjectName;
                     }
                     temp.transform.SetParent(useParent);
@@ -271,7 +270,7 @@ namespace UnityTools.Single
                     Transform tran = go.transform;
                     tran.localPosition = Vector3.zero;
                     tran.localRotation = Quaternion.identity;
-                    tran.localScale = Vector3.one;
+                    tran.localScale    = Vector3.one;
                 }
                 go.SetActive(false);
                 pools[go.name].Push(go);
@@ -291,7 +290,6 @@ namespace UnityTools.Single
             if (poolPrefab.ContainsKey(gameObjectName))
             {
                 foreach (GameObject go in pools[gameObjectName]) { Destroy(go); }
-
                 pools[gameObjectName].Clear();
                 EventManager<string>.Broadcast(EventType.ClearObj, gameObjectName);
                 Debuger.LogWarning($"clear [{gameObjectName}]");
