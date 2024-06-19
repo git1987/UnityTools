@@ -10,10 +10,6 @@ public class TestModel : BaseModel
             return _instance;
         }
     }
-    private TestModel()
-    {
-        CreateModel(this);
-    }
     protected override void Disable()
     {
         _instance = null;

@@ -27,7 +27,6 @@ namespace UnityTools.UI
             {
                 if (Application.isPlaying)
                 {
-                    direction = EditorGUILayout.Vector2Field("当前方向", direction);
                     VirtualRocker virtualRocker = target as VirtualRocker;
                     virtualRocker.unenableHide =
                         EditorGUILayout.Toggle("未激活时隐藏摇杆", virtualRocker.unenableHide);
@@ -48,8 +47,8 @@ namespace UnityTools.UI
                         if (c == null)
                         {
                             EditorGUILayout.HelpBox("进入编辑模式或者实例化在场景中，并设置父级为Canvas",
-                                MessageType.Warning
-                            );
+                                                    MessageType.Warning
+                                                   );
                             return;
                         }
                         vr.canvasRect = c.transform as RectTransform;
@@ -134,8 +133,8 @@ namespace UnityTools.UI
                     dics.Add(obj.name, obj as Sprite);
                 }
             }
-            RectTransform canvasRect = canvas.transform as RectTransform;
-            GameObject rocker = new GameObject("VirtualRocker");
+            RectTransform canvasRect    = canvas.transform as RectTransform;
+            GameObject    rocker        = new GameObject("VirtualRocker");
             VirtualRocker virtualRocker = rocker.AddComponent<VirtualRocker>();
             virtualRocker.canvasRect = canvasRect;
             rocker.transform.SetParentReset(canvasRect);
@@ -185,7 +184,8 @@ namespace UnityTools.UI
         {
             if (isClick && showGUI)
             {
-                EditorGUILayout.Vector2Field("方向", Direction);
+                // EditorGUILayout.Vector2Field("方向",Direction);
+                Debug.LogWarning($"方向==>{Direction}");
             }
         }
 #endif
@@ -255,19 +255,19 @@ namespace UnityTools.UI
             if (gp != null)
             {
                 gp.SetDownAction(() =>
-                    {
-                        if (canvasRect == null)
-                        {
-                            Debug.LogError("没有设置canvas[SetCanvas()]");
-                            return;
-                        }
-                        else
-                        {
-                            clickMousePos = Config.screenPosition;
-                            SetPoint();
-                        }
-                    }
-                );
+                                 {
+                                     if (canvasRect == null)
+                                     {
+                                         Debug.LogError("没有设置canvas[SetCanvas()]");
+                                         return;
+                                     }
+                                     else
+                                     {
+                                         clickMousePos = Config.screenPosition;
+                                         SetPoint();
+                                     }
+                                 }
+                                );
                 gp.SetUpAction(ResetRocker);
             }
             showPoint = _point.GetComponent<Image>().sprite != null;
@@ -349,8 +349,8 @@ namespace UnityTools.UI
                 //Debug.LogError("没有设置canvas[SetCanvas()]");
                 return;
             }
-            isClick         = false;
-            currentMousePos = Vector2.negativeInfinity;
+            isClick                 = false;
+            currentMousePos         = Vector2.negativeInfinity;
             _point.anchoredPosition = Vector2.zero;
             if (unenableHide)
             {
@@ -399,7 +399,7 @@ namespace UnityTools.UI
                 _point.anchoredPosition = currentMousePos - clickMousePos;
                 if (_point.anchoredPosition.magnitude > _pointBg.sizeDelta.x / 2 - _point.sizeDelta.x / 2)
                     _point.anchoredPosition = _point.anchoredPosition.normalized *
-                        (_pointBg.sizeDelta.x / 2 - _point.sizeDelta.x / 2);
+                                              (_pointBg.sizeDelta.x / 2 - _point.sizeDelta.x / 2);
             }
             /*设置pointer的方向*/
             if (showPointer)

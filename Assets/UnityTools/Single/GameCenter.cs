@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace UnityTools.Single
 {
-    public sealed class Game : SingleMono<Game>
+    /// <summary>
+    /// 全局使用的游戏控制中心
+    /// </summary>
+    [AddComponentMenu("UnityTools/Single/GameCenter")]
+    public sealed class GameCenter : SingleMono<GameCenter>
     {
         /// <summary>
         /// 延时调用的方法和计时器
@@ -13,11 +17,6 @@ namespace UnityTools.Single
             public EventAction action;
             public float timer;
             public bool unscaledTime;
-            //public DelayedData(EventAction ea, float time)
-            //{
-            //    this.action = ea;
-            //    this.timer = time;
-            //}
         }
 
         /// <summary>

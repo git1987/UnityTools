@@ -3,7 +3,8 @@
 namespace UnityTools.UI
 {
     /// <summary>
-    /// UI面板的基类
+    /// 显示层：MVC中的V
+    /// <para>UI面板的基类</para>
     /// </summary>
     public abstract class BasePanel : MonoBehaviour
     {

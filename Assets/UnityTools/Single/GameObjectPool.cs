@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityTools.Extend;
-
 namespace UnityTools.Single
 {
     /// <summary>
@@ -29,6 +29,7 @@ namespace UnityTools.Single
             /// </summary>
             RemoveObj
         }
+
         public readonly string EventKey = "Event_GameObjectPool";
         /// <summary>
         /// 回收GameObject对象，如果没有创建Pool则被Destroy掉
@@ -110,7 +111,10 @@ namespace UnityTools.Single
         /// <returns>Pool</returns>
         public GameObjectPool Init(GameObject prefab, int count = 0, bool reset = false)
         {
-            if (prefab == null) { Debuger.LogError("the prefab is null"); }
+            if (prefab == null)
+            {
+                Debuger.LogError("the prefab is null");
+            }
             else
             {
                 if (poolPrefab.ContainsKey(prefab.name))
@@ -122,8 +126,8 @@ namespace UnityTools.Single
                     Stack<GameObject> goQueue = new Stack<GameObject>();
                     for (int i = 0; i < count; i++)
                     {
-                        GameObject go = Instantiate(prefab);
-                        Transform tran = go.transform;
+                        GameObject go   = Instantiate(prefab);
+                        Transform  tran = go.transform;
                         if (reset)
                         {
                             tran.localPosition = Vector3.zero;
@@ -132,7 +136,7 @@ namespace UnityTools.Single
                                 (tran as RectTransform).anchoredPosition3D = Vector3.zero;
                             }
                             tran.localRotation = Quaternion.identity;
-                            tran.localScale = Vector3.one;
+                            tran.localScale    = Vector3.one;
                         }
                         tran.SetParent(poolParent);
                         go.SetActive(false);
@@ -183,9 +187,15 @@ namespace UnityTools.Single
                 {
                     poolCount[gameObjectName] = Mathf.Max(count, queue.Count);
                 }
-                else { poolCount.Add(gameObjectName, Mathf.Max(count, queue.Count)); }
+                else
+                {
+                    poolCount.Add(gameObjectName, Mathf.Max(count, queue.Count));
+                }
             }
-            else { Debuger.LogError($"[{gameObjectName}] does not exist"); }
+            else
+            {
+                Debuger.LogError($"[{gameObjectName}] does not exist");
+            }
             return this;
         }
         /// <summary>
@@ -195,7 +205,10 @@ namespace UnityTools.Single
         /// <returns></returns>
         private int Stock(string gameObjectName)
         {
-            if (poolCount.TryGetValue(gameObjectName, out int count)) { return count; }
+            if (poolCount.TryGetValue(gameObjectName, out int count))
+            {
+                return count;
+            }
             return int.MaxValue;
         }
         /// <summary>
@@ -234,16 +247,22 @@ namespace UnityTools.Single
                     }
                     else
                     {
-                        temp = Instantiate(go);
+                        temp      = Instantiate(go);
                         temp.name = gameObjectName;
                     }
                     temp.transform.SetParent(useParent);
                     temp.SetActive(true);
                     Transfer(gameObjectName, -1);
                 }
-                else { Debuger.LogWarning("not enough " + gameObjectName); }
+                else
+                {
+                    Debuger.LogWarning("not enough " + gameObjectName);
+                }
             }
-            else { Debuger.LogError($"[{gameObjectName}] does not exist"); }
+            else
+            {
+                Debuger.LogError($"[{gameObjectName}] does not exist");
+            }
             return temp;
         }
         /// <summary>
@@ -271,7 +290,7 @@ namespace UnityTools.Single
                     Transform tran = go.transform;
                     tran.localPosition = Vector3.zero;
                     tran.localRotation = Quaternion.identity;
-                    tran.localScale = Vector3.one;
+                    tran.localScale    = Vector3.one;
                 }
                 go.SetActive(false);
                 pools[go.name].Push(go);
@@ -290,13 +309,18 @@ namespace UnityTools.Single
         {
             if (poolPrefab.ContainsKey(gameObjectName))
             {
-                foreach (GameObject go in pools[gameObjectName]) { Destroy(go); }
-
+                foreach (GameObject go in pools[gameObjectName])
+                {
+                    Destroy(go);
+                }
                 pools[gameObjectName].Clear();
                 EventManager<string>.Broadcast(EventType.ClearObj, gameObjectName);
                 Debuger.LogWarning($"clear [{gameObjectName}]");
             }
-            else { Debuger.LogWarning($"[{gameObjectName}] does not exist"); }
+            else
+            {
+                Debuger.LogWarning($"[{gameObjectName}] does not exist");
+            }
         }
         /// <summary>
         /// 移除对象
@@ -306,7 +330,10 @@ namespace UnityTools.Single
         {
             if (poolPrefab.ContainsKey(gameObjectName))
             {
-                foreach (GameObject go in pools[gameObjectName]) { Destroy(go); }
+                foreach (GameObject go in pools[gameObjectName])
+                {
+                    Destroy(go);
+                }
 #if UNITY_EDITOR
                 tempList.Remove(poolPrefab[gameObjectName]);
 #endif
@@ -316,7 +343,10 @@ namespace UnityTools.Single
                 EventManager<string>.Broadcast(EventType.RemoveObj, gameObjectName);
                 Debuger.LogWarning($"remove [{gameObjectName}]");
             }
-            else { Debuger.LogWarning($"[{gameObjectName}] does not exist"); }
+            else
+            {
+                Debuger.LogWarning($"[{gameObjectName}] does not exist");
+            }
         }
     }
 }

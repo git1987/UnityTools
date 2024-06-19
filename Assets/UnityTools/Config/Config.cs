@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-
 namespace UnityTools
 {
     public class Config
@@ -59,43 +58,43 @@ namespace UnityTools
             /// <summary>
             /// FFFFFF
             /// </summary>
-            public static string White => "FFFFFF";
+            public const string White = "FFFFFF";
             /// <summary>
             /// 000000
             /// </summary>
-            public static string Black => "000000";
+            public const string Black = "000000";
             /// <summary>
             /// 808080
             /// </summary>
-            public static string Gray => "808080";
+            public const string Gray = "808080";
             /// <summary>
             /// FF0000
             /// </summary>
-            public static string Red => "FF0000";
+            public const string Red = "FF0000";
             /// <summary>
             /// FF8000
             /// </summary>
-            public static string Orange => "FF8000";
+            public const string Orange = "FF8000";
             /// <summary>
             /// FFFF00
             /// </summary>
-            public static string Yellow => "FFFF00";
+            public const string Yellow = "FFFF00";
             /// <summary>
             /// 00FF00
             /// </summary>
-            public static string Green => "00FF00";
+            public const string Green = "00FF00";
             /// <summary>
             /// 00FFFF
             /// </summary>
-            public static string Cyan => "00FFFF";
+            public const string Cyan = "00FFFF";
             /// <summary>
             /// 0000FF
             /// </summary>
-            public static string Blue => "0000FF";
+            public const string Blue = "0000FF";
             /// <summary>
             /// 8000FF
             /// </summary>
-            public static string Purple => "8000FF";
+            public const string Purple = "8000FF";
         }
     }
 }

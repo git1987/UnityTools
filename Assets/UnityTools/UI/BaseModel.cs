@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using UnityTools.Extend;
 namespace UnityTools.UI
 {
+    /// <summary>
+    /// 数据层：MVC中的M
+    /// </summary>
     public abstract class BaseModel
     {
         private static List<BaseModel> modelList = new();
@@ -15,6 +18,10 @@ namespace UnityTools.UI
         public static void ClearModel()
         {
             modelList.ForAction(model => model.Disable());
+        }
+        protected BaseModel()
+        {
+            CreateModel(this);
         }
         /// <summary>
         /// 移除：清空单例
