@@ -27,6 +27,7 @@ namespace UnityTools.UI
             {
                 if (Application.isPlaying)
                 {
+                    direction = EditorGUILayout.Vector2Field("当前方向", direction);
                     VirtualRocker virtualRocker = target as VirtualRocker;
                     virtualRocker.unenableHide =
                         EditorGUILayout.Toggle("未激活时隐藏摇杆", virtualRocker.unenableHide);
@@ -47,8 +48,8 @@ namespace UnityTools.UI
                         if (c == null)
                         {
                             EditorGUILayout.HelpBox("进入编辑模式或者实例化在场景中，并设置父级为Canvas",
-                                                    MessageType.Warning
-                                                   );
+                                MessageType.Warning
+                            );
                             return;
                         }
                         vr.canvasRect = c.transform as RectTransform;
@@ -80,11 +81,11 @@ namespace UnityTools.UI
                 vr.unenableHide = EditorGUILayout.Toggle("未激活时隐藏摇杆", vr.unenableHide);
                 if (!vr.unenableHide)
                 {
-                    vr.restPos       = EditorGUILayout.Toggle("未激活时是否回到原位", vr.restPos);
                     vr.backCenterPos = EditorGUILayout.Toggle("是否回到区域中心位置", vr.backCenterPos);
                     if (!vr.backCenterPos)
                     {
-                        vr.oldPos = EditorGUILayout.Vector2Field("要回到的初始位置", vr.oldPos);
+                        vr.restPos = EditorGUILayout.Toggle("未激活时是否回到指定位置", vr.restPos);
+                        vr.oldPos  = EditorGUILayout.Vector2Field("要回到的指定位置", vr.oldPos);
                     }
                 }
                 if (vr) GUILayout.Space(5);
@@ -133,8 +134,8 @@ namespace UnityTools.UI
                     dics.Add(obj.name, obj as Sprite);
                 }
             }
-            RectTransform canvasRect    = canvas.transform as RectTransform;
-            GameObject    rocker        = new GameObject("VirtualRocker");
+            RectTransform canvasRect = canvas.transform as RectTransform;
+            GameObject rocker = new GameObject("VirtualRocker");
             VirtualRocker virtualRocker = rocker.AddComponent<VirtualRocker>();
             virtualRocker.canvasRect = canvasRect;
             rocker.transform.SetParentReset(canvasRect);
@@ -184,8 +185,7 @@ namespace UnityTools.UI
         {
             if (isClick && showGUI)
             {
-                // EditorGUILayout.Vector2Field("方向",Direction);
-                Debug.LogWarning($"方向==>{Direction}");
+                EditorGUILayout.Vector2Field("方向", Direction);
             }
         }
 #endif
@@ -204,7 +204,7 @@ namespace UnityTools.UI
         [SerializeField]
         private bool ignoreUI;
         /// <summary>
-        /// 未激活时是否回到初始位置
+        /// 未激活时是否回到指定位置
         /// </summary>
         [SerializeField]
         private bool restPos;
@@ -255,19 +255,19 @@ namespace UnityTools.UI
             if (gp != null)
             {
                 gp.SetDownAction(() =>
-                                 {
-                                     if (canvasRect == null)
-                                     {
-                                         Debug.LogError("没有设置canvas[SetCanvas()]");
-                                         return;
-                                     }
-                                     else
-                                     {
-                                         clickMousePos = Config.screenPosition;
-                                         SetPoint();
-                                     }
-                                 }
-                                );
+                    {
+                        if (canvasRect == null)
+                        {
+                            Debug.LogError("没有设置canvas[SetCanvas()]");
+                            return;
+                        }
+                        else
+                        {
+                            clickMousePos = Config.screenPosition;
+                            SetPoint();
+                        }
+                    }
+                );
                 gp.SetUpAction(ResetRocker);
             }
             showPoint = _point.GetComponent<Image>().sprite != null;
@@ -301,12 +301,12 @@ namespace UnityTools.UI
             canvasRect = canvas;
         }
         /// <summary>
-        /// 设置虚拟摇杆状态
+        /// 设置虚拟摇杆状态参数
         /// </summary>
-        /// <param name="unenableHide">未激活时是否隐藏</param>
+        /// <param name="_unenableHide">未激活时是否隐藏</param>
         /// <param name="_restPos">是否重置位置</param>
-        /// <param name="backCenterPos">返回中心点</param>
-        /// <param name="backPos">返回的位置点坐标</param>
+        /// <param name="_backCenterPos">是否返回中心点</param>
+        /// <param name="_backPos">返回的位置点坐标</param>
         public void SetState(bool _unenableHide, bool _restPos, bool _backCenterPos, Vector2 _backPos)
         {
             unenableHide  = _unenableHide;
@@ -336,7 +336,7 @@ namespace UnityTools.UI
         void SetPoint()
         {
             isClick = true;
-            _pointBg.gameObject.SetActive(true);
+            _pointBg.gameObject.SetActive(showPoint || showPointer);
             _pointBg.anchoredPosition = clickMousePos * canvasRect.sizeDelta / new Vector2(Screen.width, Screen.height);
         }
         /// <summary>
@@ -358,19 +358,20 @@ namespace UnityTools.UI
             }
             else
             {
-                if (restPos)
+                if (backCenterPos)
                 {
                     //area的边界
                     float minX = areaRect.anchorMin.x * canvasRect.sizeDelta.x + areaRect.offsetMin.x,
                           maxX = areaRect.anchorMax.x * canvasRect.sizeDelta.x + areaRect.offsetMax.x,
                           minY = areaRect.anchorMin.y * canvasRect.sizeDelta.y + areaRect.offsetMin.y,
                           maxY = areaRect.anchorMax.y * canvasRect.sizeDelta.y + areaRect.offsetMax.y;
-                    if (backCenterPos)
-                        _pointBg.anchoredPosition = new Vector2(minX + (maxX - minX) / 2, minY + (maxY - minY) / 2);
-                    else
-                        _pointBg.anchoredPosition = oldPos;
+                    _pointBg.anchoredPosition = new Vector2(minX + (maxX - minX) / 2, minY + (maxY - minY) / 2);
                 }
-                _pointBg.gameObject.SetActive(true);
+                else if (restPos)
+                {
+                    _pointBg.anchoredPosition = oldPos;
+                }
+                _pointBg.gameObject.SetActive(showPoint || showPointer);
                 _pointer.gameObject.SetActive(false);
             }
         }
@@ -393,14 +394,11 @@ namespace UnityTools.UI
             }
             if (currentMousePos == Config.screenPosition) return;
             currentMousePos = Config.screenPosition;
-            /*设置point位置点*/
-            //if (showPoint)
-            {
-                _point.anchoredPosition = currentMousePos - clickMousePos;
-                if (_point.anchoredPosition.magnitude > _pointBg.sizeDelta.x / 2 - _point.sizeDelta.x / 2)
-                    _point.anchoredPosition = _point.anchoredPosition.normalized *
-                                              (_pointBg.sizeDelta.x / 2 - _point.sizeDelta.x / 2);
-            }
+            /*更新point位置点*/
+            _point.anchoredPosition = currentMousePos - clickMousePos;
+            if (_point.anchoredPosition.magnitude > _pointBg.sizeDelta.x / 2 - _point.sizeDelta.x / 2)
+                _point.anchoredPosition = _point.anchoredPosition.normalized *
+                    (_pointBg.sizeDelta.x / 2 - _point.sizeDelta.x / 2);
             /*设置pointer的方向*/
             if (showPointer)
             {

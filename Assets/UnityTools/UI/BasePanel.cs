@@ -16,10 +16,11 @@ namespace UnityTools.UI
         /// <summary>
         /// 设置的面板等级
         /// </summary>
-        public int panelLv;
+        public int panelLv = 1;
         /// <summary>
         /// 当前面板等级
         /// </summary>
+        [LabelName("当前面板等级",false)]
         public int currentPanelLv;
         /// <summary>
         /// 面板打开BasePanel，直接调用UIManager.OpenPanel，面板等级==当前面板
@@ -33,7 +34,6 @@ namespace UnityTools.UI
             panel.SetPanelLv(currentPanelLv);
             return panel;
         }
-
         public virtual void SetPanelLv(int panelLv)
         {
             currentPanelLv = panelLv;
@@ -66,6 +66,9 @@ namespace UnityTools.UI
         /// <summary>
         /// 移除面板
         /// </summary>
-        public virtual void Disable() { Destroy(this.gameObject); }
+        public virtual void Disable()
+        {
+            Destroy(this.gameObject);
+        }
     }
 }
