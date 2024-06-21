@@ -8,17 +8,26 @@ namespace UnityTools.Single
     /// <typeparam name="T"></typeparam>
     public abstract class Single<T> where T : Single<T>, new()
     {
-        private static T ms_instance = default(T);
+        private static string _EventTag_Init = null;
+        public static string EventTag_Init
+        {
+            get
+            {
+                if (_EventTag_Init is not { Length: > 0 }) _EventTag_Init = typeof(T).Name + "_Init";
+                return _EventTag_Init;
+            }
+        }
+        private static T _instance;
         public static T instance
         {
             get
             {
-                if (ms_instance == null)
+                if (_instance == null)
                 {
-                    ms_instance = new T();
-                    ms_instance.InitSingleton();
+                    _instance = new T();
+                    _instance.InitSingleton();
                 }
-                return ms_instance;
+                return _instance;
             }
         }
         protected virtual void InitSingleton() { }
