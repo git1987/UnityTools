@@ -34,21 +34,6 @@ namespace UnityTools
             return Quaternion.AngleAxis(angle, direction) * tran.rotation;
         }
         /// <summary>
-        /// 设置RectTransform四周围绕适配
-        /// </summary>
-        /// <param name="rect"></param>
-        public static void RectTransformSetSurround(RectTransform rect)
-        {
-            rect.anchorMin          = Vector2.zero;
-            rect.anchorMax          = Vector2.one;
-            rect.offsetMin          = Vector2.zero;
-            rect.offsetMax          = Vector2.zero;
-            rect.anchoredPosition3D = Vector3.zero;
-            rect.sizeDelta          = Vector2.zero;
-            rect.localScale         = Vector3.one;
-            rect.localRotation      = Quaternion.identity;
-        }
-        /// <summary>
         /// 设置文字：Get所有显示文字的组件（Text,TMP_Text,TextMesh）
         /// </summary>
         public static void SetText(Transform transform, string content, Color? textColor = null)

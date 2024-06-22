@@ -1,5 +1,7 @@
-﻿using UnityEngine;
-
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityTools.Extend;
 namespace UnityTools.UI
 {
     /// <summary>
@@ -18,49 +20,86 @@ namespace UnityTools.UI
         /// </summary>
         public int panelLv = 1;
         /// <summary>
-        /// 当前面板等级
+        /// 隐藏面板前显示状态的GameObject
         /// </summary>
-        [LabelName("当前面板等级",false)]
-        public int currentPanelLv;
-        /// <summary>
-        /// 面板打开BasePanel，直接调用UIManager.OpenPanel，面板等级==当前面板
-        /// </summary>
-        /// <typeparam name="P"></typeparam>
-        /// <returns></returns>
-        protected P Open<P>(params object[] objs) where P : BasePanel
+        private GameObject[] hideObjs;
+        protected virtual void Awake()
         {
-            UIManager.setPanelLv = false;
-            P panel = UIManager.OpenPanel<P>(objs);
-            panel.SetPanelLv(currentPanelLv);
-            return panel;
+            hideObjs = new GameObject[transform.childCount];
         }
-        public virtual void SetPanelLv(int panelLv)
+        public virtual void SetPanelLv()
         {
-            currentPanelLv = panelLv;
-            UIManager.SetPanelLv(this, currentPanelLv);
+            UIManager.SetPanelLv(this, panelLv);
         }
         /// <summary>
-        /// 打开面板
+        /// 由UIManager驱动：打开并显示面板
         /// </summary>
-        public virtual void Show(params object[] objs)
+        /// <param name="objs"></param>
+        public void OpenWithManager(params object[] objs)
         {
-            if (!isShow)
+            Open(objs);
+        }
+        /// <summary>
+        /// 打开并显示面板
+        /// </summary>
+        protected virtual void Open(params object[] objs)
+        {
+            isShow = true;
+            gameObject.SetActive(true);
+        }
+        /// <summary>
+        /// 由UIManager驱动：关闭并隐藏面板
+        /// </summary>
+        public void CloseWithManager()
+        {
+            Close();
+        }
+        /// <summary>
+        /// 关闭并隐藏面板
+        /// </summary>
+        protected virtual void Close()
+        {
+            isShow = false;
+            gameObject.SetActive(false);
+            UIManager.SetHidePanel(this);
+        }
+        /// <summary>
+        /// 显示面板
+        /// </summary>
+        public void Show()
+        {
+            for (int i = 0; i < hideObjs.Length; i++)
             {
-                isShow = true;
-                gameObject.SetActive(true);
-                UIManager.SetShowPanel(this);
+                GameObject obj = hideObjs[i];
+                if (obj != null)
+                {
+                    obj.SetActive(true);
+                    hideObjs[i] = null;
+                }
             }
         }
         /// <summary>
-        /// 关闭面板
+        /// 隐藏面板
         /// </summary>
-        public virtual void Hide()
+        public void Hide()
         {
-            if (isShow)
+            if (hideObjs.Length != transform.childCount)
             {
-                isShow = false;
-                gameObject.SetActive(false);
-                UIManager.SetHidePanel(this);
+                Debug.LogError("初始化面板子级数量和当前子级数量不同，如果有动态生成的GameObject请使用面板子级物体当作父级");
+                return;
+            }
+            for (int i = 0; i < hideObjs.Length; i++)
+            {
+                GameObject childObj = transform.GetChild(i).gameObject;
+                if (childObj.activeSelf)
+                {
+                    childObj.SetActive(false);
+                    hideObjs[i] = childObj;
+                }
+                else
+                {
+                    hideObjs[i] = null;
+                }
             }
         }
         /// <summary>

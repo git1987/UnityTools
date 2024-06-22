@@ -29,7 +29,7 @@ namespace UnityTools.UI
             maskRect = mask.AddComponent<RectTransform>();
             Image image = mask.AddComponent<Image>();
             image.color = new Color(0, 0, 0, 0);
-            Tools.RectTransformSetSurround(maskRect);
+            maskRect.SetSurround();
             mask.SetActive(false);
             UIManager.SetUICtrl(this);
         }

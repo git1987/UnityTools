@@ -17,7 +17,7 @@ namespace UnityTools.Extend
         public static Component MateComponent(this GameObject go, Type type)
         {
             UnityEngine.Component t = go.GetComponent(type);
-            if (t == null) t = go.AddComponent(type);
+            if (t == null) t        = go.AddComponent(type);
             return t;
         }
         /// <summary>
@@ -26,7 +26,7 @@ namespace UnityTools.Extend
         /// <returns>T</returns>
         public static T MateComponent<T>(this GameObject go) where T : Component
         {
-            T t = go.GetComponent<T>();
+            T t              = go.GetComponent<T>();
             if (t == null) t = go.AddComponent<T>();
             return t;
         }
@@ -43,7 +43,7 @@ namespace UnityTools.Extend
             transform.localPosition = Vector3.zero;
             if (transform is RectTransform) ((RectTransform)transform).anchoredPosition3D = Vector3.zero;
             transform.localRotation = Quaternion.identity;
-            transform.localScale = Vector3.one;
+            transform.localScale    = Vector3.one;
         }
         /// <summary>
         /// 根据名字获取子级的transform
@@ -104,7 +104,25 @@ namespace UnityTools.Extend
             }
         }
         #endregion
+        #region RectTransform
+        /// <summary>
+        /// 设置RectTransform四周围绕适配
+        /// </summary>
+        /// <param name="rect"></param>
+        public static void SetSurround(this RectTransform rect)
+        {
+            rect.anchorMin          = Vector2.zero;
+            rect.anchorMax          = Vector2.one;
+            rect.offsetMin          = Vector2.zero;
+            rect.offsetMax          = Vector2.zero;
+            rect.anchoredPosition3D = Vector3.zero;
+            rect.sizeDelta          = Vector2.zero;
+            rect.localScale         = Vector3.one;
+            rect.localRotation      = Quaternion.identity;
+        }
+        #endregion
     }
+
     public static class ClassExtend
     {
         #region string

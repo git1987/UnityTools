@@ -20,11 +20,11 @@ namespace UnityTools.UI
         /// <summary>
         /// 根据面板名称的全称自动加载panel prefab的委托
         /// </summary>
-        private static EventFunction<string, GameObject> getPanelPrefabFunction = null;
+        private static EventFunction<string, GameObject> loadPanelPrefabFunction = null;
         /// <summary>
         /// 根据面板名称的获取已经实例化的panel的委托
         /// </summary>
-        private static EventFunction<string, GameObject> getPanelFunction = null;
+        private static EventFunction<string, GameObject> createPanelFunction = null;
         /// <summary>
         /// 已经显示的panel
         /// </summary>
@@ -37,29 +37,33 @@ namespace UnityTools.UI
         /// 设置自动加载panel prefab的委托
         /// </summary>
         /// <param name="function"></param>
-        public static void SetBuildPanelFunction(EventFunction<string, GameObject> function)
+        public static void SetLoadPrefabFunction(EventFunction<string, GameObject> function)
         {
-            getPanelPrefabFunction = function;
+            loadPanelPrefabFunction = function;
         }
         /// <summary>
         /// 设置获取panel实例的委托
         /// </summary>
         /// <param name="function"></param>
-        public static void SetGetPanelFunction(EventFunction<string, GameObject> function)
+        public static void SetCreatePanelFunction(EventFunction<string, GameObject> function)
         {
-            getPanelFunction = function;
+            createPanelFunction = function;
         }
         /// <summary>
         /// 移除面板时的委托
         /// </summary>
-        private static EventAction<string> removePanelAction = null;
+        private static event EventAction<string> removePanelAction;
         /// <summary>
-        /// 设置自动加载panel prefab的委托
+        /// 设置移除panel的委托
         /// </summary>
         /// <param name="function"></param>
-        public static void SetRemovePanelAction(EventAction<string> action)
+        public static void AddRemovePanelAction(EventAction<string> action)
         {
-            removePanelAction = action;
+            removePanelAction += action;
+        }
+        public static void RemoveRemovePanelAction(EventAction<string> action)
+        {
+            removePanelAction -= action;
         }
         /// <summary>
         /// 设置当前场景的UICtrl
@@ -98,17 +102,6 @@ namespace UnityTools.UI
             }
             uiCtrl = null;
             BaseModel.ClearModel();
-        }
-        /// <summary>
-        /// 设置面板为显示状态
-        /// </summary>
-        /// <param name="panel"></param>
-        public static void SetShowPanel(BasePanel panel)
-        {
-            if (!showPanels.ContainsKey(panel.PanelName))
-            {
-                showPanels.Add(panel.PanelName, panel);
-            }
         }
         /// <summary>
         /// 设置面板为关闭状态
@@ -168,15 +161,15 @@ namespace UnityTools.UI
                 //已经加载了
                 return;
             }
-            if (getPanelPrefabFunction != null)
+            if (loadPanelPrefabFunction != null)
             {
-                GameObject panelObj = GameObject.Instantiate(getPanelPrefabFunction(panelName));
+                GameObject panelObj = GameObject.Instantiate(loadPanelPrefabFunction(panelName));
                 panelObj.name = panelName;
                 CreatePanel(panelObj);
             }
-            else if (getPanelFunction != null)
+            else if (createPanelFunction != null)
             {
-                GameObject panelObj = getPanelFunction(panelName);
+                GameObject panelObj = createPanelFunction(panelName);
                 panelObj.name = panelName;
                 CreatePanel(panelObj);
             }
@@ -213,7 +206,7 @@ namespace UnityTools.UI
                 panels.Add(panelName, p);
                 RectTransform rect = panelObj.GetComponent<RectTransform>();
                 rect.SetParentReset(uiCtrl.rect);
-                Tools.RectTransformSetSurround(rect);
+                rect.SetSurround();
             }
             return p;
         }
@@ -256,10 +249,14 @@ namespace UnityTools.UI
                 CreatePanel(panelName);
                 panel = panels[panelName];
             }
-            panel.Show(objs);
+            if (!showPanels.ContainsKey(panelName))
+            {
+                showPanels.Add(panelName, panel);
+                panel.OpenWithManager(objs);
+            }
             if (setPanelLv)
             {
-                panel.SetPanelLv(panel.panelLv);
+                panel.SetPanelLv();
             }
             else
                 setPanelLv = true;
@@ -278,7 +275,7 @@ namespace UnityTools.UI
         {
             if (panels.TryGetValue(panelName, out BasePanel panel))
             {
-                SetHidePanel(panel);
+                panel.CloseWithManager();
             }
         }
         /// <summary>
@@ -296,7 +293,7 @@ namespace UnityTools.UI
         /// <summary>
         /// 获取面板
         /// </summary>
-        /// <typeparam name="P"></typeparam>
+        /// <param name="panelName"></param>
         /// <returns></returns>
         public static BasePanel GetPanel(string panelName)
         {
@@ -316,7 +313,7 @@ namespace UnityTools.UI
         /// <summary>
         /// 判断面板是否打开中
         /// </summary>
-        /// <param name="panelName">面板名称</param>
+        /// <param name="panelName"></param>
         /// <returns></returns>
         public static bool IsOpen(string panelName)
         {
@@ -368,7 +365,7 @@ namespace UnityTools.UI
                         GameObject    go   = new GameObject("Panel" + index);
                         RectTransform rect = go.AddComponent<RectTransform>();
                         rect.SetParentReset(uiCtrl.rect);
-                        Tools.RectTransformSetSurround(rect);
+                        rect.SetSurround();
                     }
                     index++;
                 }
