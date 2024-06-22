@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
 namespace UnityTools
 {
     /// <summary>
@@ -32,6 +31,29 @@ namespace UnityTools
             float angle = Vector3.Angle(fromDir, targetDir);
             //将当前朝向向目标方向旋转一定角度，这个角度值可以做插值
             return Quaternion.AngleAxis(angle, direction) * tran.rotation;
+        }
+        /// <summary>
+        /// 坐标点移动是否穿过目标点
+        /// </summary>
+        /// <param name="currentPos">当前位置</param>
+        /// <param name="targetPos">目标点位置</param>
+        /// <param name="oldPos">移动之前的位置</param>
+        /// <returns></returns>
+        public static bool IsCrossPoint(Vector3 currentPos, Vector3 targetPos, Vector3 oldPos)
+        {
+            return Vector3.Distance(oldPos, targetPos) < Vector3.Distance(oldPos, currentPos);
+        }
+        /// <summary>
+        /// 坐标点移动是否穿过目标点
+        /// </summary>
+        /// <param name="currentPos">当前位置</param>
+        /// <param name="targetPos">目标点位置</param>
+        /// <param name="oldPos">移动之前的位置</param>
+        /// <returns></returns>
+        public static bool IsCrossPoint(Vector2 currentPos, Vector2 targetPos, Vector2 oldPos)
+        {
+            return (Mathf.Abs(targetPos.x - oldPos.x) + Mathf.Abs(targetPos.y - oldPos.y)) <
+                   Mathf.Abs(currentPos.x - oldPos.x) + Mathf.Abs(currentPos.y - oldPos.y);
         }
         /// <summary>
         /// 设置文字：Get所有显示文字的组件（Text,TMP_Text,TextMesh）
@@ -65,19 +87,28 @@ namespace UnityTools
                     else
                     {
                         textPro.text = content;
-                        if (textColor != null) { textPro.color = textColor.GetValueOrDefault(); }
+                        if (textColor != null)
+                        {
+                            textPro.color = textColor.GetValueOrDefault();
+                        }
                     }
                 }
                 else
                 {
                     textMesh.text = content;
-                    if (textColor != null) { textMesh.color = textColor.GetValueOrDefault(); }
+                    if (textColor != null)
+                    {
+                        textMesh.color = textColor.GetValueOrDefault();
+                    }
                 }
             }
             else
             {
                 text.text = content;
-                if (textColor != null) { text.color = textColor.GetValueOrDefault(); }
+                if (textColor != null)
+                {
+                    text.color = textColor.GetValueOrDefault();
+                }
             }
         }
         /// <summary>
@@ -128,7 +159,7 @@ namespace UnityTools
                 return list;
             else
             {
-                List<T> list2 = new List<T>(list);
+                List<T> list2    = new List<T>(list);
                 List<T> tempList = new List<T>();
                 while (tempList.Count < count && list2.Count > 0)
                 {
