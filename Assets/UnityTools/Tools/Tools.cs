@@ -32,6 +32,47 @@ namespace UnityTools
             //将当前朝向向目标方向旋转一定角度，这个角度值可以做插值
             return Quaternion.AngleAxis(angle, direction) * tran.rotation;
         }
+        
+        /// <summary>
+        /// 是否触碰到目标
+        /// </summary>
+        /// <param name="thisPos"></param>
+        /// <param name="targetPos"></param>
+        /// <param name="oldPos"></param>
+        /// <param name="thisSize"></param>
+        /// <param name="targetSize"></param>
+        /// <returns></returns>
+        public static bool TouchTarget(Vector3 thisPos, Vector3 targetPos, Vector3 oldPos, float thisSize, float targetSize)
+        {
+            if (Vector3.Distance(thisPos, targetPos) <= thisSize + targetSize)
+            {
+                return true;
+            }
+            else
+            {
+                return IsCrossPoint(thisPos, targetPos, oldPos);
+            }
+        }
+        /// <summary>
+        /// 是否触碰到目标
+        /// </summary>
+        /// <param name="thisPos"></param>
+        /// <param name="targetPos"></param>
+        /// <param name="oldPos"></param>
+        /// <param name="thisSize"></param>
+        /// <param name="targetSize"></param>
+        /// <returns></returns>
+        public static bool TouchTarget(Vector2 thisPos, Vector2 targetPos, Vector2 oldPos, float thisSize, float targetSize)
+        {
+            if (Vector2.Distance(thisPos, targetPos) <= thisSize + targetSize)
+            {
+                return true;
+            }
+            else
+            {
+                return IsCrossPoint(thisPos, targetPos, oldPos);
+            }
+        }
         /// <summary>
         /// 坐标点移动是否穿过目标点
         /// </summary>
