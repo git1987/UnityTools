@@ -27,5 +27,7 @@ public class Test : MonoBehaviour
     public RectTransform[] points;
     public void OnClickTest()
     {
+        TestModel.instance.ToString();
+        BaseModel.RemoveModel<TestModel>();
     }
 }

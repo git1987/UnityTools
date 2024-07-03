@@ -17,13 +17,18 @@ namespace UnityTools.UI
         /// </summary>
         public Canvas canvas { private set; get; }
         /// <summary>
+        /// 场景的CanvasScaler
+        /// </summary>
+        public CanvasScaler canvasScaler { private set; get; }
+        /// <summary>
         /// Canvas的RectTransform
         /// </summary>
         public RectTransform rect { private set; get; }
         protected virtual void Awake()
         {
-            canvas = GetComponent<Canvas>();
-            rect = transform as RectTransform;
+            canvas       = GetComponent<Canvas>();
+            canvasScaler = GetComponent<CanvasScaler>();
+            rect         = transform as RectTransform;
             GameObject mask = new GameObject("mask");
             mask.transform.SetParentReset(rect);
             maskRect = mask.AddComponent<RectTransform>();

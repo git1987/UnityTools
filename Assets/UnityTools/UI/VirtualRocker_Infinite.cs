@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using UnityTools.Extend;
 namespace UnityTools.UI
 {
-    [AddComponentMenu("UnitTools/UI/无极虚拟摇杆")]
+    [AddComponentMenu("UnityTools/UI/无极虚拟摇杆")]
     public partial class VirtualRocker_Infinite : VirtualRocker
     {
 #if UNITY_EDITOR

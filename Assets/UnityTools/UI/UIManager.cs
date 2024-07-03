@@ -336,9 +336,9 @@ namespace UnityTools.UI
         {
             if (panels.TryGetValue(panelName, out BasePanel panel))
             {
-                panel.Disable();
                 removePanelAction?.Invoke(panelName);
                 panels.Remove(panelName);
+                panel.Disable();
             }
         }
         /// <summary>

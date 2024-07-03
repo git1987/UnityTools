@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 namespace UnityTools.UI
 {
-    [AddComponentMenu("UnitTools/UI/8方向虚拟摇杆")]
+    [AddComponentMenu("UnityTools/UI/8方向虚拟摇杆")]
     public partial class VirtualRocker_8Direction : VirtualRocker
     {
         public override Vector2 Direction { get; }
