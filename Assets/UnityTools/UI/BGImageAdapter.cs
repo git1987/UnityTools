@@ -1,9 +1,11 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UnityTools.UI
 {
     /// <summary>
     /// 面板背景适配脚本：根据CanvasScaler设定的屏幕比进行满屏显示裁剪
+    /// 使用ScaleWithScreenSize-Expand适配方式，背景图模拟Shrink适配方式
     /// </summary>
     [RequireComponent(typeof(RectTransform))]
     public class BGImageAdapter : MonoBehaviour
@@ -15,60 +17,40 @@ namespace UnityTools.UI
                 Debug.LogError("没有UICtrl");
                 return;
             }
-            float screenWidth = Screen.width,
-                  screenHeight = Screen.height;
-            //当前屏幕分辨率
-            float screenRatio = screenWidth / screenHeight;
+            if (UIManager.uiCtrl.canvasScaler.uiScaleMode != CanvasScaler.ScaleMode.ScaleWithScreenSize)
+            {
+                Debug.LogWarning("没有使用ScaleWithScreenSize的ScaleMode类型");
+                return;
+            }
+            else if (UIManager.uiCtrl.canvasScaler.screenMatchMode != CanvasScaler.ScreenMatchMode.Expand)
+            {
+                Debug.LogWarning("没有使用Expand的ScreenMatchMode类型");
+                return;
+            }
             float baseWidth = UIManager.uiCtrl.canvasScaler.referenceResolution.x,
                   baseHeight = UIManager.uiCtrl.canvasScaler.referenceResolution.y;
-            ///根据CanvasScaler计算标准屏幕比
-            float baseRatio = baseWidth / baseHeight;
-            float x, y;
-            if (screenRatio > 1)
+            float UICanvasWidth = UIManager.uiCtrl.rect.sizeDelta.x,
+                  UICanvasHeigh = UIManager.uiCtrl.rect.sizeDelta.y;
+            float width, height;
+            if (UICanvasWidth == baseWidth && UICanvasHeigh == baseHeight)
             {
-                //横屏
-                if (screenRatio < baseRatio)
-                {
-                    //长屏：竖向变长
-                    x = baseWidth * screenRatio;
-                    y = baseHeight * screenRatio;
-                }
-                else if (screenRatio > baseRatio)
-                {
-                    //宽屏：横向边长
-                    x = baseHeight * screenRatio;
-                    y = baseHeight * x / baseWidth;
-                }
-                else
-                {
-                    //等比
-                    x = baseWidth;
-                    y = baseHeight;
-                }
+                height = UICanvasHeigh;
+                width  = UICanvasWidth;
             }
             else
             {
-                //竖屏
-                if (screenRatio < baseRatio)
+                if (UICanvasWidth == baseWidth)
                 {
-                    //长屏：竖向变长
-                    y = baseHeight / screenRatio;
-                    x = baseWidth * y / baseHeight;
-                }
-                else if (screenRatio > baseRatio)
-                {
-                    //宽屏：横向边长
-                    x = screenWidth;
-                    y = x / baseRatio;
+                    height = UICanvasHeigh;
+                    width  = baseWidth * height / baseHeight;
                 }
                 else
                 {
-                    //等比
-                    x = baseWidth;
-                    y = baseHeight;
+                    width  = UICanvasWidth;
+                    height = baseHeight * width / baseWidth;
                 }
             }
-            (transform as RectTransform).sizeDelta = new(x, y);
+            (transform as RectTransform).sizeDelta = new(width, height);
         }
     }
 }
