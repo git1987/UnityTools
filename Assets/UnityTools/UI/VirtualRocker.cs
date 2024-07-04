@@ -16,10 +16,11 @@ namespace UnityTools.UI
         /// </summary>
         public abstract Vector2 Direction { get; }
         public bool isClick { protected set; get; }
-        public bool isDirection => isClick && (Direction.x != 0 || Direction.y != 0);
-        [SerializeField]
-        protected RectTransform canvasRect;
+        public virtual bool isDirection => isClick && (Direction.x != 0 || Direction.y != 0);
         protected event EventAction<Vector2> rockerAction;
+        /// <summary>
+        /// 基类Awake调用ResetRocker()，子类的Awake中最后调用base.Awake()
+        /// </summary>
         protected virtual void Awake()
         {
             ResetRocker();
@@ -79,18 +80,13 @@ namespace UnityTools.UI
         {
             ResetRocker();
         }
-        /// <summary>
-        /// 设置当前UI的Canvas
-        /// </summary>
-        /// <param name="canvas"></param>
-        public void SetCanvas(RectTransform canvas)
-        {
-            canvasRect = canvas;
-        }
         private void OnDisable()
         {
             ResetRocker();
         }
-        protected virtual void Update() { }
+        protected virtual void Update()
+        {
+            if (isDirection) rockerAction?.Invoke(Direction);
+        }
     }
 }
