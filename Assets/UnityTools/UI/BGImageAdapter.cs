@@ -1,4 +1,5 @@
 using UnityEngine;
+
 namespace UnityTools.UI
 {
     /// <summary>
@@ -14,30 +15,58 @@ namespace UnityTools.UI
                 Debug.LogError("没有UICtrl");
                 return;
             }
-            ///当前屏幕比
-            float screenRatio = Screen.width / (float)Screen.height;
-            float baseWidth  = UIManager.uiCtrl.canvasScaler.referenceResolution.x,
+            float screenWidth = Screen.width,
+                  screenHeight = Screen.height;
+            //当前屏幕分辨率
+            float screenRatio = screenWidth / screenHeight;
+            float baseWidth = UIManager.uiCtrl.canvasScaler.referenceResolution.x,
                   baseHeight = UIManager.uiCtrl.canvasScaler.referenceResolution.y;
             ///根据CanvasScaler计算标准屏幕比
             float baseRatio = baseWidth / baseHeight;
             float x, y;
-            if (screenRatio < baseRatio)
+            if (screenRatio > 1)
             {
-                //长屏：竖向变长
-                x = baseWidth  * screenRatio;
-                y = baseHeight * screenRatio;
-            }
-            else if (screenRatio > baseRatio)
-            {
-                //宽屏：横向边长
-                x = baseHeight     * screenRatio;
-                y = baseHeight * x / baseWidth;
+                //横屏
+                if (screenRatio < baseRatio)
+                {
+                    //长屏：竖向变长
+                    x = baseWidth * screenRatio;
+                    y = baseHeight * screenRatio;
+                }
+                else if (screenRatio > baseRatio)
+                {
+                    //宽屏：横向边长
+                    x = baseHeight * screenRatio;
+                    y = baseHeight * x / baseWidth;
+                }
+                else
+                {
+                    //等比
+                    x = baseWidth;
+                    y = baseHeight;
+                }
             }
             else
             {
-                //等比
-                x = baseWidth;
-                y = baseHeight;
+                //竖屏
+                if (screenRatio < baseRatio)
+                {
+                    //长屏：竖向变长
+                    y = baseHeight / screenRatio;
+                    x = baseWidth * y / baseHeight;
+                }
+                else if (screenRatio > baseRatio)
+                {
+                    //宽屏：横向边长
+                    x = screenWidth;
+                    y = x / baseRatio;
+                }
+                else
+                {
+                    //等比
+                    x = baseWidth;
+                    y = baseHeight;
+                }
             }
             (transform as RectTransform).sizeDelta = new(x, y);
         }
