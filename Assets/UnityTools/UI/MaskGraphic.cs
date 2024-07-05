@@ -5,6 +5,7 @@ namespace UnityTools.UI
     /// <summary>
     /// 不渲染的Graphic，raycastTarget有效
     /// </summary>
+    [DisallowMultipleComponent]
     [RequireComponent(typeof(CanvasRenderer))]
     public class MaskGraphic : Graphic
     {

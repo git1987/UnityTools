@@ -37,6 +37,7 @@ namespace UnityTools.Editor
                 StringBuilder script = new();
                 script.AppendLine("using UnityEngine;");
                 script.AppendLine("using UnityTools.UI;");
+                script.AppendLine("[DisallowMultipleComponent]");
                 script.AppendLine("public class " + fileName + "Panel : BasePanel");
                 script.AppendLine("{");
                 script.AppendLine("");

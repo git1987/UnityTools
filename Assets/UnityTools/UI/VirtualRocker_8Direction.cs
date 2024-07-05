@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using UnityTools.Extend;
 namespace UnityTools.UI
 {
+    [DisallowMultipleComponent]
     [AddComponentMenu("UnityTools/UI/8方向虚拟摇杆")]
     public partial class VirtualRocker_8Direction : VirtualRocker
     {

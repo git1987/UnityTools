@@ -6,6 +6,7 @@ namespace UnityTools.UI
     /// 面板背景适配脚本：根据CanvasScaler设定的屏幕比进行满屏显示裁剪
     /// 使用ScaleWithScreenSize-Expand适配方式，背景图模拟Shrink适配方式
     /// </summary>
+    [DisallowMultipleComponent]
     [RequireComponent(typeof(RectTransform))]
     public class BGImageAdapter : MonoBehaviour
     {
