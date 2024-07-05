@@ -64,6 +64,13 @@ namespace UnityTools.UI
             UIManager.SetHidePanel(this);
         }
         /// <summary>
+        /// 按钮关闭面板放方法
+        /// </summary>
+        public virtual void OnClickClose()
+        {
+            Close();
+        }
+        /// <summary>
         /// 显示面板
         /// </summary>
         public void Show()
@@ -79,7 +86,7 @@ namespace UnityTools.UI
             }
         }
         /// <summary>
-        /// 隐藏面板
+        /// 隐藏面板：面板状态还是打开状态
         /// </summary>
         public void Hide()
         {

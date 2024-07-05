@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using UnityEngine;
 using UnityTools;
 using UnityTools.Extend;
 using UnityTools.UI;
+using UnityEngine;
 
 public class Test : MonoBehaviour
 {
@@ -21,13 +21,18 @@ public class Test : MonoBehaviour
         }
     }
 #endif
-    [ReadOnly]
     public Transform _transform;
     public RectTransform _rectTransform;
     public RectTransform[] points;
     public void OnClickTest()
     {
-        TestModel.instance.ToString();
-        BaseModel.RemoveModel<TestModel>();
+        if (_transform == null) return;
+        VirtualRocker rocker = _transform.GetComponent<VirtualRocker>();
+        rocker.AddListener(Move);
+        _transform = null;
+    }
+    void Move(Vector2 direction)
+    {
+        transform.position = transform.position + (Vector3)direction * Time.deltaTime;
     }
 }

@@ -22,7 +22,7 @@ namespace UnityTools.UI
         /// </summary>
         private static EventFunction<string, GameObject> loadPanelPrefabFunction = null;
         /// <summary>
-        /// 根据面板名称的获取已经实例化的panel的委托
+        /// 根据面板名称的实例化的panel的委托
         /// </summary>
         private static EventFunction<string, GameObject> createPanelFunction = null;
         /// <summary>
@@ -161,22 +161,22 @@ namespace UnityTools.UI
                 //已经加载了
                 return;
             }
+            GameObject panelObj;
             if (loadPanelPrefabFunction != null)
             {
-                GameObject panelObj = GameObject.Instantiate(loadPanelPrefabFunction(panelName));
-                panelObj.name = panelName;
-                CreatePanel(panelObj);
+                panelObj = GameObject.Instantiate(loadPanelPrefabFunction(panelName));
             }
             else if (createPanelFunction != null)
             {
-                GameObject panelObj = createPanelFunction(panelName);
-                panelObj.name = panelName;
-                CreatePanel(panelObj);
+                panelObj = createPanelFunction(panelName);
             }
             else
             {
-                Debug.LogError($"没有实例化{panelName}面板");
+                Debug.LogError($"无法自行创建{panelName}面板");
+                return;
             }
+            panelObj.name = panelName;
+            CreatePanel(panelObj);
         }
         /// <summary>
         /// 创建面板
@@ -213,8 +213,7 @@ namespace UnityTools.UI
         /// <summary>
         /// 打开面板
         /// </summary>
-        /// <typeparam name="P">面板类</typeparam>
-        /// <param name="panelLv">设置的面板等级(0级为预留最低层级)</param>
+        /// <typeparam name="P"></typeparam>
         /// <returns></returns>
         public static P OpenPanel<P>(params object[] objs) where P : BasePanel
         {
@@ -225,10 +224,6 @@ namespace UnityTools.UI
                 return GetPanel(panelName) as P;
             }
             P panel = OpenPanel(panelName, objs) as P;
-            if (panel == null)
-            {
-                Debuger.LogError($"{panelName}不存在");
-            }
             return panel;
         }
         /// <summary>
@@ -249,11 +244,8 @@ namespace UnityTools.UI
                 CreatePanel(panelName);
                 panel = panels[panelName];
             }
-            if (!showPanels.ContainsKey(panelName))
-            {
-                showPanels.Add(panelName, panel);
-                panel.OpenWithManager(objs);
-            }
+            showPanels.Add(panelName, panel);
+            panel.OpenWithManager(objs);
             if (setPanelLv)
             {
                 panel.SetPanelLv();

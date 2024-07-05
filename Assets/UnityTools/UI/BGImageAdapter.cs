@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-
 namespace UnityTools.UI
 {
     /// <summary>
@@ -27,7 +26,7 @@ namespace UnityTools.UI
                 Debug.LogWarning("没有使用Expand的ScreenMatchMode类型");
                 return;
             }
-            float baseWidth = UIManager.uiCtrl.canvasScaler.referenceResolution.x,
+            float baseWidth  = UIManager.uiCtrl.canvasScaler.referenceResolution.x,
                   baseHeight = UIManager.uiCtrl.canvasScaler.referenceResolution.y;
             float UICanvasWidth = UIManager.uiCtrl.rect.sizeDelta.x,
                   UICanvasHeigh = UIManager.uiCtrl.rect.sizeDelta.y;
