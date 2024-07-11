@@ -8,6 +8,7 @@ namespace UnityTools.UI
     /// 使用ScaleWithScreenSize-Expand适配方式，背景图模拟Shrink适配方式
     /// </summary>
     [RequireComponent(typeof(RectTransform))]
+    [DisallowMultipleComponent]
     public class BGImageAdapter : MonoBehaviour
     {
         private void Start()

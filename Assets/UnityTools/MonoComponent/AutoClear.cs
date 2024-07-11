@@ -5,6 +5,7 @@ namespace UnityTools.MonoComponent
     /// <summary>
     /// 自动清除：删除/放回对象池
     /// </summary>
+    [DisallowMultipleComponent]
     public class AutoClear : MonoBehaviour
     {
         [SerializeField]
