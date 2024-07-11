@@ -32,7 +32,7 @@ namespace UnityTools.UI
             GameObject mask = new GameObject("mask");
             mask.transform.SetParentReset(rect);
             maskRect = mask.AddComponent<RectTransform>();
-            Image image = mask.AddComponent<Image>();
+            MaskGraphic image = mask.AddComponent<MaskGraphic>();
             image.color = new Color(0, 0, 0, 0);
             maskRect.SetSurround();
             mask.SetActive(false);
@@ -60,15 +60,6 @@ namespace UnityTools.UI
         /// 初始化UICtrl，由GameBegin调用
         /// </summary>
         protected abstract void Init();
-        /// <summary>
-        /// UI控制内打开面板
-        /// </summary>
-        /// <typeparam name="P"></typeparam>
-        /// <param name="panelLv"></param>
-        protected virtual P OpenPanel<P>(int panelLv = 1) where P : BasePanel
-        {
-            return UIManager.OpenPanel<P>(panelLv);
-        }
         /// <summary>
         /// 设置遮罩状态:过度一些动画，防止在动画中点击触发了事件
         /// </summary>

@@ -1,7 +1,6 @@
+using Codice.Client.BaseCommands.BranchExplorer;
 using UnityEngine;
 using UnityEditor;
-using UnityEngine.UI;
-
 namespace UnityTools.Editor
 {
     public class EditorTools
@@ -35,6 +34,33 @@ namespace UnityTools.Editor
         public static bool InUnityProject(string path)
         {
             return path.IndexOf(Application.dataPath) > -1;
+        }
+        /// <summary>
+        /// unity资源路径转文件本地路径
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string UnityAssetPathToFilePath(string path)
+        {
+            return Application.dataPath + "/" + path.Substring("Assets/".Length);
+        }
+        /// <summary>
+        /// 本地文件路径转unity资源路径
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string FilePathToUnityAssetPath(string path)
+        {
+            if (path.IndexOf(Application.dataPath) > -1)
+            {
+                string unityPath = "Assets/" + path.Substring(Application.dataPath.Length);
+                return unityPath;
+            }
+            else
+            {
+                Debug.LogError($"不是本地工程路径：{path}");
+                return string.Empty;
+            }
         }
     }
 }

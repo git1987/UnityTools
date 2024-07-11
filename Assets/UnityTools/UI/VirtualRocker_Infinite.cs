@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityTools.Extend;
 namespace UnityTools.UI
 {
+    [DisallowMultipleComponent]
     [AddComponentMenu("UnityTools/UI/无极虚拟摇杆")]
     public partial class VirtualRocker_Infinite : VirtualRocker
     {
@@ -142,21 +143,12 @@ namespace UnityTools.UI
             }
         }
 
-        public void Set_pointBg(RectTransform rect)
+        public void SetRects(RectTransform area, RectTransform pointBg, RectTransform point, RectTransform pointer)
         {
-            _pointBg = rect;
-        }
-        public void Set_pointer(RectTransform rect)
-        {
-            _pointer = rect;
-        }
-        public void Set_point(RectTransform rect)
-        {
-            _point = rect;
-        }
-        public void SetareaRect(RectTransform rect)
-        {
-            areaRect = rect;
+            areaRect = area;
+            _pointBg = pointBg;
+            _point   = point;
+            _pointer = pointer;
         }
         bool showGUI;
         private void OnGUI()
@@ -167,6 +159,8 @@ namespace UnityTools.UI
             }
         }
 #endif
+        [SerializeField]
+        private RectTransform canvasRect;
         /// <summary>
         /// 当作初始化用途的Vector2
         /// </summary>
@@ -235,7 +229,6 @@ namespace UnityTools.UI
         private Vector2 currentMousePos;
         protected override void Awake()
         {
-            base.Awake();
             if (gp != null)
             {
                 gp.SetDownAction(() =>
@@ -258,7 +251,15 @@ namespace UnityTools.UI
             _point.gameObject.SetActive(showPoint);
             showPointer = _pointer.GetComponent<Image>().sprite != null;
             _pointer.gameObject.SetActive(showPointer);
-            ResetRocker();
+            base.Awake();
+        }
+        /// <summary>
+        /// 设置当前UI的Canvas
+        /// </summary>
+        /// <param name="canvas"></param>
+        public void SetCanvas(RectTransform canvas)
+        {
+            canvasRect = canvas;
         }
         /// <summary>
         /// 设置虚拟摇杆状态参数
@@ -394,6 +395,7 @@ namespace UnityTools.UI
                 }
             }
             UpdateRocker();
+            base.Update();
         }
     }
 }
