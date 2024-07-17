@@ -18,19 +18,39 @@ namespace UnityTools.Single
             }
         }
         private static T _instance;
-        public static T instance
+        public static T instance => _instance;
+        /// <summary>
+        /// 获取单例：如果没有实例化一个
+        /// </summary>
+        /// <returns></returns>
+        public static T GetInstance()
         {
-            get
+            if (_instance == null)
             {
-                if (_instance == null)
-                {
-                    _instance = new T();
-                    _instance.InitSingleton();
-                }
-                return _instance;
+                _instance = new T();
+                _instance.InitSingle();
+            }
+            return _instance;
+        }
+        /// <summary>
+        /// 释放单例
+        /// </summary>
+        public static void Release()
+        {
+            if (_instance != null)
+            {
+                _instance.DisableSingle();
+                _instance = null;
             }
         }
-        protected virtual void InitSingleton() { }
+        /// <summary>
+        /// 初始化对象
+        /// </summary>
+        protected virtual void InitSingle() { }
+        /// <summary>
+        /// 释放对象资源
+        /// </summary>
+        protected virtual void DisableSingle() { }
     }
 
     /// <summary>
